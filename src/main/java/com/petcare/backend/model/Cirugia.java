@@ -1,15 +1,13 @@
 package com.petcare.backend.model;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,25 +16,25 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Diagnostico {
+@NoArgsConstructor
+public class Cirugia {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean examenRealizado;
+    private String tipoCirugia;
 
-    private String diagnostico;
+    private String observaciones;
+    
+    private LocalDateTime fecha;
 
     @ManyToOne
     @JoinColumn(name = "consulta_id")
     private Consulta consulta;
 
-    @OneToMany(mappedBy = "diagnostico", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tratamiento> tratamientos;
-
-    @OneToMany(mappedBy = "diagnostico", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cirugia> cirugias;
+    @ManyToOne
+    @JoinColumn(name = "diagnostico_id")
+    private Diagnostico diagnostico;
 }
