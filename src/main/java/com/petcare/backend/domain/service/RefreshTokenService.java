@@ -1,8 +1,8 @@
 package com.petcare.backend.domain.service;
 
 import com.petcare.backend.domain.model.RefreshToken;
-import com.petcare.backend.domain.port.RefreshTokenPort;
-import com.petcare.backend.domain.port.UsuarioPort;
+import com.petcare.backend.domain.port.RefreshTokenRepositoryPort;
+import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.TokenRefreshException;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,40 +18,40 @@ public class RefreshTokenService {
     @Value("${jwt.refreshExpirationMs:604800000}")
     private Long refreshTokenDurationMs;
 
-    private final RefreshTokenPort refreshTokenPort;
-    private final UsuarioPort usuarioPort;
+    private final RefreshTokenRepositoryPort refreshTokenRepositoryPort;
+    private final UsuarioRepositoryPort usuarioRepositoryPort;
 
-    public RefreshTokenService(RefreshTokenPort refreshTokenPort, UsuarioPort usuarioPort) {
-        this.refreshTokenPort = refreshTokenPort;
-        this.usuarioPort = usuarioPort;
+    public RefreshTokenService(RefreshTokenRepositoryPort refreshTokenRepositoryPort, UsuarioRepositoryPort usuarioRepositoryPort) {
+        this.refreshTokenRepositoryPort = refreshTokenRepositoryPort;
+        this.usuarioRepositoryPort = usuarioRepositoryPort;
     }
 
     public RefreshToken createRefreshToken(Long userId) {
-        refreshTokenPort.deleteByUsuarioId(userId);
+        refreshTokenRepositoryPort.deleteByUsuarioId(userId);
 
         RefreshToken refreshToken = RefreshToken.builder()
-                .usuario(usuarioPort.findById(userId)
+                .usuario(usuarioRepositoryPort.findById(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")))
                 .token(UUID.randomUUID().toString())
                 .fechaExpiracion(LocalDateTime.now().plusNanos(refreshTokenDurationMs * 1000000))
                 .build();
 
-        return refreshTokenPort.save(refreshToken);
+        return refreshTokenRepositoryPort.save(refreshToken);
     }
 
     public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenPort.findByToken(token);
+        return refreshTokenRepositoryPort.findByToken(token);
     }
 
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getFechaExpiracion().isBefore(LocalDateTime.now())) {
-            refreshTokenPort.deleteByUsuarioId(token.getUsuario().getId());
+            refreshTokenRepositoryPort.deleteByUsuarioId(token.getUsuario().getId());
             throw new TokenRefreshException("El Refresh token ha expirado. Por favor vuelva a iniciar sesión.");
         }
         return token;
     }
 
     public void deleteByUserId(Long userId) {
-        refreshTokenPort.deleteByUsuarioId(userId);
+        refreshTokenRepositoryPort.deleteByUsuarioId(userId);
     }
 }

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface CitaPort {
+public interface CitaRepositoryPort {
     Optional<Cita> findById(Long id);
     List<Cita> findAll();
     List<Cita> findByMascotaId(Long mascotaId);

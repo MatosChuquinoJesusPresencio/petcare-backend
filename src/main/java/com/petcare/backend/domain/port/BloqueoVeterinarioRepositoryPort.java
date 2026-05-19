@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface BloqueoPort {
+public interface BloqueoVeterinarioRepositoryPort {
     List<BloqueoVeterinario> findByVeterinarioId(Long veterinarioId);
     List<BloqueoVeterinario> findByVeterinarioIdAndFecha(Long veterinarioId, LocalDate fecha);
     Optional<BloqueoVeterinario> findById(Long id);

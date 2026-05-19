@@ -1,7 +1,7 @@
 package com.petcare.backend.domain.service;
 
 import com.petcare.backend.domain.model.Servicio;
-import com.petcare.backend.domain.port.ServicioPort;
+import com.petcare.backend.domain.port.ServicioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -11,19 +11,19 @@ import java.util.Optional;
 @Service
 public class ServicioService {
 
-    private final ServicioPort servicioPort;
+    private final ServicioRepositoryPort servicioRepositoryPort;
 
-    public ServicioService(ServicioPort servicioPort) {
-        this.servicioPort = servicioPort;
+    public ServicioService(ServicioRepositoryPort servicioRepositoryPort) {
+        this.servicioRepositoryPort = servicioRepositoryPort;
     }
 
     public Servicio crearServicio(Servicio servicio) {
         servicio.setActivo(true);
-        return servicioPort.save(servicio);
+        return servicioRepositoryPort.save(servicio);
     }
 
     public Servicio actualizarServicio(Long id, Servicio servicioDetalles) {
-        Servicio servicio = servicioPort.findById(id)
+        Servicio servicio = servicioRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
         
         servicio.setNombre(servicioDetalles.getNombre());
@@ -31,25 +31,25 @@ public class ServicioService {
         servicio.setDuracionMinutos(servicioDetalles.getDuracionMinutos());
         servicio.setCostoReferencial(servicioDetalles.getCostoReferencial());
         
-        return servicioPort.save(servicio);
+        return servicioRepositoryPort.save(servicio);
     }
 
     public Optional<Servicio> obtenerPorId(Long id) {
-        return servicioPort.findById(id);
+        return servicioRepositoryPort.findById(id);
     }
 
     public List<Servicio> listarTodos() {
-        return servicioPort.findAll();
+        return servicioRepositoryPort.findAll();
     }
 
     public List<Servicio> listarActivos() {
-        return servicioPort.findByActivo(true);
+        return servicioRepositoryPort.findByActivo(true);
     }
 
     public void desactivarServicio(Long id) {
-        Servicio servicio = servicioPort.findById(id)
+        Servicio servicio = servicioRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
         servicio.setActivo(false);
-        servicioPort.save(servicio);
+        servicioRepositoryPort.save(servicio);
     }
 }

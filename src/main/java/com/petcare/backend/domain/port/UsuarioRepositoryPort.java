@@ -4,7 +4,7 @@ import com.petcare.backend.domain.model.Usuario;
 import java.util.Optional;
 import java.util.List;
 
-public interface UsuarioPort {
+public interface UsuarioRepositoryPort {
     Optional<Usuario> findById(Long id);
     Optional<Usuario> findByUsername(String username);
     Optional<Usuario> findByEmail(String email);

@@ -4,7 +4,7 @@ import com.petcare.backend.domain.model.Servicio;
 import java.util.Optional;
 import java.util.List;
 
-public interface ServicioPort {
+public interface ServicioRepositoryPort {
     Optional<Servicio> findById(Long id);
     List<Servicio> findAll();
     List<Servicio> findByActivo(Boolean activo);

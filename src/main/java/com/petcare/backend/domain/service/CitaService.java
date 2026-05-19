@@ -6,12 +6,12 @@ import com.petcare.backend.domain.model.DisponibilidadVeterinario;
 import com.petcare.backend.domain.model.Mascota;
 import com.petcare.backend.domain.model.Servicio;
 import com.petcare.backend.domain.model.Usuario;
-import com.petcare.backend.domain.port.BloqueoPort;
-import com.petcare.backend.domain.port.CitaPort;
-import com.petcare.backend.domain.port.DisponibilidadPort;
-import com.petcare.backend.domain.port.MascotaPort;
-import com.petcare.backend.domain.port.ServicioPort;
-import com.petcare.backend.domain.port.UsuarioPort;
+import com.petcare.backend.domain.port.BloqueoVeterinarioRepositoryPort;
+import com.petcare.backend.domain.port.CitaRepositoryPort;
+import com.petcare.backend.domain.port.DisponibilidadVeterinarioRepositoryPort;
+import com.petcare.backend.domain.port.MascotaRepositoryPort;
+import com.petcare.backend.domain.port.ServicioRepositoryPort;
+import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.BusinessRuleException;
 import com.petcare.backend.domain.exception.ScheduleConflictException;
@@ -26,47 +26,47 @@ import java.util.Optional;
 @Service
 public class CitaService {
 
-    private final CitaPort citaPort;
-    private final BloqueoPort bloqueoPort;
-    private final DisponibilidadPort disponibilidadPort;
-    private final MascotaPort mascotaPort;
-    private final ServicioPort servicioPort;
-    private final UsuarioPort usuarioPort;
+    private final CitaRepositoryPort citaRepositoryPort;
+    private final BloqueoVeterinarioRepositoryPort bloqueoRepositoryPort;
+    private final DisponibilidadVeterinarioRepositoryPort disponibilidadRepositoryPort;
+    private final MascotaRepositoryPort mascotaRepositoryPort;
+    private final ServicioRepositoryPort servicioRepositoryPort;
+    private final UsuarioRepositoryPort usuarioRepositoryPort;
 
-    public CitaService(CitaPort citaPort,
-                       BloqueoPort bloqueoPort,
-                       DisponibilidadPort disponibilidadPort,
-                       MascotaPort mascotaPort,
-                       ServicioPort servicioPort,
-                       UsuarioPort usuarioPort) {
-        this.citaPort = citaPort;
-        this.bloqueoPort = bloqueoPort;
-        this.disponibilidadPort = disponibilidadPort;
-        this.mascotaPort = mascotaPort;
-        this.servicioPort = servicioPort;
-        this.usuarioPort = usuarioPort;
+    public CitaService(CitaRepositoryPort citaRepositoryPort,
+                       BloqueoVeterinarioRepositoryPort bloqueoRepositoryPort,
+                       DisponibilidadVeterinarioRepositoryPort disponibilidadRepositoryPort,
+                       MascotaRepositoryPort mascotaRepositoryPort,
+                       ServicioRepositoryPort servicioRepositoryPort,
+                       UsuarioRepositoryPort usuarioRepositoryPort) {
+        this.citaRepositoryPort = citaRepositoryPort;
+        this.bloqueoRepositoryPort = bloqueoRepositoryPort;
+        this.disponibilidadRepositoryPort = disponibilidadRepositoryPort;
+        this.mascotaRepositoryPort = mascotaRepositoryPort;
+        this.servicioRepositoryPort = servicioRepositoryPort;
+        this.usuarioRepositoryPort = usuarioRepositoryPort;
     }
 
     @Transactional
     public Cita agendarCita(Long mascotaId, Long veterinarioId, Long servicioId, LocalDateTime fechaHora, String notas, Long creadoPorId) {
-        Mascota mascota = mascotaPort.findById(mascotaId)
+        Mascota mascota = mascotaRepositoryPort.findById(mascotaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Mascota no encontrada"));
         
-        Usuario veterinario = usuarioPort.findById(veterinarioId)
+        Usuario veterinario = usuarioRepositoryPort.findById(veterinarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Veterinario no encontrado"));
         
         if (!"VETERINARIO".equalsIgnoreCase(veterinario.getRol())) {
             throw new BusinessRuleException("El usuario asignado no tiene el rol de VETERINARIO");
         }
 
-        Servicio servicio = servicioPort.findById(servicioId)
+        Servicio servicio = servicioRepositoryPort.findById(servicioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
         
         if (!servicio.getActivo()) {
             throw new BusinessRuleException("El servicio seleccionado no está activo");
         }
 
-        Usuario creadoPor = usuarioPort.findById(creadoPorId)
+        Usuario creadoPor = usuarioRepositoryPort.findById(creadoPorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario creador no encontrado"));
 
         validarDisponibilidadYHorarios(veterinarioId, servicio, fechaHora, null);
@@ -81,12 +81,12 @@ public class CitaService {
                 .creadoPor(creadoPor)
                 .build();
 
-        return citaPort.save(cita);
+        return citaRepositoryPort.save(cita);
     }
 
     @Transactional
     public Cita reprogramarCita(Long citaId, LocalDateTime nuevaFechaHora) {
-        Cita cita = citaPort.findById(citaId)
+        Cita cita = citaRepositoryPort.findById(citaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada"));
 
         if ("CANCELADA".equals(cita.getEstado()) || "ATENDIDA".equals(cita.getEstado())) {
@@ -97,11 +97,11 @@ public class CitaService {
 
         cita.setFechaHora(nuevaFechaHora);
         cita.setEstado("REPROGRAMADA");
-        return citaPort.save(cita);
+        return citaRepositoryPort.save(cita);
     }
 
     public Cita cambiarEstadoCita(Long citaId, String nuevoEstado) {
-        Cita cita = citaPort.findById(citaId)
+        Cita cita = citaRepositoryPort.findById(citaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada"));
 
         String estadoUpper = nuevoEstado.toUpperCase();
@@ -110,31 +110,31 @@ public class CitaService {
         }
 
         cita.setEstado(estadoUpper);
-        return citaPort.save(cita);
+        return citaRepositoryPort.save(cita);
     }
 
     public Optional<Cita> obtenerPorId(Long id) {
-        return citaPort.findById(id);
+        return citaRepositoryPort.findById(id);
     }
 
     public List<Cita> listarTodas() {
-        return citaPort.findAll();
+        return citaRepositoryPort.findAll();
     }
 
     public List<Cita> listarPorMascota(Long mascotaId) {
-        return citaPort.findByMascotaId(mascotaId);
+        return citaRepositoryPort.findByMascotaId(mascotaId);
     }
 
     public List<Cita> listarPorVeterinario(Long veterinarioId) {
-        return citaPort.findByVeterinarioId(veterinarioId);
+        return citaRepositoryPort.findByVeterinarioId(veterinarioId);
     }
 
     private void validarDisponibilidadYHorarios(Long veterinarioId, Servicio servicio, LocalDateTime fechaHora, Long citaAExcluirId) {
         LocalTime horaInicioCita = fechaHora.toLocalTime();
         LocalTime horaFinCita = horaInicioCita.plusMinutes(servicio.getDuracionMinutos());
-        int diaSemanaVal = fechaHora.getDayOfWeek().getValue();
+        int diaSemanaVal = fechaHora.getDayOfWeek().getValue(); // 1 = Lunes, 7 = Domingo
 
-        List<DisponibilidadVeterinario> disponibilidades = disponibilidadPort.findByVeterinarioIdAndDiaSemana(veterinarioId, diaSemanaVal);
+        List<DisponibilidadVeterinario> disponibilidades = disponibilidadRepositoryPort.findByVeterinarioIdAndDiaSemana(veterinarioId, diaSemanaVal);
         boolean dentroDeHorario = false;
         for (DisponibilidadVeterinario disp : disponibilidades) {
             if (disp.getActivo() &&
@@ -148,7 +148,7 @@ public class CitaService {
             throw new ScheduleConflictException("La fecha u hora seleccionada está fuera del horario disponible del veterinario");
         }
 
-        List<BloqueoVeterinario> bloqueos = bloqueoPort.findByVeterinarioIdAndFecha(veterinarioId, fechaHora.toLocalDate());
+        List<BloqueoVeterinario> bloqueos = bloqueoRepositoryPort.findByVeterinarioIdAndFecha(veterinarioId, fechaHora.toLocalDate());
         for (BloqueoVeterinario bloq : bloqueos) {
             if (horaInicioCita.isBefore(bloq.getHoraFin()) && bloq.getHoraInicio().isBefore(horaFinCita)) {
                 throw new ScheduleConflictException("El veterinario tiene un bloqueo de agenda programado en el horario seleccionado: " + bloq.getMotivo());
@@ -157,14 +157,12 @@ public class CitaService {
 
         LocalDateTime inicioDia = fechaHora.toLocalDate().atStartOfDay();
         LocalDateTime finDia = fechaHora.toLocalDate().atTime(23, 59, 59);
-        List<Cita> citasDelDia = citaPort.findByVeterinarioIdAndFechaHoraBetween(veterinarioId, inicioDia, finDia);
+        List<Cita> citasDelDia = citaRepositoryPort.findByVeterinarioIdAndFechaHoraBetween(veterinarioId, inicioDia, finDia);
 
         for (Cita existente : citasDelDia) {
             if (citaAExcluirId != null && existente.getId().equals(citaAExcluirId)) {
                 continue;
             }
-
-            // Excluir citas canceladas o no asistidas
             if ("CANCELADA".equals(existente.getEstado()) || "NO_ASISTIO".equals(existente.getEstado())) {
                 continue;
             }
