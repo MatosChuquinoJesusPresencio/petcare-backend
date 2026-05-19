@@ -1,0 +1,7 @@
+package com.petcare.backend.domain.exception;
+
+public class ScheduleConflictException extends PetcareException {
+    public ScheduleConflictException(String message) {
+        super(message);
+    }
+}
