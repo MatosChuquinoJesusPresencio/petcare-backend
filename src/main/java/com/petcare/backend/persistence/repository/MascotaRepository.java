@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MascotaRepository extends JpaRepository<MascotaEntity, Long> {
+    java.util.Optional<MascotaEntity> findByMicrochip(String microchip);
 }

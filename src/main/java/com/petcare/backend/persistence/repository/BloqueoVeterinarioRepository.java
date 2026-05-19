@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BloqueoVeterinarioRepository extends JpaRepository<BloqueoVeterinarioEntity, Long> {
+    java.util.List<BloqueoVeterinarioEntity> findByVeterinarioId(Long veterinarioId);
+    java.util.List<BloqueoVeterinarioEntity> findByVeterinarioIdAndFecha(Long veterinarioId, java.time.LocalDate fecha);
 }

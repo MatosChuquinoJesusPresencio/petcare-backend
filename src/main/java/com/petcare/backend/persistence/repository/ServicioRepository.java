@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ServicioRepository extends JpaRepository<ServicioEntity, Long> {
+    java.util.List<ServicioEntity> findByActivo(Boolean activo);
 }
