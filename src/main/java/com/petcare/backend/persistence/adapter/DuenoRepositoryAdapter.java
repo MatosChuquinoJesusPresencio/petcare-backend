@@ -5,11 +5,11 @@ import com.petcare.backend.domain.port.DuenoRepositoryPort;
 import com.petcare.backend.persistence.entity.DuenoEntity;
 import com.petcare.backend.persistence.mapper.DuenoMapper;
 import com.petcare.backend.persistence.repository.DuenoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class DuenoRepositoryAdapter implements DuenoRepositoryPort {
@@ -38,10 +38,9 @@ public class DuenoRepositoryAdapter implements DuenoRepositoryPort {
     }
 
     @Override
-    public List<Dueno> findAll() {
-        return duenoRepository.findAll().stream()
-                .map(duenoMapper::toModel)
-                .collect(Collectors.toList());
+    public Page<Dueno> findAll(Pageable pageable) {
+        return duenoRepository.findAll(pageable)
+                .map(duenoMapper::toModel);
     }
 
     @Override

@@ -1,12 +1,13 @@
 package com.petcare.backend.domain.port;
 
 import com.petcare.backend.domain.model.Servicio;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
-import java.util.List;
 
 public interface ServicioRepositoryPort {
     Optional<Servicio> findById(Long id);
-    List<Servicio> findAll();
-    List<Servicio> findByActivo(Boolean activo);
+    Page<Servicio> findAll(Pageable pageable);
+    Page<Servicio> findByActivo(Boolean activo, Pageable pageable);
     Servicio save(Servicio servicio);
 }

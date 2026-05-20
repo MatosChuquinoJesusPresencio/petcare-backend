@@ -5,6 +5,8 @@ import com.petcare.backend.domain.port.MascotaResponsableRepositoryPort;
 import com.petcare.backend.persistence.entity.MascotaResponsableEntity;
 import com.petcare.backend.persistence.mapper.MascotaResponsableMapper;
 import com.petcare.backend.persistence.repository.MascotaResponsableRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +33,9 @@ public class MascotaResponsableRepositoryAdapter implements MascotaResponsableRe
     }
 
     @Override
-    public List<MascotaResponsable> findByDuenoId(Long duenoId) {
-        return repository.findByDuenoId(duenoId).stream()
-                .map(mapper::toModel)
-                .collect(Collectors.toList());
+    public Page<MascotaResponsable> findByDuenoId(Long duenoId, Pageable pageable) {
+        return repository.findByDuenoId(duenoId, pageable)
+                .map(mapper::toModel);
     }
 
     @Override

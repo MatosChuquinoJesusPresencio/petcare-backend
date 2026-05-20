@@ -9,12 +9,12 @@ import com.petcare.backend.domain.port.MascotaResponsableRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceDuplicateException;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.BusinessRuleException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class MascotaService {
@@ -87,8 +87,8 @@ public class MascotaService {
         return mascotaRepositoryPort.findById(id);
     }
 
-    public List<Mascota> listarTodas() {
-        return mascotaRepositoryPort.findAll();
+    public Page<Mascota> listarTodas(Pageable pageable) {
+        return mascotaRepositoryPort.findAll(pageable);
     }
 
     @Transactional
@@ -99,10 +99,9 @@ public class MascotaService {
         mascotaRepositoryPort.save(mascota);
     }
 
-    public List<Mascota> listarMascotasDeDueno(Long duenoId) {
-        return responsableRepositoryPort.findByDuenoId(duenoId).stream()
-                .map(MascotaResponsable::getMascota)
-                .collect(Collectors.toList());
+    public Page<Mascota> listarMascotasDeDueno(Long duenoId, Pageable pageable) {
+        return responsableRepositoryPort.findByDuenoId(duenoId, pageable)
+                .map(MascotaResponsable::getMascota);
     }
 
     @Transactional

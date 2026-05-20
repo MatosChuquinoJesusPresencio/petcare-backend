@@ -5,6 +5,8 @@ import com.petcare.backend.domain.port.CitaRepositoryPort;
 import com.petcare.backend.persistence.entity.CitaEntity;
 import com.petcare.backend.persistence.mapper.CitaMapper;
 import com.petcare.backend.persistence.repository.CitaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -29,24 +31,21 @@ public class CitaRepositoryAdapter implements CitaRepositoryPort {
     }
 
     @Override
-    public List<Cita> findAll() {
-        return citaRepository.findAll().stream()
-                .map(citaMapper::toModel)
-                .collect(Collectors.toList());
+    public Page<Cita> findAll(Pageable pageable) {
+        return citaRepository.findAll(pageable)
+                .map(citaMapper::toModel);
     }
 
     @Override
-    public List<Cita> findByMascotaId(Long mascotaId) {
-        return citaRepository.findByMascotaId(mascotaId).stream()
-                .map(citaMapper::toModel)
-                .collect(Collectors.toList());
+    public Page<Cita> findByMascotaId(Long mascotaId, Pageable pageable) {
+        return citaRepository.findByMascotaId(mascotaId, pageable)
+                .map(citaMapper::toModel);
     }
 
     @Override
-    public List<Cita> findByVeterinarioId(Long veterinarioId) {
-        return citaRepository.findByVeterinarioId(veterinarioId).stream()
-                .map(citaMapper::toModel)
-                .collect(Collectors.toList());
+    public Page<Cita> findByVeterinarioId(Long veterinarioId, Pageable pageable) {
+        return citaRepository.findByVeterinarioId(veterinarioId, pageable)
+                .map(citaMapper::toModel);
     }
 
     @Override

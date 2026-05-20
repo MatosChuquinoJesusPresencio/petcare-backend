@@ -5,7 +5,8 @@ import com.petcare.backend.domain.port.ServicioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 @Service
@@ -38,12 +39,12 @@ public class ServicioService {
         return servicioRepositoryPort.findById(id);
     }
 
-    public List<Servicio> listarTodos() {
-        return servicioRepositoryPort.findAll();
+    public Page<Servicio> listarTodos(Pageable pageable) {
+        return servicioRepositoryPort.findAll(pageable);
     }
 
-    public List<Servicio> listarActivos() {
-        return servicioRepositoryPort.findByActivo(true);
+    public Page<Servicio> listarActivos(Pageable pageable) {
+        return servicioRepositoryPort.findByActivo(true, pageable);
     }
 
     public void desactivarServicio(Long id) {

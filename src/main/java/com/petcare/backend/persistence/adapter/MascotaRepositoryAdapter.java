@@ -5,11 +5,11 @@ import com.petcare.backend.domain.port.MascotaRepositoryPort;
 import com.petcare.backend.persistence.entity.MascotaEntity;
 import com.petcare.backend.persistence.mapper.MascotaMapper;
 import com.petcare.backend.persistence.repository.MascotaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class MascotaRepositoryAdapter implements MascotaRepositoryPort {
@@ -33,10 +33,9 @@ public class MascotaRepositoryAdapter implements MascotaRepositoryPort {
     }
 
     @Override
-    public List<Mascota> findAll() {
-        return mascotaRepository.findAll().stream()
-                .map(mascotaMapper::toModel)
-                .collect(Collectors.toList());
+    public Page<Mascota> findAll(Pageable pageable) {
+        return mascotaRepository.findAll(pageable)
+                .map(mascotaMapper::toModel);
     }
 
     @Override

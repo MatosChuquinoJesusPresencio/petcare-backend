@@ -5,11 +5,11 @@ import com.petcare.backend.domain.port.ContactoEmergenciaRepositoryPort;
 import com.petcare.backend.persistence.entity.ContactoEmergenciaEntity;
 import com.petcare.backend.persistence.mapper.ContactoEmergenciaMapper;
 import com.petcare.backend.persistence.repository.ContactoEmergenciaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ContactoEmergenciaRepositoryAdapter implements ContactoEmergenciaRepositoryPort {
@@ -23,10 +23,9 @@ public class ContactoEmergenciaRepositoryAdapter implements ContactoEmergenciaRe
     }
 
     @Override
-    public List<ContactoEmergencia> findByDuenoId(Long duenoId) {
-        return contactoRepository.findByDuenoId(duenoId).stream()
-                .map(contactoMapper::toModel)
-                .collect(Collectors.toList());
+    public Page<ContactoEmergencia> findByDuenoId(Long duenoId, Pageable pageable) {
+        return contactoRepository.findByDuenoId(duenoId, pageable)
+                .map(contactoMapper::toModel);
     }
 
     @Override

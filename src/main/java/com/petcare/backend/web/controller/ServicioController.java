@@ -9,7 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/servicios")
@@ -22,8 +23,10 @@ public class ServicioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Servicio>> listarServicios(@RequestParam(value = "soloActivos", defaultValue = "true") boolean soloActivos) {
-        List<Servicio> servicios = soloActivos ? servicioService.listarActivos() : servicioService.listarTodos();
+    public ResponseEntity<Page<Servicio>> listarServicios(
+            @RequestParam(value = "soloActivos", defaultValue = "true") boolean soloActivos,
+            Pageable pageable) {
+        Page<Servicio> servicios = soloActivos ? servicioService.listarActivos(pageable) : servicioService.listarTodos(pageable);
         return ResponseEntity.ok(servicios);
     }
 

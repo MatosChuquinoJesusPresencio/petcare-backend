@@ -6,9 +6,10 @@ import com.petcare.backend.domain.port.ContactoEmergenciaRepositoryPort;
 import com.petcare.backend.domain.port.DuenoRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceDuplicateException;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -63,8 +64,8 @@ public class DuenoService {
         return duenoRepositoryPort.findById(id);
     }
 
-    public List<Dueno> listarTodos() {
-        return duenoRepositoryPort.findAll();
+    public Page<Dueno> listarTodos(Pageable pageable) {
+        return duenoRepositoryPort.findAll(pageable);
     }
 
     public void desactivarDueno(Long id) {
@@ -81,8 +82,8 @@ public class DuenoService {
         return contactoRepositoryPort.save(contacto);
     }
 
-    public List<ContactoEmergencia> listarContactosDeDueno(Long duenoId) {
-        return contactoRepositoryPort.findByDuenoId(duenoId);
+    public Page<ContactoEmergencia> listarContactosDeDueno(Long duenoId, Pageable pageable) {
+        return contactoRepositoryPort.findByDuenoId(duenoId, pageable);
     }
 
     public void eliminarContactoEmergencia(Long contactoId) {

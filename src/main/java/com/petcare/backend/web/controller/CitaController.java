@@ -9,13 +9,13 @@ import com.petcare.backend.web.dto.CitaEstadoRequest;
 import com.petcare.backend.web.dto.CitaReprogramarRequest;
 import com.petcare.backend.web.dto.CitaRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/citas")
@@ -30,8 +30,8 @@ public class CitaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Cita>> listarCitas() {
-        return ResponseEntity.ok(citaService.listarTodas());
+    public ResponseEntity<Page<Cita>> listarCitas(Pageable pageable) {
+        return ResponseEntity.ok(citaService.listarTodas(pageable));
     }
 
     @GetMapping("/{id}")
@@ -42,13 +42,13 @@ public class CitaController {
     }
 
     @GetMapping("/mascota/{mascotaId}")
-    public ResponseEntity<List<Cita>> listarPorMascota(@PathVariable Long mascotaId) {
-        return ResponseEntity.ok(citaService.listarPorMascota(mascotaId));
+    public ResponseEntity<Page<Cita>> listarPorMascota(@PathVariable Long mascotaId, Pageable pageable) {
+        return ResponseEntity.ok(citaService.listarPorMascota(mascotaId, pageable));
     }
 
     @GetMapping("/veterinario/{veterinarioId}")
-    public ResponseEntity<List<Cita>> listarPorVeterinario(@PathVariable Long veterinarioId) {
-        return ResponseEntity.ok(citaService.listarPorVeterinario(veterinarioId));
+    public ResponseEntity<Page<Cita>> listarPorVeterinario(@PathVariable Long veterinarioId, Pageable pageable) {
+        return ResponseEntity.ok(citaService.listarPorVeterinario(veterinarioId, pageable));
     }
 
     @PostMapping

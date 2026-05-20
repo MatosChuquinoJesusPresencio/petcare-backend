@@ -60,9 +60,8 @@ public class AuthController {
         
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuarioDB.getId());
 
-        // Obtener rol
         String rol = userDetails.getAuthorities().iterator().next().getAuthority();
-        // Quitar "ROLE_" si lo tiene
+        
         if (rol.startsWith("ROLE_")) {
             rol = rol.substring(5);
         }

@@ -1,11 +1,12 @@
 package com.petcare.backend.domain.port;
 
 import com.petcare.backend.domain.model.ContactoEmergencia;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface ContactoEmergenciaRepositoryPort {
-    List<ContactoEmergencia> findByDuenoId(Long duenoId);
+    Page<ContactoEmergencia> findByDuenoId(Long duenoId, Pageable pageable);
     Optional<ContactoEmergencia> findById(Long id);
     ContactoEmergencia save(ContactoEmergencia contacto);
     void deleteById(Long id);

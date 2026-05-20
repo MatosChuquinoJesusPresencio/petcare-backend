@@ -6,7 +6,9 @@ import com.petcare.backend.domain.exception.ResourceDuplicateException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 @Service
@@ -41,7 +43,7 @@ public class UsuarioService {
         return usuarioRepositoryPort.findByUsername(username);
     }
 
-    public List<Usuario> listarTodos() {
-        return usuarioRepositoryPort.findAll();
+    public Page<Usuario> listarTodos(Pageable pageable) {
+        return usuarioRepositoryPort.findAll(pageable);
     }
 }

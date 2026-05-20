@@ -15,6 +15,8 @@ import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.BusinessRuleException;
 import com.petcare.backend.domain.exception.ScheduleConflictException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,16 +119,16 @@ public class CitaService {
         return citaRepositoryPort.findById(id);
     }
 
-    public List<Cita> listarTodas() {
-        return citaRepositoryPort.findAll();
+    public Page<Cita> listarTodas(Pageable pageable) {
+        return citaRepositoryPort.findAll(pageable);
     }
 
-    public List<Cita> listarPorMascota(Long mascotaId) {
-        return citaRepositoryPort.findByMascotaId(mascotaId);
+    public Page<Cita> listarPorMascota(Long mascotaId, Pageable pageable) {
+        return citaRepositoryPort.findByMascotaId(mascotaId, pageable);
     }
 
-    public List<Cita> listarPorVeterinario(Long veterinarioId) {
-        return citaRepositoryPort.findByVeterinarioId(veterinarioId);
+    public Page<Cita> listarPorVeterinario(Long veterinarioId, Pageable pageable) {
+        return citaRepositoryPort.findByVeterinarioId(veterinarioId, pageable);
     }
 
     private void validarDisponibilidadYHorarios(Long veterinarioId, Servicio servicio, LocalDateTime fechaHora, Long citaAExcluirId) {

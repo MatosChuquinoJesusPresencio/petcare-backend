@@ -1,6 +1,6 @@
 {"properties": [
   {
-    "name": "jwt.refreshExpirationMs",
+    "name": "jwt.refresh-expiration-ms",
     "type": "java.lang.String",
     "description": "Tiempo de expiracion del refresh token"
   },

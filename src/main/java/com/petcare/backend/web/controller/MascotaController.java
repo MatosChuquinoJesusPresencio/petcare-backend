@@ -9,7 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/mascotas")
@@ -22,8 +23,8 @@ public class MascotaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Mascota>> listarMascotas() {
-        return ResponseEntity.ok(mascotaService.listarTodas());
+    public ResponseEntity<Page<Mascota>> listarMascotas(Pageable pageable) {
+        return ResponseEntity.ok(mascotaService.listarTodas(pageable));
     }
 
     @GetMapping("/{id}")
@@ -34,8 +35,8 @@ public class MascotaController {
     }
 
     @GetMapping("/dueno/{duenoId}")
-    public ResponseEntity<List<Mascota>> listarMascotasDeDueno(@PathVariable Long duenoId) {
-        return ResponseEntity.ok(mascotaService.listarMascotasDeDueno(duenoId));
+    public ResponseEntity<Page<Mascota>> listarMascotasDeDueno(@PathVariable Long duenoId, Pageable pageable) {
+        return ResponseEntity.ok(mascotaService.listarMascotasDeDueno(duenoId, pageable));
     }
 
     @PostMapping

@@ -14,7 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/duenos")
@@ -29,8 +30,8 @@ public class DuenoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Dueno>> listarDuenos() {
-        return ResponseEntity.ok(duenoService.listarTodos());
+    public ResponseEntity<Page<Dueno>> listarDuenos(Pageable pageable) {
+        return ResponseEntity.ok(duenoService.listarTodos(pageable));
     }
 
     @GetMapping("/{id}")
@@ -88,8 +89,8 @@ public class DuenoController {
 
     // Contactos de emergencia
     @GetMapping("/{duenoId}/contactos")
-    public ResponseEntity<List<ContactoEmergencia>> listarContactos(@PathVariable Long duenoId) {
-        return ResponseEntity.ok(duenoService.listarContactosDeDueno(duenoId));
+    public ResponseEntity<Page<ContactoEmergencia>> listarContactos(@PathVariable Long duenoId, Pageable pageable) {
+        return ResponseEntity.ok(duenoService.listarContactosDeDueno(duenoId, pageable));
     }
 
     @PostMapping("/{duenoId}/contactos")

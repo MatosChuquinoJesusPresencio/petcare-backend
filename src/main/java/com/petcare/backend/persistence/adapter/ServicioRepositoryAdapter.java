@@ -5,11 +5,11 @@ import com.petcare.backend.domain.port.ServicioRepositoryPort;
 import com.petcare.backend.persistence.entity.ServicioEntity;
 import com.petcare.backend.persistence.mapper.ServicioMapper;
 import com.petcare.backend.persistence.repository.ServicioRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ServicioRepositoryAdapter implements ServicioRepositoryPort {
@@ -28,17 +28,15 @@ public class ServicioRepositoryAdapter implements ServicioRepositoryPort {
     }
 
     @Override
-    public List<Servicio> findAll() {
-        return servicioRepository.findAll().stream()
-                .map(servicioMapper::toModel)
-                .collect(Collectors.toList());
+    public Page<Servicio> findAll(Pageable pageable) {
+        return servicioRepository.findAll(pageable)
+                .map(servicioMapper::toModel);
     }
 
     @Override
-    public List<Servicio> findByActivo(Boolean activo) {
-        return servicioRepository.findByActivo(activo).stream()
-                .map(servicioMapper::toModel)
-                .collect(Collectors.toList());
+    public Page<Servicio> findByActivo(Boolean activo, Pageable pageable) {
+        return servicioRepository.findByActivo(activo, pageable)
+                .map(servicioMapper::toModel);
     }
 
     @Override

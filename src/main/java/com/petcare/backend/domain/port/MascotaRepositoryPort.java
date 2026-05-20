@@ -1,12 +1,13 @@
 package com.petcare.backend.domain.port;
 
 import com.petcare.backend.domain.model.Mascota;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
-import java.util.List;
 
 public interface MascotaRepositoryPort {
     Optional<Mascota> findById(Long id);
     Optional<Mascota> findByMicrochip(String microchip);
-    List<Mascota> findAll();
+    Page<Mascota> findAll(Pageable pageable);
     Mascota save(Mascota mascota);
 }
