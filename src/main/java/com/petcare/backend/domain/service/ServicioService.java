@@ -25,7 +25,7 @@ public class ServicioService {
 
     public Servicio actualizarServicio(Long id, Servicio servicioDetalles) {
         Servicio servicio = servicioRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
         
         servicio.setNombre(servicioDetalles.getNombre());
         servicio.setDescripcion(servicioDetalles.getDescripcion());
@@ -49,7 +49,7 @@ public class ServicioService {
 
     public void desactivarServicio(Long id) {
         Servicio servicio = servicioRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
         servicio.setActivo(false);
         servicioRepositoryPort.save(servicio);
     }

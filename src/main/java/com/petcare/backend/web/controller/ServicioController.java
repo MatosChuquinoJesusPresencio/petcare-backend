@@ -41,10 +41,10 @@ public class ServicioController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Servicio> crearServicio(@Valid @RequestBody ServicioRequest request) {
         Servicio servicio = Servicio.builder()
-                .nombre(request.nombre())
-                .descripcion(request.descripcion())
-                .duracionMinutos(request.duracionMinutos())
-                .costoReferencial(request.costoReferencial())
+                .nombre(request.name())
+                .descripcion(request.description())
+                .duracionMinutos(request.durationMinutes())
+                .costoReferencial(request.referentialCost())
                 .build();
         Servicio creado = servicioService.crearServicio(servicio);
         return new ResponseEntity<>(creado, HttpStatus.CREATED);
@@ -54,10 +54,10 @@ public class ServicioController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Servicio> actualizarServicio(@PathVariable Long id, @Valid @RequestBody ServicioRequest request) {
         Servicio servicioDetalles = Servicio.builder()
-                .nombre(request.nombre())
-                .descripcion(request.descripcion())
-                .duracionMinutos(request.duracionMinutos())
-                .costoReferencial(request.costoReferencial())
+                .nombre(request.name())
+                .descripcion(request.description())
+                .duracionMinutos(request.durationMinutes())
+                .costoReferencial(request.referentialCost())
                 .build();
         Servicio actualizado = servicioService.actualizarServicio(id, servicioDetalles);
         return ResponseEntity.ok(actualizado);

@@ -56,7 +56,7 @@ public class AuthController {
         final String jwt = jwtUtil.generateToken(userDetails);
 
         Usuario usuarioDB = usuarioService.obtenerPorUsername(request.username())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuarioDB.getId());
 
@@ -83,11 +83,11 @@ public class AuthController {
         Usuario usuario = Usuario.builder()
                 .username(request.username())
                 .password(request.password())
-                .nombre(request.nombre())
-                .apellido(request.apellido())
+                .nombre(request.firstName())
+                .apellido(request.lastName())
                 .email(request.email())
-                .telefono(request.telefono())
-                .rol(request.rol().toUpperCase())
+                .telefono(request.phone())
+                .rol(request.role().toUpperCase())
                 .build();
 
         Usuario registrado = usuarioService.registrarUsuario(usuario);
@@ -106,7 +106,7 @@ public class AuthController {
         }
 
         if (requestRefreshToken == null || requestRefreshToken.trim().isEmpty()) {
-            throw new TokenRefreshException("El Refresh token no se encuentra en las cookies ni en el cuerpo de la petición.");
+            throw new TokenRefreshException("Refresh token is not present in cookies or request body.");
         }
 
         final String finalRefreshToken = requestRefreshToken;
@@ -123,7 +123,7 @@ public class AuthController {
                             .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                             .body(new TokenRefreshResponse(token, finalRefreshToken));
                 })
-                .orElseThrow(() -> new TokenRefreshException("El Refresh token no se encuentra en la base de datos o es inválido."));
+                .orElseThrow(() -> new TokenRefreshException("Refresh token is not in database or is invalid."));
     }
 
     @PostMapping("/logout")

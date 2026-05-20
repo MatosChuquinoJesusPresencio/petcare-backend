@@ -25,10 +25,10 @@ public class DuenoService {
 
     public Dueno registrarDueno(Dueno dueno) {
         if (duenoRepositoryPort.findByDni(dueno.getDni()).isPresent()) {
-            throw new ResourceDuplicateException("El DNI del dueño ya está registrado");
+            throw new ResourceDuplicateException("The owner's DNI is already registered");
         }
         if (duenoRepositoryPort.findByEmail(dueno.getEmail()).isPresent()) {
-            throw new ResourceDuplicateException("El correo del dueño ya está registrado");
+            throw new ResourceDuplicateException("The owner's email is already registered");
         }
         dueno.setActivo(true);
         return duenoRepositoryPort.save(dueno);
@@ -36,17 +36,17 @@ public class DuenoService {
 
     public Dueno actualizarDueno(Long id, Dueno duenoDetalles) {
         Dueno dueno = duenoRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Dueño no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
 
         duenoRepositoryPort.findByDni(duenoDetalles.getDni()).ifPresent(d -> {
             if (!d.getId().equals(id)) {
-                throw new ResourceDuplicateException("El DNI ya pertenece a otro dueño");
+                throw new ResourceDuplicateException("DNI already belongs to another owner");
             }
         });
 
         duenoRepositoryPort.findByEmail(duenoDetalles.getEmail()).ifPresent(d -> {
             if (!d.getId().equals(id)) {
-                throw new ResourceDuplicateException("El correo ya pertenece a otro dueño");
+                throw new ResourceDuplicateException("Email already belongs to another owner");
             }
         });
 
@@ -70,14 +70,14 @@ public class DuenoService {
 
     public void desactivarDueno(Long id) {
         Dueno dueno = duenoRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Dueño no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
         dueno.setActivo(false);
         duenoRepositoryPort.save(dueno);
     }
 
     public ContactoEmergencia agregarContactoEmergencia(Long duenoId, ContactoEmergencia contacto) {
         Dueno dueno = duenoRepositoryPort.findById(duenoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dueño no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
         contacto.setDueno(dueno);
         return contactoRepositoryPort.save(contacto);
     }

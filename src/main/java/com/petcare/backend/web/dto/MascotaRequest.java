@@ -6,37 +6,37 @@ import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 public record MascotaRequest(
-        @NotBlank(message = "El nombre de la mascota es obligatorio")
-        String nombre,
+        @NotBlank(message = "Pet name is required")
+        String name,
 
-        @NotBlank(message = "La especie es obligatoria")
-        String especie,
+        @NotBlank(message = "Species is required")
+        String species,
 
-        @NotBlank(message = "La raza es obligatoria")
-        String raza,
+        @NotBlank(message = "Breed is required")
+        String breed,
 
-        @NotBlank(message = "El sexo es obligatorio")
-        @Pattern(regexp = "^(?i)(MACHO|HEMBRA)$", message = "El sexo debe ser MACHO o HEMBRA")
-        String sexo,
+        @NotBlank(message = "Gender is required")
+        @Pattern(regexp = "^(?i)(MACHO|HEMBRA)$", message = "Gender must be MACHO or HEMBRA")
+        String gender,
 
-        @NotNull(message = "La fecha de nacimiento es obligatoria")
-        LocalDate fechaNacimiento,
+        @NotNull(message = "Birth date is required")
+        LocalDate birthDate,
 
         String microchip,
 
-        String condicionReproductiva,
+        String reproductiveCondition,
 
-        String alergias,
+        String allergies,
 
-        String enfermedadesCronicas,
+        String chronicDiseases,
 
-        String alertasMedicas,
+        String medicalAlerts,
 
-        // Campos obligatorios para el registro inicial vinculando al dueño principal
-        @NotNull(message = "El ID del dueño es obligatorio")
-        Long duenoId,
+        // Required fields for initial registration linking to the main owner
+        @NotNull(message = "Owner ID is required")
+        Long ownerId,
 
-        @NotBlank(message = "La relación con el dueño es obligatoria")
-        String relacionDueno
+        @NotBlank(message = "Relation with owner is required")
+        String ownerRelation
 ) {
 }

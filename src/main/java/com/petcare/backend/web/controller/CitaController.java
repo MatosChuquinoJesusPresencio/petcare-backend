@@ -56,14 +56,14 @@ public class CitaController {
     public ResponseEntity<Cita> agendarCita(@Valid @RequestBody CitaRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario creador = usuarioService.obtenerPorUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no válido"));
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not valid"));
 
         Cita cita = citaService.agendarCita(
-                request.mascotaId(),
-                request.veterinarioId(),
-                request.servicioId(),
-                request.fechaHora(),
-                request.notas(),
+                request.petId(),
+                request.veterinarianId(),
+                request.serviceId(),
+                request.dateTime(),
+                request.notes(),
                 creador.getId()
         );
         return new ResponseEntity<>(cita, HttpStatus.CREATED);
@@ -72,14 +72,14 @@ public class CitaController {
     @PutMapping("/{id}/reprogramar")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<Cita> reprogramarCita(@PathVariable Long id, @Valid @RequestBody CitaReprogramarRequest request) {
-        Cita reprogramada = citaService.reprogramarCita(id, request.fechaHora());
+        Cita reprogramada = citaService.reprogramarCita(id, request.dateTime());
         return ResponseEntity.ok(reprogramada);
     }
 
     @PutMapping("/{id}/estado")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<Cita> cambiarEstado(@PathVariable Long id, @Valid @RequestBody CitaEstadoRequest request) {
-        Cita actualizada = citaService.cambiarEstadoCita(id, request.estado());
+        Cita actualizada = citaService.cambiarEstadoCita(id, request.status());
         return ResponseEntity.ok(actualizada);
     }
 

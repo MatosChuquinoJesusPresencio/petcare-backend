@@ -45,18 +45,18 @@ public class DuenoController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<Dueno> registrarDueno(@Valid @RequestBody DuenoRequest request) {
         Usuario usuario = null;
-        if (request.usuarioId() != null) {
-            usuario = usuarioService.obtenerPorId(request.usuarioId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuario asociado no encontrado"));
+        if (request.userId() != null) {
+            usuario = usuarioService.obtenerPorId(request.userId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Associated user not found"));
         }
 
         Dueno dueno = Dueno.builder()
-                .nombre(request.nombre())
-                .apellido(request.apellido())
+                .nombre(request.firstName())
+                .apellido(request.lastName())
                 .dni(request.dni())
                 .email(request.email())
-                .telefono(request.telefono())
-                .direccion(request.direccion())
+                .telefono(request.phone())
+                .direccion(request.address())
                 .usuario(usuario)
                 .build();
 
@@ -68,12 +68,12 @@ public class DuenoController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<Dueno> actualizarDueno(@PathVariable Long id, @Valid @RequestBody DuenoRequest request) {
         Dueno duenoDetalles = Dueno.builder()
-                .nombre(request.nombre())
-                .apellido(request.apellido())
+                .nombre(request.firstName())
+                .apellido(request.lastName())
                 .dni(request.dni())
                 .email(request.email())
-                .telefono(request.telefono())
-                .direccion(request.direccion())
+                .telefono(request.phone())
+                .direccion(request.address())
                 .build();
 
         Dueno actualizado = duenoService.actualizarDueno(id, duenoDetalles);
@@ -97,9 +97,9 @@ public class DuenoController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<ContactoEmergencia> agregarContacto(@PathVariable Long duenoId, @Valid @RequestBody ContactoEmergenciaRequest request) {
         ContactoEmergencia contacto = ContactoEmergencia.builder()
-                .nombre(request.nombre())
-                .telefono(request.telefono())
-                .relacion(request.relacion())
+                .nombre(request.name())
+                .telefono(request.phone())
+                .relacion(request.relation())
                 .build();
 
         ContactoEmergencia creado = duenoService.agregarContactoEmergencia(duenoId, contacto);

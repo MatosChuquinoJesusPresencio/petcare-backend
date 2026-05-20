@@ -43,19 +43,19 @@ public class MascotaController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<Mascota> registrarMascota(@Valid @RequestBody MascotaRequest request) {
         Mascota mascota = Mascota.builder()
-                .nombre(request.nombre())
-                .especie(request.especie())
-                .raza(request.raza())
-                .sexo(request.sexo())
-                .fechaNacimiento(request.fechaNacimiento())
+                .nombre(request.name())
+                .especie(request.species())
+                .raza(request.breed())
+                .sexo(request.gender())
+                .fechaNacimiento(request.birthDate())
                 .microchip(request.microchip())
-                .condicionReproductiva(request.condicionReproductiva())
-                .alergias(request.alergias())
-                .enfermedadesCronicas(request.enfermedadesCronicas())
-                .alertasMedicas(request.alertasMedicas())
+                .condicionReproductiva(request.reproductiveCondition())
+                .alergias(request.allergies())
+                .enfermedadesCronicas(request.chronicDiseases())
+                .alertasMedicas(request.medicalAlerts())
                 .build();
 
-        Mascota creada = mascotaService.registrarMascota(mascota, request.duenoId(), request.relacionDueno());
+        Mascota creada = mascotaService.registrarMascota(mascota, request.ownerId(), request.ownerRelation());
         return new ResponseEntity<>(creada, HttpStatus.CREATED);
     }
 
@@ -63,16 +63,16 @@ public class MascotaController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<Mascota> actualizarMascota(@PathVariable Long id, @Valid @RequestBody MascotaRequest request) {
         Mascota mascotaDetalles = Mascota.builder()
-                .nombre(request.nombre())
-                .especie(request.especie())
-                .raza(request.raza())
-                .sexo(request.sexo())
-                .fechaNacimiento(request.fechaNacimiento())
+                .nombre(request.name())
+                .especie(request.species())
+                .raza(request.breed())
+                .sexo(request.gender())
+                .fechaNacimiento(request.birthDate())
                 .microchip(request.microchip())
-                .condicionReproductiva(request.condicionReproductiva())
-                .alergias(request.alergias())
-                .enfermedadesCronicas(request.enfermedadesCronicas())
-                .alertasMedicas(request.alertasMedicas())
+                .condicionReproductiva(request.reproductiveCondition())
+                .alergias(request.allergies())
+                .enfermedadesCronicas(request.chronicDiseases())
+                .alertasMedicas(request.medicalAlerts())
                 .build();
 
         Mascota actualizada = mascotaService.actualizarMascota(id, mascotaDetalles);

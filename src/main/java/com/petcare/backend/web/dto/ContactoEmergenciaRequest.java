@@ -3,12 +3,12 @@ package com.petcare.backend.web.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public record ContactoEmergenciaRequest(
-        @NotBlank(message = "El nombre del contacto es obligatorio")
-        String nombre,
+        @NotBlank(message = "Contact name is required")
+        String name,
 
-        @NotBlank(message = "El teléfono del contacto es obligatorio")
-        String telefono,
+        @NotBlank(message = "Contact phone is required")
+        String phone,
 
-        String relacion
+        String relation
 ) {
 }

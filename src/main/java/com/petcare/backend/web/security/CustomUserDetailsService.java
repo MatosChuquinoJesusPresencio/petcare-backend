@@ -24,10 +24,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepositoryPort.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con username: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         if (!usuario.getActivo()) {
-            throw new UsernameNotFoundException("El usuario está inactivo");
+            throw new UsernameNotFoundException("User is inactive");
         }
 
         String roleName = usuario.getRol().toUpperCase();

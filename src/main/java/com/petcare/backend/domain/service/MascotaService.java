@@ -35,12 +35,12 @@ public class MascotaService {
     public Mascota registrarMascota(Mascota mascota, Long duenoId, String relacion) {
         if (mascota.getMicrochip() != null && !mascota.getMicrochip().trim().isEmpty()) {
             if (mascotaRepositoryPort.findByMicrochip(mascota.getMicrochip()).isPresent()) {
-                throw new ResourceDuplicateException("El microchip de la mascota ya está registrado");
+                throw new ResourceDuplicateException("The pet microchip is already registered");
             }
         }
 
         Dueno dueno = duenoRepositoryPort.findById(duenoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dueño no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
 
         mascota.setActivo(true);
         Mascota mascotaGuardada = mascotaRepositoryPort.save(mascota);
@@ -59,12 +59,12 @@ public class MascotaService {
     @Transactional
     public Mascota actualizarMascota(Long id, Mascota mascotaDetalles) {
         Mascota mascota = mascotaRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Mascota no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
 
         if (mascotaDetalles.getMicrochip() != null && !mascotaDetalles.getMicrochip().trim().isEmpty()) {
             mascotaRepositoryPort.findByMicrochip(mascotaDetalles.getMicrochip()).ifPresent(m -> {
                 if (!m.getId().equals(id)) {
-                    throw new ResourceDuplicateException("El microchip ya pertenece a otra mascota");
+                    throw new ResourceDuplicateException("The microchip already belongs to another pet");
                 }
             });
         }
@@ -94,7 +94,7 @@ public class MascotaService {
     @Transactional
     public void desactivarMascota(Long id) {
         Mascota mascota = mascotaRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Mascota no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
         mascota.setActivo(false);
         mascotaRepositoryPort.save(mascota);
     }
@@ -107,12 +107,12 @@ public class MascotaService {
     @Transactional
     public void vincularDueñoAdicional(Long mascotaId, Long duenoId, String relacion) {
         Mascota mascota = mascotaRepositoryPort.findById(mascotaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Mascota no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
         Dueno dueno = duenoRepositoryPort.findById(duenoId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dueño no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
 
         if (responsableRepositoryPort.findByMascotaIdAndDuenoId(mascotaId, duenoId).isPresent()) {
-            throw new BusinessRuleException("El dueño ya está asociado a esta mascota");
+            throw new BusinessRuleException("The owner is already associated with this pet");
         }
 
         MascotaResponsable responsable = MascotaResponsable.builder()

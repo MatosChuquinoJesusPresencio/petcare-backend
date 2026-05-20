@@ -3,10 +3,10 @@ package com.petcare.backend.web.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public record LoginRequest(
-        @NotBlank(message = "El nombre de usuario es obligatorio")
+        @NotBlank(message = "Username is required")
         String username,
 
-        @NotBlank(message = "La contraseña es obligatoria")
+        @NotBlank(message = "Password is required")
         String password
 ) {
 }

@@ -31,7 +31,7 @@ public class RefreshTokenService {
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .usuario(usuarioRepositoryPort.findById(userId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")))
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found")))
                 .token(UUID.randomUUID().toString())
                 .fechaExpiracion(LocalDateTime.now().plusNanos(refreshTokenDurationMs * 1000000))
                 .build();
@@ -46,7 +46,7 @@ public class RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getFechaExpiracion().isBefore(LocalDateTime.now())) {
             refreshTokenRepositoryPort.deleteByUsuarioId(token.getUsuario().getId());
-            throw new TokenRefreshException("El Refresh token ha expirado. Por favor vuelva a iniciar sesión.");
+            throw new TokenRefreshException("Refresh token has expired. Please log in again.");
         }
         return token;
     }

@@ -24,10 +24,10 @@ public class UsuarioService {
 
     public Usuario registrarUsuario(Usuario usuario) {
         if (usuarioRepositoryPort.findByUsername(usuario.getUsername()).isPresent()) {
-            throw new ResourceDuplicateException("El nombre de usuario ya está registrado");
+            throw new ResourceDuplicateException("Username is already registered");
         }
         if (usuarioRepositoryPort.findByEmail(usuario.getEmail()).isPresent()) {
-            throw new ResourceDuplicateException("El correo electrónico ya está registrado");
+            throw new ResourceDuplicateException("Email address is already registered");
         }
 
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));

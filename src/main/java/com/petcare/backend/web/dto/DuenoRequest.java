@@ -5,24 +5,24 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record DuenoRequest(
-        @NotBlank(message = "El nombre es obligatorio")
-        String nombre,
+        @NotBlank(message = "First name is required")
+        String firstName,
 
-        @NotBlank(message = "El apellido es obligatorio")
-        String apellido,
+        @NotBlank(message = "Last name is required")
+        String lastName,
 
-        @NotBlank(message = "El DNI es obligatorio")
-        @Size(min = 8, max = 20, message = "El DNI debe tener entre 8 y 20 caracteres")
+        @NotBlank(message = "DNI is required")
+        @Size(min = 8, max = 20, message = "DNI must be between 8 and 20 characters")
         String dni,
 
-        @NotBlank(message = "El correo electrónico es obligatorio")
-        @Email(message = "El correo electrónico debe ser válido")
+        @NotBlank(message = "Email is required")
+        @Email(message = "Email must be valid")
         String email,
 
-        String telefono,
+        String phone,
         
-        String direccion,
+        String address,
         
-        Long usuarioId // opcional, si ya tiene un usuario asociado
+        Long userId
 ) {
 }

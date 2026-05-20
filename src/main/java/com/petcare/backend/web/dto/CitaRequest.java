@@ -5,19 +5,19 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public record CitaRequest(
-        @NotNull(message = "El ID de la mascota es obligatorio")
-        Long mascotaId,
+        @NotNull(message = "Pet ID is required")
+        Long petId,
 
-        @NotNull(message = "El ID del veterinario es obligatorio")
-        Long veterinarioId,
+        @NotNull(message = "Veterinarian ID is required")
+        Long veterinarianId,
 
-        @NotNull(message = "El ID del servicio es obligatorio")
-        Long servicioId,
+        @NotNull(message = "Service ID is required")
+        Long serviceId,
 
-        @NotNull(message = "La fecha y hora de la cita son obligatorias")
-        @Future(message = "La fecha y hora de la cita deben estar en el futuro")
-        LocalDateTime fechaHora,
+        @NotNull(message = "Date and time are required")
+        @Future(message = "Date and time must be in the future")
+        LocalDateTime dateTime,
 
-        String notas
+        String notes
 ) {
 }

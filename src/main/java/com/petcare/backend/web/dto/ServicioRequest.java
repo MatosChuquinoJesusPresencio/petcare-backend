@@ -7,17 +7,17 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record ServicioRequest(
-        @NotBlank(message = "El nombre del servicio es obligatorio")
-        String nombre,
+        @NotBlank(message = "Service name is required")
+        String name,
 
-        String descripcion,
+        String description,
 
-        @NotNull(message = "La duración es obligatoria")
-        @Min(value = 5, message = "La duración estimada mínima es de 5 minutos")
-        Integer duracionMinutos,
+        @NotNull(message = "Duration is required")
+        @Min(value = 5, message = "Minimum duration is 5 minutes")
+        Integer durationMinutes,
 
-        @NotNull(message = "El costo referencial es obligatorio")
-        @DecimalMin(value = "0.0", inclusive = true, message = "El costo no puede ser negativo")
-        BigDecimal costoReferencial
+        @NotNull(message = "Referential cost is required")
+        @DecimalMin(value = "0.0", inclusive = true, message = "Cost cannot be negative")
+        BigDecimal referentialCost
 ) {
 }
