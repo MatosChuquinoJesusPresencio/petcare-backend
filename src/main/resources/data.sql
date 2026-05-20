@@ -1,12 +1,12 @@
 -- Datos iniciales de prueba para PetCare
 
 -- 1. Usuarios (Password es 'password' en todos)
--- Hashed: $2a$10$d57RJc0QNnQ1epY.c/3fT.A.SgM52D3f93F.1o0dD6X3.7s5Q2h6G
+-- Hashed: $2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G
 INSERT INTO usuarios (username, password, nombre, apellido, email, telefono, rol, activo) VALUES
-('admin', '$2a$10$d57RJc0QNnQ1epY.c/3fT.A.SgM52D3f93F.1o0dD6X3.7s5Q2h6G', 'Admin', 'PetCare', 'admin@petcare.com', '999999999', 'ADMINISTRADOR', true),
-('veterinario1', '$2a$10$d57RJc0QNnQ1epY.c/3fT.A.SgM52D3f93F.1o0dD6X3.7s5Q2h6G', 'Carlos', 'Mendoza', 'carlos@petcare.com', '988888888', 'VETERINARIO', true),
-('asistente1', '$2a$10$d57RJc0QNnQ1epY.c/3fT.A.SgM52D3f93F.1o0dD6X3.7s5Q2h6G', 'Ana', 'Gomez', 'ana@petcare.com', '977777777', 'ASISTENTE', true),
-('dueno1', '$2a$10$d57RJc0QNnQ1epY.c/3fT.A.SgM52D3f93F.1o0dD6X3.7s5Q2h6G', 'Juan', 'Perez', 'juan.perez@gmail.com', '966666666', 'DUENO', true);
+('admin', '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Admin', 'PetCare', 'admin@petcare.com', '999999999', 'ADMINISTRADOR', true),
+('veterinario1', '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Carlos', 'Mendoza', 'carlos@petcare.com', '988888888', 'VETERINARIO', true),
+('asistente1', '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Ana', 'Gomez', 'ana@petcare.com', '977777777', 'ASISTENTE', true),
+('dueno1', '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Juan', 'Perez', 'juan.perez@gmail.com', '966666666', 'DUENO', true);
 
 -- 2. Dueños
 INSERT INTO duenos (nombre, apellido, dni, email, telefono, direccion, usuario_id, activo) VALUES
