@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "jwt.refreshExpirationMs",
+    "type": "java.lang.String",
+    "description": "Tiempo de expiracion del refresh token"
+  },
+  {
+    "name": "jwt.expiration",
+    "type": "java.lang.String",
+    "description": "Tiempo de expiracion del refresh token"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "Secret key para firmar los tokens JWT"
+  }
+]}

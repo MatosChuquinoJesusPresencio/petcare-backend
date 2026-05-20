@@ -1,4 +1,4 @@
--- Esquema de base de datos para PetCare (Estructura Normalizada)
+-- Esquema de base de datos para PetCare
 
 -- 1. Usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
