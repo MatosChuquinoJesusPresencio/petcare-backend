@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import org.springframework.http.ResponseCookie;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -20,10 +24,14 @@ public class JwtUtil {
 
     private final SecretKey key;
     private final long expiration;
+    private final long refreshExpiration;
 
-    public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
+    public JwtUtil(@Value("${jwt.secret}") String secret, 
+                   @Value("${jwt.expiration}") long expiration,
+                   @Value("${jwt.refreshExpirationMs:604800000}") long refreshExpiration) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expiration = expiration;
+        this.refreshExpiration = refreshExpiration;
     }
 
     public String extractUsername(String token) {
@@ -70,5 +78,80 @@ public class JwtUtil {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public ResponseCookie generateJwtCookie(UserDetails userDetails) {
+        String jwt = generateToken(userDetails);
+        return ResponseCookie.from("accessToken", jwt)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(expiration / 1000)
+                .sameSite("Lax")
+                .build();
+    }
+
+    public ResponseCookie generateJwtCookie(String jwt) {
+        return ResponseCookie.from("accessToken", jwt)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(expiration / 1000)
+                .sameSite("Lax")
+                .build();
+    }
+
+    public ResponseCookie generateRefreshTokenCookie(String refreshToken) {
+        return ResponseCookie.from("refreshToken", refreshToken)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(refreshExpiration / 1000)
+                .sameSite("Lax")
+                .build();
+    }
+
+    public ResponseCookie getCleanJwtCookie() {
+        return ResponseCookie.from("accessToken", "")
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+    }
+
+    public ResponseCookie getCleanRefreshTokenCookie() {
+        return ResponseCookie.from("refreshToken", "")
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+    }
+
+    public String getJwtFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    public String getRefreshTokenFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }
