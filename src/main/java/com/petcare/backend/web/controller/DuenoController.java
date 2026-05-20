@@ -87,7 +87,6 @@ public class DuenoController {
         return ResponseEntity.noContent().build();
     }
 
-    // Contactos de emergencia
     @GetMapping("/{duenoId}/contactos")
     public ResponseEntity<Page<ContactoEmergencia>> listarContactos(@PathVariable Long duenoId, Pageable pageable) {
         return ResponseEntity.ok(duenoService.listarContactosDeDueno(duenoId, pageable));
