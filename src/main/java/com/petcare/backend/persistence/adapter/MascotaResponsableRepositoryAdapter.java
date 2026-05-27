@@ -17,42 +17,42 @@ import java.util.stream.Collectors;
 @Component
 public class MascotaResponsableRepositoryAdapter implements MascotaResponsableRepositoryPort {
 
-    private final MascotaResponsableRepository repository;
-    private final MascotaResponsableMapper mapper;
+    private final MascotaResponsableRepository mascotaResponsableRepository;
+    private final MascotaResponsableMapper mascotaResponsableMapper;
 
-    public MascotaResponsableRepositoryAdapter(MascotaResponsableRepository repository, MascotaResponsableMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
+    public MascotaResponsableRepositoryAdapter(MascotaResponsableRepository mascotaResponsableRepository, MascotaResponsableMapper mascotaResponsableMapper) {
+        this.mascotaResponsableRepository = mascotaResponsableRepository;
+        this.mascotaResponsableMapper = mascotaResponsableMapper;
     }
 
     @Override
     public List<MascotaResponsable> findByMascotaId(Long mascotaId) {
-        return repository.findByMascotaId(mascotaId).stream()
-                .map(mapper::toModel)
+        return mascotaResponsableRepository.findByMascotaId(mascotaId).stream()
+                .map(mascotaResponsableMapper::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Page<MascotaResponsable> findByDuenoId(Long duenoId, Pageable pageable) {
-        return repository.findByDuenoId(duenoId, pageable)
-                .map(mapper::toModel);
+        return mascotaResponsableRepository.findByDuenoId(duenoId, pageable)
+                .map(mascotaResponsableMapper::toModel);
     }
 
     @Override
     public Optional<MascotaResponsable> findByMascotaIdAndDuenoId(Long mascotaId, Long duenoId) {
-        return repository.findByMascotaIdAndDuenoId(mascotaId, duenoId).map(mapper::toModel);
+        return mascotaResponsableRepository.findByMascotaIdAndDuenoId(mascotaId, duenoId).map(mascotaResponsableMapper::toModel);
     }
 
     @Override
     public MascotaResponsable save(MascotaResponsable mascotaResponsable) {
-        MascotaResponsableEntity entity = mapper.toEntity(mascotaResponsable);
-        MascotaResponsableEntity savedEntity = repository.save(entity);
-        return mapper.toModel(savedEntity);
+        MascotaResponsableEntity entity = mascotaResponsableMapper.toEntity(mascotaResponsable);
+        MascotaResponsableEntity savedEntity = mascotaResponsableRepository.save(entity);
+        return mascotaResponsableMapper.toModel(savedEntity);
     }
 
     @Override
     @Transactional
     public void deleteByMascotaIdAndDuenoId(Long mascotaId, Long duenoId) {
-        repository.deleteByMascotaIdAndDuenoId(mascotaId, duenoId);
+        mascotaResponsableRepository.deleteByMascotaIdAndDuenoId(mascotaId, duenoId);
     }
 }

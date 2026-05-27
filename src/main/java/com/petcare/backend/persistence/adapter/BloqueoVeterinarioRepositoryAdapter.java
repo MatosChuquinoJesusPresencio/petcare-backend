@@ -15,37 +15,37 @@ import java.util.stream.Collectors;
 @Component
 public class BloqueoVeterinarioRepositoryAdapter implements BloqueoVeterinarioRepositoryPort {
 
-    private final BloqueoVeterinarioRepository repository;
-    private final BloqueoVeterinarioMapper mapper;
+    private final BloqueoVeterinarioRepository bloqueVeterinarioRepository;
+    private final BloqueoVeterinarioMapper bloqueVeterinarioMapper;
 
-    public BloqueoVeterinarioRepositoryAdapter(BloqueoVeterinarioRepository repository, BloqueoVeterinarioMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
+    public BloqueoVeterinarioRepositoryAdapter(BloqueoVeterinarioRepository bloqueVeterinarioRepository, BloqueoVeterinarioMapper bloqueVeterinarioMapper) {
+        this.bloqueVeterinarioRepository = bloqueVeterinarioRepository;
+        this.bloqueVeterinarioMapper = bloqueVeterinarioMapper;
     }
 
     @Override
     public List<BloqueoVeterinario> findByVeterinarioId(Long veterinarioId) {
-        return repository.findByVeterinarioId(veterinarioId).stream()
-                .map(mapper::toModel)
+        return bloqueVeterinarioRepository.findByVeterinarioId(veterinarioId).stream()
+                .map(bloqueVeterinarioMapper::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<BloqueoVeterinario> findByVeterinarioIdAndFecha(Long veterinarioId, LocalDate fecha) {
-        return repository.findByVeterinarioIdAndFecha(veterinarioId, fecha).stream()
-                .map(mapper::toModel)
+        return bloqueVeterinarioRepository.findByVeterinarioIdAndFecha(veterinarioId, fecha).stream()
+                .map(bloqueVeterinarioMapper::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<BloqueoVeterinario> findById(Long id) {
-        return repository.findById(id).map(mapper::toModel);
+        return bloqueVeterinarioRepository.findById(id).map(bloqueVeterinarioMapper::toModel);
     }
 
     @Override
     public BloqueoVeterinario save(BloqueoVeterinario bloqueo) {
-        BloqueoVeterinarioEntity entity = mapper.toEntity(bloqueo);
-        BloqueoVeterinarioEntity savedEntity = repository.save(entity);
-        return mapper.toModel(savedEntity);
+        BloqueoVeterinarioEntity entity = bloqueVeterinarioMapper.toEntity(bloqueo);
+        BloqueoVeterinarioEntity savedEntity = bloqueVeterinarioRepository.save(entity);
+        return bloqueVeterinarioMapper.toModel(savedEntity);
     }
 }

@@ -14,37 +14,37 @@ import java.util.stream.Collectors;
 @Component
 public class DisponibilidadVeterinarioRepositoryAdapter implements DisponibilidadVeterinarioRepositoryPort {
 
-    private final DisponibilidadVeterinarioRepository repository;
-    private final DisponibilidadVeterinarioMapper mapper;
+    private final DisponibilidadVeterinarioRepository disponibilidadVeterinarioRepository;
+    private final DisponibilidadVeterinarioMapper disponibilidadVeterinarioMapper;
 
-    public DisponibilidadVeterinarioRepositoryAdapter(DisponibilidadVeterinarioRepository repository, DisponibilidadVeterinarioMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
+    public DisponibilidadVeterinarioRepositoryAdapter(DisponibilidadVeterinarioRepository disponibilidadVeterinarioRepository, DisponibilidadVeterinarioMapper disponibilidadVeterinarioMapper) {
+        this.disponibilidadVeterinarioRepository = disponibilidadVeterinarioRepository;
+        this.disponibilidadVeterinarioMapper = disponibilidadVeterinarioMapper;
     }
 
     @Override
     public List<DisponibilidadVeterinario> findByVeterinarioId(Long veterinarioId) {
-        return repository.findByVeterinarioId(veterinarioId).stream()
-                .map(mapper::toModel)
+        return disponibilidadVeterinarioRepository.findByVeterinarioId(veterinarioId).stream()
+                .map(disponibilidadVeterinarioMapper::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<DisponibilidadVeterinario> findByVeterinarioIdAndDiaSemana(Long veterinarioId, Integer diaSemana) {
-        return repository.findByVeterinarioIdAndDiaSemana(veterinarioId, diaSemana).stream()
-                .map(mapper::toModel)
+        return disponibilidadVeterinarioRepository.findByVeterinarioIdAndDiaSemana(veterinarioId, diaSemana).stream()
+                .map(disponibilidadVeterinarioMapper::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<DisponibilidadVeterinario> findById(Long id) {
-        return repository.findById(id).map(mapper::toModel);
+        return disponibilidadVeterinarioRepository.findById(id).map(disponibilidadVeterinarioMapper::toModel);
     }
 
     @Override
     public DisponibilidadVeterinario save(DisponibilidadVeterinario disponibilidad) {
-        DisponibilidadVeterinarioEntity entity = mapper.toEntity(disponibilidad);
-        DisponibilidadVeterinarioEntity savedEntity = repository.save(entity);
-        return mapper.toModel(savedEntity);
+        DisponibilidadVeterinarioEntity entity = disponibilidadVeterinarioMapper.toEntity(disponibilidad);
+        DisponibilidadVeterinarioEntity savedEntity = disponibilidadVeterinarioRepository.save(entity);
+        return disponibilidadVeterinarioMapper.toModel(savedEntity);
     }
 }

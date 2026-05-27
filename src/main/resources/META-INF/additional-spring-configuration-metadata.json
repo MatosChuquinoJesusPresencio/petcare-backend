@@ -13,5 +13,10 @@
     "name": "jwt.secret",
     "type": "java.lang.String",
     "description": "Secret key para firmar los tokens JWT"
+  },
+  {
+    "name": "app.cors.allowed-origins",
+    "type": "java.lang.String",
+    "description": "URL del frontend donde se consumira la API REST"
   }
 ]}
