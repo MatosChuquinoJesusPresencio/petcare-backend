@@ -60,6 +60,10 @@ docker build -t petcare-backend .
 docker run -p 8080:8080 --env-file .env petcare-backend
 ```
 
+## Despliegue
+
+El proyecto está desplegado en: [https://petcare-backend-xxuc.onrender.com/](https://petcare-backend-xxuc.onrender.com/)
+
 ## Documentación
 
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
