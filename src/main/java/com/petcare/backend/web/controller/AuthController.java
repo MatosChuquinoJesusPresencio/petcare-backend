@@ -75,7 +75,7 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(new AuthResponse(jwt, refreshToken.getToken(), request.username(), rol));
+                .body(new AuthResponse(usuarioDB.getId(), jwt, refreshToken.getToken(), request.username(), rol));
     }
 
     @PostMapping("/register")
@@ -156,6 +156,6 @@ public class AuthController {
         if (rol.startsWith("ROLE_")) {
             rol = rol.substring(5);
         }
-        return ResponseEntity.ok(new AuthResponse(null, null, username, rol));
+        return ResponseEntity.ok(new AuthResponse(null, null, null, username, rol));
     }
 }
