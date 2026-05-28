@@ -145,4 +145,17 @@ public class AuthController {
                 .headers(headers)
                 .build();
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<AuthResponse> getCurrentUser(org.springframework.security.core.Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String username = authentication.getName();
+        String rol = authentication.getAuthorities().iterator().next().getAuthority();
+        if (rol.startsWith("ROLE_")) {
+            rol = rol.substring(5);
+        }
+        return ResponseEntity.ok(new AuthResponse(null, null, username, rol));
+    }
 }
