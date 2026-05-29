@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface ContactoEmergenciaRepositoryPort {
-    Page<ContactoEmergencia> findByDuenoId(Long duenoId, Pageable pageable);
+    Page<ContactoEmergencia> findAll(Long duenoId, String nombre, String telefono, String relacion, Pageable pageable);
     Optional<ContactoEmergencia> findById(Long id);
     ContactoEmergencia save(ContactoEmergencia contacto);
     void deleteById(Long id);

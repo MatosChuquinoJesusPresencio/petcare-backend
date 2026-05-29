@@ -28,26 +28,9 @@ public class ServicioRepositoryAdapter implements ServicioRepositoryPort {
     }
 
     @Override
-    public Page<Servicio> findAll(Pageable pageable) {
-        return servicioRepository.findAll(pageable)
-                .map(servicioMapper::toModel);
-    }
-
-    @Override
-    public Page<Servicio> findByActivo(Boolean activo, Pageable pageable) {
-        return servicioRepository.findByActivo(activo, pageable)
-                .map(servicioMapper::toModel);
-    }
-
-    @Override
-    public Page<Servicio> findByNombre(String nombre, Pageable pageable) {
-        return servicioRepository.findByNombreContainingIgnoreCase(nombre, pageable)
-                .map(servicioMapper::toModel);
-    }
-
-    @Override
-    public Page<Servicio> findByActivoAndNombre(Boolean activo, String nombre, Pageable pageable) {
-        return servicioRepository.findByActivoAndNombreContainingIgnoreCase(activo, nombre, pageable)
+    public Page<Servicio> findAll(Boolean soloActivos, String nombre, Pageable pageable) {
+        var spec = com.petcare.backend.persistence.specification.ServicioSpecification.conFiltros(soloActivos, nombre);
+        return servicioRepository.findAll(spec, pageable)
                 .map(servicioMapper::toModel);
     }
 

@@ -23,7 +23,17 @@ public class MascotaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Mascota>> listarMascotas(Pageable pageable) {
+    public ResponseEntity<Page<Mascota>> listarMascotas(
+            @RequestParam(value = "nombre", required = false) String nombre,
+            @RequestParam(value = "especie", required = false) String especie,
+            @RequestParam(value = "raza", required = false) String raza,
+            @RequestParam(value = "sexo", required = false) String sexo,
+            @RequestParam(value = "activo", required = false) Boolean activo,
+            @RequestParam(value = "duenoId", required = false) Long duenoId,
+            Pageable pageable) {
+        if (nombre != null || especie != null || raza != null || sexo != null || activo != null || duenoId != null) {
+            return ResponseEntity.ok(mascotaService.listarTodas(nombre, especie, raza, sexo, activo, duenoId, pageable));
+        }
         return ResponseEntity.ok(mascotaService.listarTodas(pageable));
     }
 

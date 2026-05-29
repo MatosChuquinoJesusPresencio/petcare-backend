@@ -30,8 +30,13 @@ public class DuenoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Dueno>> listarDuenos(Pageable pageable) {
-        return ResponseEntity.ok(duenoService.listarTodos(pageable));
+    public ResponseEntity<Page<Dueno>> listarDuenos(
+            @RequestParam(value = "soloActivos", required = false) Boolean soloActivos,
+            @RequestParam(value = "nombre", required = false) String nombre,
+            @RequestParam(value = "dni", required = false) String dni,
+            Pageable pageable) {
+        Page<Dueno> duenos = duenoService.listar(soloActivos, nombre, dni, pageable);
+        return ResponseEntity.ok(duenos);
     }
 
     @GetMapping("/{id}")
@@ -82,14 +87,26 @@ public class DuenoController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
-    public ResponseEntity<Void> desactivarDueno(@PathVariable Long id) {
-        duenoService.desactivarDueno(id);
+    public ResponseEntity<Void> eliminarDueno(@PathVariable Long id) {
+        duenoService.eliminarDueno(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/toggle")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
+    public ResponseEntity<Dueno> cambiarActivo(@PathVariable Long id) {
+        Dueno dueno = duenoService.cambiarActivo(id);
+        return ResponseEntity.ok(dueno);
+    }
+
     @GetMapping("/{duenoId}/contactos")
-    public ResponseEntity<Page<ContactoEmergencia>> listarContactos(@PathVariable Long duenoId, Pageable pageable) {
-        return ResponseEntity.ok(duenoService.listarContactosDeDueno(duenoId, pageable));
+    public ResponseEntity<Page<ContactoEmergencia>> listarContactos(
+            @PathVariable Long duenoId,
+            @RequestParam(value = "nombre", required = false) String nombre,
+            @RequestParam(value = "telefono", required = false) String telefono,
+            @RequestParam(value = "relacion", required = false) String relacion,
+            Pageable pageable) {
+        return ResponseEntity.ok(duenoService.listarContactosDeDueno(duenoId, nombre, telefono, relacion, pageable));
     }
 
     @PostMapping("/{duenoId}/contactos")

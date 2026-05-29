@@ -23,8 +23,9 @@ public class ContactoEmergenciaRepositoryAdapter implements ContactoEmergenciaRe
     }
 
     @Override
-    public Page<ContactoEmergencia> findByDuenoId(Long duenoId, Pageable pageable) {
-        return contactoRepository.findByDuenoId(duenoId, pageable)
+    public Page<ContactoEmergencia> findAll(Long duenoId, String nombre, String telefono, String relacion, Pageable pageable) {
+        var spec = com.petcare.backend.persistence.specification.ContactoEmergenciaSpecification.conFiltros(duenoId, nombre, telefono, relacion);
+        return contactoRepository.findAll(spec, pageable)
                 .map(contactoMapper::toModel);
     }
 

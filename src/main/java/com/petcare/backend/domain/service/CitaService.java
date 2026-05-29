@@ -123,6 +123,10 @@ public class CitaService {
         return citaRepositoryPort.findAll(pageable);
     }
 
+    public Page<Cita> listarConFiltros(Long mascotaId, Long veterinarioId, Long servicioId, String estado, LocalDateTime fechaDesde, LocalDateTime fechaHasta, Pageable pageable) {
+        return citaRepositoryPort.findAll(mascotaId, veterinarioId, servicioId, estado, fechaDesde, fechaHasta, pageable);
+    }
+
     public Page<Cita> listarPorMascota(Long mascotaId, Pageable pageable) {
         return citaRepositoryPort.findByMascotaId(mascotaId, pageable);
     }

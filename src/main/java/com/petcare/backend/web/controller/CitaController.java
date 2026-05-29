@@ -30,7 +30,17 @@ public class CitaController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Cita>> listarCitas(Pageable pageable) {
+    public ResponseEntity<Page<Cita>> listarCitas(
+            @RequestParam(value = "mascotaId", required = false) Long mascotaId,
+            @RequestParam(value = "veterinarioId", required = false) Long veterinarioId,
+            @RequestParam(value = "servicioId", required = false) Long servicioId,
+            @RequestParam(value = "estado", required = false) String estado,
+            @RequestParam(value = "fechaDesde", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime fechaDesde,
+            @RequestParam(value = "fechaHasta", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime fechaHasta,
+            Pageable pageable) {
+        if (mascotaId != null || veterinarioId != null || servicioId != null || (estado != null && !estado.isBlank()) || fechaDesde != null || fechaHasta != null) {
+            return ResponseEntity.ok(citaService.listarConFiltros(mascotaId, veterinarioId, servicioId, estado, fechaDesde, fechaHasta, pageable));
+        }
         return ResponseEntity.ok(citaService.listarTodas(pageable));
     }
 

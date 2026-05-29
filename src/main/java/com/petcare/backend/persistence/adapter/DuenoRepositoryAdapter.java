@@ -38,8 +38,9 @@ public class DuenoRepositoryAdapter implements DuenoRepositoryPort {
     }
 
     @Override
-    public Page<Dueno> findAll(Pageable pageable) {
-        return duenoRepository.findAll(pageable)
+    public Page<Dueno> findAll(Boolean soloActivos, String nombre, String dni, Pageable pageable) {
+        var spec = com.petcare.backend.persistence.specification.DuenoSpecification.conFiltros(soloActivos, nombre, dni);
+        return duenoRepository.findAll(spec, pageable)
                 .map(duenoMapper::toModel);
     }
 
@@ -48,5 +49,10 @@ public class DuenoRepositoryAdapter implements DuenoRepositoryPort {
         DuenoEntity entity = duenoMapper.toEntity(dueno);
         DuenoEntity savedEntity = duenoRepository.save(entity);
         return duenoMapper.toModel(savedEntity);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        duenoRepository.deleteById(id);
     }
 }

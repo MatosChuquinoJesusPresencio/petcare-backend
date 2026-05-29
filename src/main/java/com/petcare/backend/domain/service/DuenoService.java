@@ -64,8 +64,8 @@ public class DuenoService {
         return duenoRepositoryPort.findById(id);
     }
 
-    public Page<Dueno> listarTodos(Pageable pageable) {
-        return duenoRepositoryPort.findAll(pageable);
+    public Page<Dueno> listar(Boolean soloActivos, String nombre, String dni, Pageable pageable) {
+        return duenoRepositoryPort.findAll(soloActivos, nombre, dni, pageable);
     }
 
     public void desactivarDueno(Long id) {
@@ -75,6 +75,19 @@ public class DuenoService {
         duenoRepositoryPort.save(dueno);
     }
 
+    public Dueno cambiarActivo(Long id) {
+        Dueno dueno = duenoRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+        dueno.setActivo(!dueno.getActivo());
+        return duenoRepositoryPort.save(dueno);
+    }
+
+    public void eliminarDueno(Long id) {
+        duenoRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+        duenoRepositoryPort.deleteById(id);
+    }
+
     public ContactoEmergencia agregarContactoEmergencia(Long duenoId, ContactoEmergencia contacto) {
         Dueno dueno = duenoRepositoryPort.findById(duenoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
@@ -82,8 +95,8 @@ public class DuenoService {
         return contactoRepositoryPort.save(contacto);
     }
 
-    public Page<ContactoEmergencia> listarContactosDeDueno(Long duenoId, Pageable pageable) {
-        return contactoRepositoryPort.findByDuenoId(duenoId, pageable);
+    public Page<ContactoEmergencia> listarContactosDeDueno(Long duenoId, String nombre, String telefono, String relacion, Pageable pageable) {
+        return contactoRepositoryPort.findAll(duenoId, nombre, telefono, relacion, pageable);
     }
 
     public void eliminarContactoEmergencia(Long contactoId) {

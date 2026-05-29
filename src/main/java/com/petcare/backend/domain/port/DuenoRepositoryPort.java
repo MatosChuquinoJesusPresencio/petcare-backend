@@ -9,6 +9,7 @@ public interface DuenoRepositoryPort {
     Optional<Dueno> findById(Long id);
     Optional<Dueno> findByDni(String dni);
     Optional<Dueno> findByEmail(String email);
-    Page<Dueno> findAll(Pageable pageable);
+    Page<Dueno> findAll(Boolean soloActivos, String nombre, String dni, Pageable pageable);
     Dueno save(Dueno dueno);
+    void deleteById(Long id);
 }

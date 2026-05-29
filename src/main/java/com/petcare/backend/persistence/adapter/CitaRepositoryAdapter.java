@@ -37,6 +37,13 @@ public class CitaRepositoryAdapter implements CitaRepositoryPort {
     }
 
     @Override
+    public Page<Cita> findAll(Long mascotaId, Long veterinarioId, Long servicioId, String estado, LocalDateTime fechaDesde, LocalDateTime fechaHasta, Pageable pageable) {
+        var spec = com.petcare.backend.persistence.specification.CitaSpecification.conFiltros(mascotaId, veterinarioId, servicioId, estado, fechaDesde, fechaHasta);
+        return citaRepository.findAll(spec, pageable)
+                .map(citaMapper::toModel);
+    }
+
+    @Override
     public Page<Cita> findByMascotaId(Long mascotaId, Pageable pageable) {
         return citaRepository.findByMascotaId(mascotaId, pageable)
                 .map(citaMapper::toModel);

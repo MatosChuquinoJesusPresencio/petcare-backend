@@ -40,16 +40,7 @@ public class ServicioService {
     }
 
     public Page<Servicio> listar(Boolean soloActivos, String nombre, Pageable pageable) {
-        if (soloActivos != null && nombre != null && !nombre.isBlank()) {
-            return servicioRepositoryPort.findByActivoAndNombre(soloActivos, nombre, pageable);
-        }
-        if (soloActivos != null) {
-            return servicioRepositoryPort.findByActivo(soloActivos, pageable);
-        }
-        if (nombre != null && !nombre.isBlank()) {
-            return servicioRepositoryPort.findByNombre(nombre, pageable);
-        }
-        return servicioRepositoryPort.findAll(pageable);
+        return servicioRepositoryPort.findAll(soloActivos, nombre, pageable);
     }
 
     public void eliminarServicio(Long id) {

@@ -91,6 +91,10 @@ public class MascotaService {
         return mascotaRepositoryPort.findAll(pageable);
     }
 
+    public Page<Mascota> listarTodas(String nombre, String especie, String raza, String sexo, Boolean activo, Long duenoId, Pageable pageable) {
+        return mascotaRepositoryPort.findAll(nombre, especie, raza, sexo, activo, duenoId, pageable);
+    }
+
     @Transactional
     public void desactivarMascota(Long id) {
         Mascota mascota = mascotaRepositoryPort.findById(id)

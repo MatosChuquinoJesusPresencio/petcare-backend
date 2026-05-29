@@ -39,6 +39,13 @@ public class MascotaRepositoryAdapter implements MascotaRepositoryPort {
     }
 
     @Override
+    public Page<Mascota> findAll(String nombre, String especie, String raza, String sexo, Boolean activo, Long duenoId, Pageable pageable) {
+        var spec = com.petcare.backend.persistence.specification.MascotaSpecification.conFiltros(nombre, especie, raza, sexo, activo, duenoId);
+        return mascotaRepository.findAll(spec, pageable)
+                .map(mascotaMapper::toModel);
+    }
+
+    @Override
     public Mascota save(Mascota mascota) {
         MascotaEntity entity = mascotaMapper.toEntity(mascota);
         MascotaEntity savedEntity = mascotaRepository.save(entity);
