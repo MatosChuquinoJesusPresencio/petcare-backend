@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ServicioRepository extends JpaRepository<ServicioEntity, Long> {
     Page<ServicioEntity> findByActivo(Boolean activo, Pageable pageable);
+    Page<ServicioEntity> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
+    Page<ServicioEntity> findByActivoAndNombreContainingIgnoreCase(Boolean activo, String nombre, Pageable pageable);
 }

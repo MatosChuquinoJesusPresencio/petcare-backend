@@ -40,6 +40,18 @@ public class ServicioRepositoryAdapter implements ServicioRepositoryPort {
     }
 
     @Override
+    public Page<Servicio> findByNombre(String nombre, Pageable pageable) {
+        return servicioRepository.findByNombreContainingIgnoreCase(nombre, pageable)
+                .map(servicioMapper::toModel);
+    }
+
+    @Override
+    public Page<Servicio> findByActivoAndNombre(Boolean activo, String nombre, Pageable pageable) {
+        return servicioRepository.findByActivoAndNombreContainingIgnoreCase(activo, nombre, pageable)
+                .map(servicioMapper::toModel);
+    }
+
+    @Override
     public Servicio save(Servicio servicio) {
         ServicioEntity entity = servicioMapper.toEntity(servicio);
         ServicioEntity savedEntity = servicioRepository.save(entity);

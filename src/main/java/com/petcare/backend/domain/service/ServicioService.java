@@ -39,12 +39,17 @@ public class ServicioService {
         return servicioRepositoryPort.findById(id);
     }
 
-    public Page<Servicio> listarTodos(Pageable pageable) {
+    public Page<Servicio> listar(Boolean soloActivos, String nombre, Pageable pageable) {
+        if (soloActivos != null && nombre != null && !nombre.isBlank()) {
+            return servicioRepositoryPort.findByActivoAndNombre(soloActivos, nombre, pageable);
+        }
+        if (soloActivos != null) {
+            return servicioRepositoryPort.findByActivo(soloActivos, pageable);
+        }
+        if (nombre != null && !nombre.isBlank()) {
+            return servicioRepositoryPort.findByNombre(nombre, pageable);
+        }
         return servicioRepositoryPort.findAll(pageable);
-    }
-
-    public Page<Servicio> listarActivos(Pageable pageable) {
-        return servicioRepositoryPort.findByActivo(true, pageable);
     }
 
     public void eliminarServicio(Long id) {

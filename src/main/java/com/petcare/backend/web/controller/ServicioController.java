@@ -24,9 +24,10 @@ public class ServicioController {
 
     @GetMapping
     public ResponseEntity<Page<Servicio>> listarServicios(
-            @RequestParam(value = "soloActivos", defaultValue = "true") boolean soloActivos,
+            @RequestParam(value = "soloActivos", required = false) Boolean soloActivos,
+            @RequestParam(value = "nombre", required = false) String nombre,
             Pageable pageable) {
-        Page<Servicio> servicios = soloActivos ? servicioService.listarActivos(pageable) : servicioService.listarTodos(pageable);
+        Page<Servicio> servicios = servicioService.listar(soloActivos, nombre, pageable);
         return ResponseEntity.ok(servicios);
     }
 
