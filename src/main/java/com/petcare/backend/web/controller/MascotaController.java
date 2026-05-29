@@ -3,6 +3,7 @@ package com.petcare.backend.web.controller;
 import com.petcare.backend.domain.model.Dueno;
 import com.petcare.backend.domain.model.Mascota;
 import com.petcare.backend.domain.service.MascotaService;
+import com.petcare.backend.web.dto.CambioDuenoPrincipalRequest;
 import com.petcare.backend.web.dto.MascotaRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -115,6 +116,13 @@ public class MascotaController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<Void> vincularDueñoAdicional(@PathVariable Long mascotaId, @PathVariable Long duenoId, @RequestParam String relacion) {
         mascotaService.vincularDueñoAdicional(mascotaId, duenoId, relacion);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{mascotaId}/cambiar-dueno-principal")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
+    public ResponseEntity<Void> cambiarDuenoPrincipal(@PathVariable Long mascotaId, @Valid @RequestBody CambioDuenoPrincipalRequest request) {
+        mascotaService.cambiarDuenoPrincipal(mascotaId, request.duenoId(), request.relacion());
         return ResponseEntity.ok().build();
     }
 }

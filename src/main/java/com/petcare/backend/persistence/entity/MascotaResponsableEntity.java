@@ -32,6 +32,8 @@ public class MascotaResponsableEntity {
 
     @PrePersist
     protected void onCreate() {
-        this.esPrincipal = false;
+        if (this.esPrincipal == null) {
+            this.esPrincipal = false;
+        }
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -147,5 +148,40 @@ public class MascotaService {
                 .relacion(relacion)
                 .build();
         responsableRepositoryPort.save(responsable);
+    }
+
+    @Transactional
+    public void cambiarDuenoPrincipal(Long mascotaId, Long nuevoDuenoId, String relacion) {
+        Mascota mascota = mascotaRepositoryPort.findById(mascotaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
+
+        Dueno nuevoDueno = duenoRepositoryPort.findById(nuevoDuenoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+
+        List<MascotaResponsable> responsables = responsableRepositoryPort.findByMascotaId(mascotaId);
+
+        for (MascotaResponsable mr : responsables) {
+            if (mr.getEsPrincipal()) {
+                mr.setEsPrincipal(false);
+                responsableRepositoryPort.save(mr);
+            }
+        }
+
+        Optional<MascotaResponsable> existing = responsables.stream()
+                .filter(mr -> mr.getDueno().getId().equals(nuevoDuenoId))
+                .findFirst();
+
+        if (existing.isPresent()) {
+            existing.get().setEsPrincipal(true);
+            responsableRepositoryPort.save(existing.get());
+        } else {
+            MascotaResponsable nuevo = MascotaResponsable.builder()
+                    .mascota(mascota)
+                    .dueno(nuevoDueno)
+                    .esPrincipal(true)
+                    .relacion(relacion)
+                    .build();
+            responsableRepositoryPort.save(nuevo);
+        }
     }
 }
