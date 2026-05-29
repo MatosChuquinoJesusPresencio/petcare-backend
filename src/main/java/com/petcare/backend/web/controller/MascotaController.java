@@ -89,10 +89,17 @@ public class MascotaController {
         return ResponseEntity.ok(actualizada);
     }
 
+    @PatchMapping("/{id}/toggle")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
+    public ResponseEntity<Mascota> cambiarActivo(@PathVariable Long id) {
+        Mascota mascota = mascotaService.cambiarActivo(id);
+        return ResponseEntity.ok(mascota);
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
-    public ResponseEntity<Void> desactivarMascota(@PathVariable Long id) {
-        mascotaService.desactivarMascota(id);
+    public ResponseEntity<Void> eliminarMascota(@PathVariable Long id) {
+        mascotaService.eliminarMascota(id);
         return ResponseEntity.noContent().build();
     }
 

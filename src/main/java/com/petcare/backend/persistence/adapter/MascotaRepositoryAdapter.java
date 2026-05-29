@@ -51,4 +51,9 @@ public class MascotaRepositoryAdapter implements MascotaRepositoryPort {
         MascotaEntity savedEntity = mascotaRepository.save(entity);
         return mascotaMapper.toModel(savedEntity);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        mascotaRepository.deleteById(id);
+    }
 }

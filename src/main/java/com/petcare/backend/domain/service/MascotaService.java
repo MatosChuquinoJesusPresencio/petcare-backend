@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,6 +54,7 @@ public class MascotaService {
                 .build();
         responsableRepositoryPort.save(responsable);
 
+        mascotaGuardada.setDuenoPrincipal(dueno.getNombre() + " " + (dueno.getApellido() != null ? dueno.getApellido() : ""));
         return mascotaGuardada;
     }
 
@@ -84,15 +86,32 @@ public class MascotaService {
     }
 
     public Optional<Mascota> obtenerPorId(Long id) {
-        return mascotaRepositoryPort.findById(id);
+        Optional<Mascota> mascota = mascotaRepositoryPort.findById(id);
+        mascota.ifPresent(this::cargarDuenoPrincipal);
+        return mascota;
     }
 
     public Page<Mascota> listarTodas(Pageable pageable) {
-        return mascotaRepositoryPort.findAll(pageable);
+        Page<Mascota> page = mascotaRepositoryPort.findAll(pageable);
+        page.getContent().forEach(this::cargarDuenoPrincipal);
+        return page;
     }
 
     public Page<Mascota> listarTodas(String nombre, String especie, String raza, String sexo, Boolean activo, Long duenoId, Pageable pageable) {
-        return mascotaRepositoryPort.findAll(nombre, especie, raza, sexo, activo, duenoId, pageable);
+        Page<Mascota> page = mascotaRepositoryPort.findAll(nombre, especie, raza, sexo, activo, duenoId, pageable);
+        page.getContent().forEach(this::cargarDuenoPrincipal);
+        return page;
+    }
+
+    private void cargarDuenoPrincipal(Mascota mascota) {
+        List<MascotaResponsable> responsables = responsableRepositoryPort.findByMascotaId(mascota.getId());
+        responsables.stream()
+                .filter(MascotaResponsable::getEsPrincipal)
+                .findFirst()
+                .ifPresent(r -> {
+                    Dueno d = r.getDueno();
+                    mascota.setDuenoPrincipal(d.getNombre() + " " + (d.getApellido() != null ? d.getApellido() : ""));
+                });
     }
 
     @Transactional
@@ -103,9 +122,25 @@ public class MascotaService {
         mascotaRepositoryPort.save(mascota);
     }
 
+    public Mascota cambiarActivo(Long id) {
+        Mascota mascota = mascotaRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
+        mascota.setActivo(!mascota.getActivo());
+        return mascotaRepositoryPort.save(mascota);
+    }
+
+    @Transactional
+    public void eliminarMascota(Long id) {
+        mascotaRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
+        mascotaRepositoryPort.deleteById(id);
+    }
+
     public Page<Mascota> listarMascotasDeDueno(Long duenoId, Pageable pageable) {
-        return responsableRepositoryPort.findByDuenoId(duenoId, pageable)
+        Page<Mascota> page = responsableRepositoryPort.findByDuenoId(duenoId, pageable)
                 .map(MascotaResponsable::getMascota);
+        page.getContent().forEach(this::cargarDuenoPrincipal);
+        return page;
     }
 
     @Transactional
