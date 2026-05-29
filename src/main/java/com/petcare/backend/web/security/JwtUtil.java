@@ -85,9 +85,9 @@ public class JwtUtil {
         return ResponseCookie.from("accessToken", jwt)
                 .path("/")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .maxAge(expiration / 1000)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
     }
 
@@ -95,9 +95,9 @@ public class JwtUtil {
         return ResponseCookie.from("accessToken", jwt)
                 .path("/")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .maxAge(expiration / 1000)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
     }
 
@@ -105,9 +105,9 @@ public class JwtUtil {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .path("/")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .maxAge(refreshExpiration / 1000)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
     }
 
@@ -115,9 +115,9 @@ public class JwtUtil {
         return ResponseCookie.from("accessToken", "")
                 .path("/")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
     }
 
@@ -125,9 +125,9 @@ public class JwtUtil {
         return ResponseCookie.from("refreshToken", "")
                 .path("/")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
     }
 
