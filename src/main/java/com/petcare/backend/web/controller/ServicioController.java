@@ -65,8 +65,15 @@ public class ServicioController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<Void> desactivarServicio(@PathVariable Long id) {
-        servicioService.desactivarServicio(id);
+    public ResponseEntity<Void> eliminarServicio(@PathVariable Long id) {
+        servicioService.eliminarServicio(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/toggle")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<Servicio> cambiarActivo(@PathVariable Long id) {
+        Servicio servicio = servicioService.cambiarActivo(id);
+        return ResponseEntity.ok(servicio);
     }
 }

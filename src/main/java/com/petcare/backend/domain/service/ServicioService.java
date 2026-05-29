@@ -47,10 +47,16 @@ public class ServicioService {
         return servicioRepositoryPort.findByActivo(true, pageable);
     }
 
-    public void desactivarServicio(Long id) {
+    public void eliminarServicio(Long id) {
+        servicioRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+        servicioRepositoryPort.deleteById(id);
+    }
+
+    public Servicio cambiarActivo(Long id) {
         Servicio servicio = servicioRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
-        servicio.setActivo(false);
-        servicioRepositoryPort.save(servicio);
+        servicio.setActivo(!servicio.getActivo());
+        return servicioRepositoryPort.save(servicio);
     }
 }

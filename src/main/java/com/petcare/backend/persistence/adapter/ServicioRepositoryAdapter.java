@@ -45,4 +45,9 @@ public class ServicioRepositoryAdapter implements ServicioRepositoryPort {
         ServicioEntity savedEntity = servicioRepository.save(entity);
         return servicioMapper.toModel(savedEntity);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        servicioRepository.deleteById(id);
+    }
 }

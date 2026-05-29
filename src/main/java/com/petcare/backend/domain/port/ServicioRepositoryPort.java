@@ -10,4 +10,5 @@ public interface ServicioRepositoryPort {
     Page<Servicio> findAll(Pageable pageable);
     Page<Servicio> findByActivo(Boolean activo, Pageable pageable);
     Servicio save(Servicio servicio);
+    void deleteById(Long id);
 }
