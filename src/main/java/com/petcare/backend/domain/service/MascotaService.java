@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -54,7 +53,6 @@ public class MascotaService {
                 .build();
         responsableRepositoryPort.save(responsable);
 
-        mascotaGuardada.setDuenoPrincipal(dueno.getNombre() + " " + (dueno.getApellido() != null ? dueno.getApellido() : ""));
         return mascotaGuardada;
     }
 
@@ -86,32 +84,22 @@ public class MascotaService {
     }
 
     public Optional<Mascota> obtenerPorId(Long id) {
-        Optional<Mascota> mascota = mascotaRepositoryPort.findById(id);
-        mascota.ifPresent(this::cargarDuenoPrincipal);
-        return mascota;
+        return mascotaRepositoryPort.findById(id);
     }
 
     public Page<Mascota> listarTodas(Pageable pageable) {
-        Page<Mascota> page = mascotaRepositoryPort.findAll(pageable);
-        page.getContent().forEach(this::cargarDuenoPrincipal);
-        return page;
+        return mascotaRepositoryPort.findAll(pageable);
     }
 
     public Page<Mascota> listarTodas(String nombre, String especie, String raza, String sexo, Boolean activo, Long duenoId, Pageable pageable) {
-        Page<Mascota> page = mascotaRepositoryPort.findAll(nombre, especie, raza, sexo, activo, duenoId, pageable);
-        page.getContent().forEach(this::cargarDuenoPrincipal);
-        return page;
+        return mascotaRepositoryPort.findAll(nombre, especie, raza, sexo, activo, duenoId, pageable);
     }
 
-    private void cargarDuenoPrincipal(Mascota mascota) {
-        List<MascotaResponsable> responsables = responsableRepositoryPort.findByMascotaId(mascota.getId());
-        responsables.stream()
+    public Optional<Dueno> obtenerDuenoPrincipal(Long mascotaId) {
+        return responsableRepositoryPort.findByMascotaId(mascotaId).stream()
                 .filter(MascotaResponsable::getEsPrincipal)
                 .findFirst()
-                .ifPresent(r -> {
-                    Dueno d = r.getDueno();
-                    mascota.setDuenoPrincipal(d.getNombre() + " " + (d.getApellido() != null ? d.getApellido() : ""));
-                });
+                .map(MascotaResponsable::getDueno);
     }
 
     @Transactional
@@ -137,10 +125,8 @@ public class MascotaService {
     }
 
     public Page<Mascota> listarMascotasDeDueno(Long duenoId, Pageable pageable) {
-        Page<Mascota> page = responsableRepositoryPort.findByDuenoId(duenoId, pageable)
+        return responsableRepositoryPort.findByDuenoId(duenoId, pageable)
                 .map(MascotaResponsable::getMascota);
-        page.getContent().forEach(this::cargarDuenoPrincipal);
-        return page;
     }
 
     @Transactional

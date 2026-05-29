@@ -1,5 +1,6 @@
 package com.petcare.backend.web.controller;
 
+import com.petcare.backend.domain.model.Dueno;
 import com.petcare.backend.domain.model.Mascota;
 import com.petcare.backend.domain.service.MascotaService;
 import com.petcare.backend.web.dto.MascotaRequest;
@@ -42,6 +43,13 @@ public class MascotaController {
         return mascotaService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/dueno-principal")
+    public ResponseEntity<Dueno> obtenerDuenoPrincipal(@PathVariable Long id) {
+        return mascotaService.obtenerDuenoPrincipal(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
     }
 
     @GetMapping("/dueno/{duenoId}")

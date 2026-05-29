@@ -8,6 +8,7 @@ import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.web.dto.CitaEstadoRequest;
 import com.petcare.backend.web.dto.CitaReprogramarRequest;
 import com.petcare.backend.web.dto.CitaRequest;
+import com.petcare.backend.web.dto.DisponibilidadResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,14 @@ public class CitaController {
             return ResponseEntity.ok(citaService.listarConFiltros(mascotaId, veterinarioId, servicioId, estado, fechaDesde, fechaHasta, pageable));
         }
         return ResponseEntity.ok(citaService.listarTodas(pageable));
+    }
+
+    @GetMapping("/disponibilidad")
+    public ResponseEntity<DisponibilidadResponse> obtenerDisponibilidad(
+            @RequestParam Long veterinarioId,
+            @RequestParam @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate fecha,
+            @RequestParam Long servicioId) {
+        return ResponseEntity.ok(citaService.obtenerDisponibilidad(veterinarioId, fecha, servicioId));
     }
 
     @GetMapping("/{id}")

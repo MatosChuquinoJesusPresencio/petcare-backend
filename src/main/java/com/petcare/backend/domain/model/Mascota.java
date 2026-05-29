@@ -21,5 +21,4 @@ public class Mascota {
     private String enfermedadesCronicas;
     private String alertasMedicas;
     private Boolean activo;
-    private String duenoPrincipal;
 }

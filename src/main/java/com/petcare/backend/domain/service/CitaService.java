@@ -15,11 +15,13 @@ import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.BusinessRuleException;
 import com.petcare.backend.domain.exception.ScheduleConflictException;
+import com.petcare.backend.web.dto.DisponibilidadResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -133,6 +135,71 @@ public class CitaService {
 
     public Page<Cita> listarPorVeterinario(Long veterinarioId, Pageable pageable) {
         return citaRepositoryPort.findByVeterinarioId(veterinarioId, pageable);
+    }
+
+    public DisponibilidadResponse obtenerDisponibilidad(Long veterinarioId, LocalDate fecha, Long servicioId) {
+        Servicio servicio = servicioRepositoryPort.findById(servicioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+
+        int diaSemana = fecha.getDayOfWeek().getValue();
+        List<DisponibilidadVeterinario> disponibilidades = disponibilidadRepositoryPort
+                .findByVeterinarioIdAndDiaSemana(veterinarioId, diaSemana);
+
+        if (disponibilidades.isEmpty()) {
+            return new DisponibilidadResponse(veterinarioId, fecha.toString(), servicio.getDuracionMinutos(), List.of());
+        }
+
+        List<BloqueoVeterinario> bloqueos = bloqueoRepositoryPort
+                .findByVeterinarioIdAndFecha(veterinarioId, fecha);
+
+        LocalDateTime inicioDia = fecha.atStartOfDay();
+        LocalDateTime finDia = fecha.atTime(23, 59, 59);
+        List<Cita> citasExistentes = citaRepositoryPort
+                .findByVeterinarioIdAndFechaHoraBetween(veterinarioId, inicioDia, finDia);
+
+        List<String> horarios = new java.util.ArrayList<>();
+
+        for (DisponibilidadVeterinario disp : disponibilidades) {
+            if (!disp.getActivo()) continue;
+
+            LocalTime slotInicio = disp.getHoraInicio();
+            int duracion = servicio.getDuracionMinutos();
+
+            while (!slotInicio.isAfter(disp.getHoraFin().minusMinutes(duracion))) {
+                LocalTime slotFin = slotInicio.plusMinutes(duracion);
+
+                boolean bloqueado = false;
+
+                for (BloqueoVeterinario bloq : bloqueos) {
+                    if (slotInicio.isBefore(bloq.getHoraFin()) && bloq.getHoraInicio().isBefore(slotFin)) {
+                        bloqueado = true;
+                        break;
+                    }
+                }
+
+                if (!bloqueado) {
+                    for (Cita existente : citasExistentes) {
+                        if ("CANCELADA".equals(existente.getEstado()) || "NO_ASISTIO".equals(existente.getEstado())) {
+                            continue;
+                        }
+                        LocalTime extInicio = existente.getFechaHora().toLocalTime();
+                        LocalTime extFin = extInicio.plusMinutes(existente.getServicio().getDuracionMinutos());
+                        if (slotInicio.isBefore(extFin) && extInicio.isBefore(slotFin)) {
+                            bloqueado = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!bloqueado) {
+                    horarios.add(slotInicio.toString());
+                }
+
+                slotInicio = slotInicio.plusMinutes(duracion);
+            }
+        }
+
+        return new DisponibilidadResponse(veterinarioId, fecha.toString(), servicio.getDuracionMinutos(), horarios);
     }
 
     private void validarDisponibilidadYHorarios(Long veterinarioId, Servicio servicio, LocalDateTime fechaHora, Long citaAExcluirId) {

@@ -9,7 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
@@ -41,6 +43,13 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     public Page<Usuario> findAll(Pageable pageable) {
         return usuarioRepository.findAll(pageable)
                 .map(usuarioMapper::toModel);
+    }
+
+    @Override
+    public List<Usuario> findByRolAndActivo(String rol, Boolean activo) {
+        return usuarioRepository.findByRolAndActivo(rol, activo).stream()
+                .map(usuarioMapper::toModel)
+                .collect(Collectors.toList());
     }
 
     @Override

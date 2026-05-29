@@ -1,6 +1,5 @@
 package com.petcare.backend.web.dto;
 
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -15,7 +14,6 @@ public record CitaRequest(
         Long serviceId,
 
         @NotNull(message = "Date and time are required")
-        @Future(message = "Date and time must be in the future")
         LocalDateTime dateTime,
 
         String notes
