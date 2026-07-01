@@ -40,9 +40,15 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     }
 
     @Override
-    public Page<Usuario> findAll(Pageable pageable) {
-        return usuarioRepository.findAll(pageable)
+    public Page<Usuario> findAll(Boolean soloActivos, String rol, Pageable pageable) {
+        var spec = com.petcare.backend.persistence.specification.UsuarioSpecification.conFiltros(soloActivos, rol);
+        return usuarioRepository.findAll(spec, pageable)
                 .map(usuarioMapper::toModel);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        usuarioRepository.deleteById(id);
     }
 
     @Override

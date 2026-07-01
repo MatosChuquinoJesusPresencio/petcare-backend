@@ -11,7 +11,8 @@ public interface UsuarioRepositoryPort {
     Optional<Usuario> findById(Long id);
     Optional<Usuario> findByUsername(String username);
     Optional<Usuario> findByEmail(String email);
-    Page<Usuario> findAll(Pageable pageable);
+    Page<Usuario> findAll(Boolean soloActivos, String rol, Pageable pageable);
     Usuario save(Usuario usuario);
+    void deleteById(Long id);
     List<Usuario> findByRolAndActivo(String rol, Boolean activo);
 }
