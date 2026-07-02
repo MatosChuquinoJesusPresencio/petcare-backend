@@ -2,13 +2,17 @@ package com.petcare.backend.web.controller;
 
 import com.petcare.backend.domain.model.Dueno;
 import com.petcare.backend.domain.model.Mascota;
+import com.petcare.backend.domain.model.Usuario;
 import com.petcare.backend.domain.service.MascotaService;
+import com.petcare.backend.domain.service.UsuarioService;
+import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.web.dto.CambioDuenoPrincipalRequest;
 import com.petcare.backend.web.dto.MascotaRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Page;
@@ -19,9 +23,11 @@ import org.springframework.data.domain.Pageable;
 public class MascotaController {
 
     private final MascotaService mascotaService;
+    private final UsuarioService usuarioService;
 
-    public MascotaController(MascotaService mascotaService) {
+    public MascotaController(MascotaService mascotaService, UsuarioService usuarioService) {
         this.mascotaService = mascotaService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping
@@ -122,7 +128,11 @@ public class MascotaController {
     @PatchMapping("/{mascotaId}/cambiar-dueno-principal")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<Void> cambiarDuenoPrincipal(@PathVariable Long mascotaId, @Valid @RequestBody CambioDuenoPrincipalRequest request) {
-        mascotaService.cambiarDuenoPrincipal(mascotaId, request.duenoId(), request.relacion());
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioService.obtenerPorUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        mascotaService.cambiarDuenoPrincipal(mascotaId, request.duenoId(), request.relacion(), request.motivo(), usuario.getId());
         return ResponseEntity.ok().build();
     }
 }

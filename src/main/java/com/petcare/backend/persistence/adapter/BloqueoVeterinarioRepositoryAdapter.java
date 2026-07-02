@@ -48,4 +48,9 @@ public class BloqueoVeterinarioRepositoryAdapter implements BloqueoVeterinarioRe
         BloqueoVeterinarioEntity savedEntity = bloqueVeterinarioRepository.save(entity);
         return bloqueVeterinarioMapper.toModel(savedEntity);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        bloqueVeterinarioRepository.deleteById(id);
+    }
 }

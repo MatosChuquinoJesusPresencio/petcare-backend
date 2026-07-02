@@ -8,5 +8,8 @@ public record CambioDuenoPrincipalRequest(
     Long duenoId,
 
     @NotBlank(message = "Relation is required")
-    String relacion
+    String relacion,
+
+    @NotBlank(message = "Reason is required")
+    String motivo
 ) {}

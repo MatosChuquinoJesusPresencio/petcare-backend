@@ -23,13 +23,16 @@ public class MascotaService {
     private final MascotaRepositoryPort mascotaRepositoryPort;
     private final DuenoRepositoryPort duenoRepositoryPort;
     private final MascotaResponsableRepositoryPort responsableRepositoryPort;
+    private final HistorialTransferenciaService historialTransferenciaService;
 
     public MascotaService(MascotaRepositoryPort mascotaRepositoryPort,
                           DuenoRepositoryPort duenoRepositoryPort,
-                          MascotaResponsableRepositoryPort responsableRepositoryPort) {
+                          MascotaResponsableRepositoryPort responsableRepositoryPort,
+                          HistorialTransferenciaService historialTransferenciaService) {
         this.mascotaRepositoryPort = mascotaRepositoryPort;
         this.duenoRepositoryPort = duenoRepositoryPort;
         this.responsableRepositoryPort = responsableRepositoryPort;
+        this.historialTransferenciaService = historialTransferenciaService;
     }
 
     @Transactional
@@ -151,7 +154,7 @@ public class MascotaService {
     }
 
     @Transactional
-    public void cambiarDuenoPrincipal(Long mascotaId, Long nuevoDuenoId, String relacion) {
+    public void cambiarDuenoPrincipal(Long mascotaId, Long nuevoDuenoId, String relacion, String motivo, Long usuarioResponsableId) {
         Mascota mascota = mascotaRepositoryPort.findById(mascotaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
 
@@ -160,8 +163,10 @@ public class MascotaService {
 
         List<MascotaResponsable> responsables = responsableRepositoryPort.findByMascotaId(mascotaId);
 
+        Long duenoAnteriorId = null;
         for (MascotaResponsable mr : responsables) {
             if (mr.getEsPrincipal()) {
+                duenoAnteriorId = mr.getDueno().getId();
                 mr.setEsPrincipal(false);
                 responsableRepositoryPort.save(mr);
             }
@@ -183,5 +188,7 @@ public class MascotaService {
                     .build();
             responsableRepositoryPort.save(nuevo);
         }
+
+        historialTransferenciaService.registrarTransferencia(mascotaId, duenoAnteriorId, nuevoDuenoId, motivo, usuarioResponsableId);
     }
 }

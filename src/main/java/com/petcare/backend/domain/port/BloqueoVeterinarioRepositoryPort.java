@@ -10,4 +10,5 @@ public interface BloqueoVeterinarioRepositoryPort {
     List<BloqueoVeterinario> findByVeterinarioIdAndFecha(Long veterinarioId, LocalDate fecha);
     Optional<BloqueoVeterinario> findById(Long id);
     BloqueoVeterinario save(BloqueoVeterinario bloqueo);
+    void deleteById(Long id);
 }
