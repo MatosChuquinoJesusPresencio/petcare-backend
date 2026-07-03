@@ -18,5 +18,20 @@
     "name": "app.cors.allowed-origins",
     "type": "java.lang.String",
     "description": "URL del frontend donde se consumira la API REST"
+  },
+  {
+    "name": "spring.h2.console.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Habilitar la consola H2"
+  },
+  {
+    "name": "spring.h2.console.path",
+    "type": "java.lang.String",
+    "description": "Path de la consola H2"
+  },
+  {
+    "name": "spring.h2.console.settings.web-allow-others",
+    "type": "java.lang.Boolean",
+    "description": "Permitir acceso remoto a la consola H2"
   }
 ]}
