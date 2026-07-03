@@ -4,10 +4,10 @@ import java.time.Instant;
 
 public record HistorialTransferenciaResponse(
         Long id,
-        Long mascotaId,
-        Long duenoAnteriorId,
-        Long duenoNuevoId,
-        Instant fecha,
-        String motivo,
-        Long usuarioResponsableId
+        Long petId,
+        Long previousOwnerId,
+        Long newOwnerId,
+        Instant date,
+        String reason,
+        Long responsibleUserId
 ) {}

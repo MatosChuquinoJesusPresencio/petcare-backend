@@ -5,9 +5,9 @@ import java.time.LocalTime;
 
 public record BloqueoVeterinarioResponse(
         Long id,
-        Long veterinarioId,
-        LocalDate fecha,
-        LocalTime horaInicio,
-        LocalTime horaFin,
-        String motivo
+        Long veterinarianId,
+        LocalDate date,
+        LocalTime startTime,
+        LocalTime endTime,
+        String reason
 ) {}

@@ -4,17 +4,17 @@ import java.time.Instant;
 
 public record AtencionClinicaResponse(
         Long id,
-        Long citaId,
-        Long mascotaId,
-        Long veterinarioId,
-        Long triajeId,
-        String motivoConsulta,
-        String sintomas,
-        String diagnostico,
-        String tratamiento,
-        String observacionesClinicas,
-        Long creadoPorId,
-        Instant creadoEn,
-        Long actualizadoPorId,
-        Instant actualizadoEn
+        Long appointmentId,
+        Long petId,
+        Long veterinarianId,
+        Long triageId,
+        String reasonForConsultation,
+        String symptoms,
+        String diagnosis,
+        String treatment,
+        String clinicalObservations,
+        Long createdBy,
+        Instant createdAt,
+        Long updatedBy,
+        Instant updatedAt
 ) {}

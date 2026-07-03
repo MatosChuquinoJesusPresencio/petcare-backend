@@ -4,9 +4,9 @@ import java.time.Instant;
 
 public record SalaEsperaResponse(
         Long id,
-        Long citaId,
-        Long mascotaId,
-        Instant fechaLlegada,
-        String estado,
-        String observaciones
+        Long appointmentId,
+        Long petId,
+        Instant arrivalDate,
+        String status,
+        String observations
 ) {}

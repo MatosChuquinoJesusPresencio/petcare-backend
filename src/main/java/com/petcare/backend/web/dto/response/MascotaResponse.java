@@ -4,16 +4,16 @@ import java.time.LocalDate;
 
 public record MascotaResponse(
         Long id,
-        String nombre,
+        String name,
         String especie,
-        String raza,
-        String genero,
-        LocalDate fechaNacimiento,
+        String breed,
+        String gender,
+        LocalDate dateOfBirth,
         String microchip,
-        String condicionReproductiva,
-        String alergias,
-        String enfermedadesCronicas,
-        String alertasMedicas,
-        String notasMedicas,
-        Boolean estado
+        String reproductiveCondition,
+        String allergies,
+        String chronicDiseases,
+        String medicalAlerts,
+        String medicalNotes,
+        Boolean active
 ) {}

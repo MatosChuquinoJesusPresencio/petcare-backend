@@ -4,9 +4,9 @@ import java.time.LocalTime;
 
 public record DisponibilidadVeterinarioResponse(
         Long id,
-        Long veterinarioId,
-        Integer diaSemana,
-        LocalTime horaInicio,
-        LocalTime horaFin,
-        Boolean activo
+        Long veterinarianId,
+        Integer dayOfWeek,
+        LocalTime startTime,
+        LocalTime endTime,
+        Boolean active
 ) {}

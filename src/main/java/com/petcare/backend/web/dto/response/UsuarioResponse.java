@@ -2,10 +2,10 @@ package com.petcare.backend.web.dto.response;
 
 public record UsuarioResponse(
         Long id,
-        String nombres,
-        String apellidos,
+        String names,
+        String lastNames,
         String email,
-        String telefono,
+        String phone,
         String rol,
-        Boolean estado
+        Boolean active
 ) {}
