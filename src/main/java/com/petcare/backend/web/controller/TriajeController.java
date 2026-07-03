@@ -44,29 +44,36 @@ public class TriajeController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<Page<TriajeResponse>> listarTodos(Pageable pageable) {
         return ResponseEntity.ok(triajeService.listarTodos(pageable).map(this::toResponse));
     }
 
     @GetMapping("/prioridad/{nivelUrgencia}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<Page<TriajeResponse>> listarPorPrioridad(@PathVariable String nivelUrgencia, Pageable pageable) {
         return ResponseEntity.ok(triajeService.listarPorPrioridad(nivelUrgencia, pageable).map(this::toResponse));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<TriajeResponse> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(toResponse(triajeService.obtenerPorId(id)));
     }
 
     @GetMapping("/cita/{citaId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<TriajeResponse> obtenerPorCitaId(@PathVariable Long citaId) {
         return ResponseEntity.ok(toResponse(triajeService.obtenerPorCitaId(citaId)));
     }
 
     private TriajeResponse toResponse(Triaje t) {
-        return new TriajeResponse(t.getId(), t.getCita().getId(), t.getMotivoVisita(),
+        return new TriajeResponse(t.getId(),
+                t.getCita() != null ? t.getCita().getId() : null,
+                t.getMotivoVisita(),
                 t.getNivelUrgencia(), t.getSignosVisibles(), t.getObservaciones(), t.getPeso(),
                 t.getTemperatura(), t.getFrecuenciaCardiaca(), t.getFrecuenciaRespiratoria(),
-                t.getAsistente().getId(), t.getCreadoEn(), t.getActualizadoEn());
+                t.getAsistente() != null ? t.getAsistente().getId() : null,
+                t.getCreadoEn(), t.getActualizadoEn());
     }
 }

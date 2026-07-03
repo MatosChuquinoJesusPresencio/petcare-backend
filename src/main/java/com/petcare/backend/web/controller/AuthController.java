@@ -11,7 +11,6 @@ import com.petcare.backend.web.dto.response.TokenRefreshResponse;
 import com.petcare.backend.web.dto.request.LoginRequest;
 import com.petcare.backend.web.dto.request.RegisterRequest;
 import com.petcare.backend.web.dto.request.TokenRefreshRequest;
-import com.petcare.backend.web.security.CustomUserDetailsService;
 import com.petcare.backend.web.security.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -22,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,18 +31,15 @@ public class AuthController {
     private final UsuarioService usuarioService;
     private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
 
     public AuthController(AuthenticationManager authenticationManager,
                           UsuarioService usuarioService,
                           RefreshTokenService refreshTokenService,
-                          JwtUtil jwtUtil,
-                          CustomUserDetailsService userDetailsService) {
+                          JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.usuarioService = usuarioService;
         this.refreshTokenService = refreshTokenService;
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/login")
@@ -53,19 +48,14 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(request.username(), request.password())
         );
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
-        String jwt = jwtUtil.generateToken(userDetails);
-
         Usuario usuarioDB = usuarioService.obtenerPorEmail(request.username())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        String jwt = jwtUtil.generateToken(usuarioDB);
+
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuarioDB.getId());
 
-        var authorities = userDetails.getAuthorities();
-        String rol = authorities.isEmpty() ? "UNKNOWN" : authorities.iterator().next().getAuthority();
-        if (rol.startsWith("ROLE_")) {
-            rol = rol.substring(5);
-        }
+        String rol = usuarioDB.getRol();
 
         ResponseCookie jwtCookie = jwtUtil.generateJwtCookie(jwt);
         ResponseCookie refreshCookie = jwtUtil.generateRefreshTokenCookie(refreshToken.getToken());
@@ -88,8 +78,7 @@ public class AuthController {
 
         Usuario registrado = usuarioService.registrarUsuario(usuario);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(registrado.getEmail());
-        String jwt = jwtUtil.generateToken(userDetails);
+        String jwt = jwtUtil.generateToken(registrado);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(registrado.getId());
 
         ResponseCookie jwtCookie = jwtUtil.generateJwtCookie(jwt);
@@ -131,8 +120,7 @@ public class AuthController {
                     return usuario;
                 })
                 .map(usuario -> {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(usuario.getEmail());
-                    String token = jwtUtil.generateToken(userDetails);
+                    String token = jwtUtil.generateToken(usuario);
                     ResponseCookie jwtCookie = jwtUtil.generateJwtCookie(token);
 
                     return ResponseEntity.ok()
@@ -146,8 +134,12 @@ public class AuthController {
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         String requestRefreshToken = jwtUtil.getRefreshTokenFromCookies(request);
         if (requestRefreshToken != null) {
-            refreshTokenService.findByToken(requestRefreshToken)
-                    .ifPresent(token -> refreshTokenService.deleteByUserId(token.getUsuario().getId()));
+        refreshTokenService.findByToken(requestRefreshToken)
+                .ifPresent(token -> {
+                    if (token.getUsuario() != null) {
+                        refreshTokenService.deleteByUserId(token.getUsuario().getId());
+                    }
+                });
         }
 
         ResponseCookie cleanJwtCookie = jwtUtil.getCleanJwtCookie();

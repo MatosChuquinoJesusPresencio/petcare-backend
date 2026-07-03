@@ -12,6 +12,7 @@ public interface AtencionClinicaMapper {
     @Mapping(target = "cita", ignore = true)
     @Mapping(target = "mascota", ignore = true)
     @Mapping(target = "veterinario", ignore = true)
+    @Mapping(target = "triaje", ignore = true)
     @Mapping(target = "creadoPor", ignore = true)
     @Mapping(target = "actualizadoPor", ignore = true)
     AtencionClinicaEntity toEntity(AtencionClinica domain);

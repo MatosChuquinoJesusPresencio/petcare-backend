@@ -26,9 +26,14 @@ public class JwtUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
+        String rol = userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
         Usuario usuario = new Usuario();
         usuario.setEmail(userDetails.getUsername());
-        usuario.setRol(userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", ""));
+        usuario.setRol(rol);
+        return jwtTokenProvider.generateAccessToken(usuario);
+    }
+
+    public String generateToken(Usuario usuario) {
         return jwtTokenProvider.generateAccessToken(usuario);
     }
 

@@ -24,11 +24,13 @@ public class SalaEsperaController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<List<SalaEsperaResponse>> listarTodas() {
         return ResponseEntity.ok(toResponseList(salaEsperaService.listarTodas()));
     }
 
     @GetMapping("/estado/{estado}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<List<SalaEsperaResponse>> listarPorEstado(@PathVariable String estado) {
         return ResponseEntity.ok(toResponseList(salaEsperaService.listarPorEstado(estado)));
     }
@@ -48,7 +50,9 @@ public class SalaEsperaController {
     }
 
     private SalaEsperaResponse toResponse(SalaEspera s) {
-        return new SalaEsperaResponse(s.getId(), s.getCita().getId(), s.getMascota().getId(),
+        return new SalaEsperaResponse(s.getId(),
+                s.getCita() != null ? s.getCita().getId() : null,
+                s.getMascota() != null ? s.getMascota().getId() : null,
                 s.getFechaLlegada(), s.getEstado(), s.getObservaciones());
     }
 

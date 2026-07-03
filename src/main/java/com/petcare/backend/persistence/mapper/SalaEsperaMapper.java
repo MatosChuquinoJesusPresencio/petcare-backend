@@ -10,5 +10,6 @@ public interface SalaEsperaMapper {
     SalaEspera toDomain(SalaEsperaEntity entity);
 
     @Mapping(target = "cita", ignore = true)
+    @Mapping(target = "mascota", ignore = true)
     SalaEsperaEntity toEntity(SalaEspera domain);
 }

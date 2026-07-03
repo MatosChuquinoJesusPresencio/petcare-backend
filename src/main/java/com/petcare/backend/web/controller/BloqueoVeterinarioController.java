@@ -31,11 +31,13 @@ public class BloqueoVeterinarioController {
     }
 
     @GetMapping("/veterinario/{veterinarioId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
     public ResponseEntity<List<BloqueoVeterinarioResponse>> listarPorVeterinario(@PathVariable Long veterinarioId) {
         return ResponseEntity.ok(toResponseList(bloqueoService.listarPorVeterinario(veterinarioId)));
     }
 
     @GetMapping("/veterinario/{veterinarioId}/fecha")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
     public ResponseEntity<List<BloqueoVeterinarioResponse>> listarPorVeterinarioYFecha(
             @PathVariable Long veterinarioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
@@ -43,6 +45,7 @@ public class BloqueoVeterinarioController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
     public ResponseEntity<BloqueoVeterinarioResponse> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(toResponse(bloqueoService.obtenerPorId(id)));
     }
@@ -68,8 +71,9 @@ public class BloqueoVeterinarioController {
     }
 
     private BloqueoVeterinarioResponse toResponse(BloqueoVeterinario b) {
-        return new BloqueoVeterinarioResponse(b.getId(), b.getVeterinario().getId(), b.getFecha(),
-                b.getHoraInicio(), b.getHoraFin(), b.getMotivo());
+        return new BloqueoVeterinarioResponse(b.getId(),
+                b.getVeterinario() != null ? b.getVeterinario().getId() : null,
+                b.getFecha(), b.getHoraInicio(), b.getHoraFin(), b.getMotivo());
     }
 
     private List<BloqueoVeterinarioResponse> toResponseList(List<BloqueoVeterinario> list) {

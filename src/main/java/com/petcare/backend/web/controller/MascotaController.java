@@ -60,7 +60,7 @@ public class MascotaController {
         return mascotaService.obtenerDuenoPrincipal(id)
                 .map(d -> ResponseEntity.ok(new DuenoResponse(d.getId(), d.getDni(), d.getTelefono(),
                         d.getDireccion(), d.getUsuario() != null ? d.getUsuario().getId() : null)))
-                .orElse(ResponseEntity.noContent().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/dueno/{duenoId}")

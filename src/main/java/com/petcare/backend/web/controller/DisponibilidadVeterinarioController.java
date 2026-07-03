@@ -29,11 +29,13 @@ public class DisponibilidadVeterinarioController {
     }
 
     @GetMapping("/veterinario/{veterinarioId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
     public ResponseEntity<List<DisponibilidadVeterinarioResponse>> listarPorVeterinario(@PathVariable Long veterinarioId) {
         return ResponseEntity.ok(toResponseList(disponibilidadService.listarPorVeterinario(veterinarioId)));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
     public ResponseEntity<DisponibilidadVeterinarioResponse> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(toResponse(disponibilidadService.obtenerPorId(id)));
     }
@@ -72,7 +74,8 @@ public class DisponibilidadVeterinarioController {
     }
 
     private DisponibilidadVeterinarioResponse toResponse(DisponibilidadVeterinario d) {
-        return new DisponibilidadVeterinarioResponse(d.getId(), d.getVeterinario().getId(),
+        return new DisponibilidadVeterinarioResponse(d.getId(),
+                d.getVeterinario() != null ? d.getVeterinario().getId() : null,
                 d.getDiaSemana(), d.getHoraInicio(), d.getHoraFin(), d.getActivo());
     }
 

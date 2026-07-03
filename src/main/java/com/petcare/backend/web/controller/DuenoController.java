@@ -70,7 +70,9 @@ public class DuenoController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<DuenoResponse> actualizarDueno(@PathVariable Long id,
                                                           @Valid @RequestBody DuenoRequest request) {
-        Dueno detalles = new Dueno(null, request.dni(), request.phone(), request.address(), null);
+        Dueno existente = duenoService.obtenerPorId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+        Dueno detalles = new Dueno(null, request.dni(), request.phone(), request.address(), existente.getUsuario());
         Dueno actualizado = duenoService.actualizarDueno(id, detalles);
         return ResponseEntity.ok(new DuenoResponse(actualizado.getId(), actualizado.getDni(),
                 actualizado.getTelefono(), actualizado.getDireccion(),
@@ -114,7 +116,7 @@ public class DuenoController {
                 request.phone(), request.relation());
         ContactoEmergencia creado = duenoService.agregarContactoEmergencia(duenoId, contacto);
         return new ResponseEntity<>(new ContactoEmergenciaResponse(creado.getId(),
-                creado.getDueno().getId(), creado.getNombre(), creado.getTelefono(),
+                creado.getDueno() != null ? creado.getDueno().getId() : null, creado.getNombre(), creado.getTelefono(),
                 creado.getRelacion()), HttpStatus.CREATED);
     }
 

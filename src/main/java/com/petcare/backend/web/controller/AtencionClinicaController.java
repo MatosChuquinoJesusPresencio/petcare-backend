@@ -44,16 +44,19 @@ public class AtencionClinicaController {
     }
 
     @GetMapping("/mascota/{mascotaId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
     public ResponseEntity<Page<AtencionClinicaResponse>> listarPorMascota(@PathVariable Long mascotaId, Pageable pageable) {
         return ResponseEntity.ok(atencionClinicaService.listarPorMascota(mascotaId, pageable).map(this::toResponse));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
     public ResponseEntity<AtencionClinicaResponse> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(toResponse(atencionClinicaService.obtenerPorId(id)));
     }
 
     @GetMapping("/cita/{citaId}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
     public ResponseEntity<AtencionClinicaResponse> obtenerPorCitaId(@PathVariable Long citaId) {
         return ResponseEntity.ok(toResponse(atencionClinicaService.obtenerPorCitaId(citaId)));
     }
@@ -74,10 +77,14 @@ public class AtencionClinicaController {
 
     private AtencionClinicaResponse toResponse(AtencionClinica a) {
         return new AtencionClinicaResponse(a.getId(),
-                a.getCita().getId(), a.getMascota().getId(), a.getVeterinario().getId(),
+                a.getCita() != null ? a.getCita().getId() : null,
+                a.getMascota() != null ? a.getMascota().getId() : null,
+                a.getVeterinario() != null ? a.getVeterinario().getId() : null,
                 a.getTriaje() != null ? a.getTriaje().getId() : null,
                 a.getMotivoConsulta(), a.getSintomas(), a.getDiagnostico(), a.getTratamiento(),
-                a.getObservacionesClinicas(), a.getCreadoPor().getId(), a.getCreadoEn(),
+                a.getObservacionesClinicas(),
+                a.getCreadoPor() != null ? a.getCreadoPor().getId() : null,
+                a.getCreadoEn(),
                 a.getActualizadoPor() != null ? a.getActualizadoPor().getId() : null,
                 a.getActualizadoEn());
     }

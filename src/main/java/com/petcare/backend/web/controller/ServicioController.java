@@ -2,6 +2,7 @@ package com.petcare.backend.web.controller;
 
 import com.petcare.backend.domain.model.Servicio;
 import com.petcare.backend.domain.service.ServicioService;
+import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.web.dto.request.ServicioRequest;
 import com.petcare.backend.web.dto.response.ServicioResponse;
 import jakarta.validation.Valid;
@@ -56,8 +57,10 @@ public class ServicioController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ServicioResponse> actualizarServicio(@PathVariable Long id,
                                                                 @Valid @RequestBody ServicioRequest request) {
+        Servicio existente = servicioService.obtenerPorId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
         Servicio detalles = new Servicio(null, request.name(), request.description(),
-                request.durationMinutes(), request.referentialCost(), null);
+                request.durationMinutes(), request.referentialCost(), existente.getActivo());
         Servicio actualizado = servicioService.actualizarServicio(id, detalles);
         return ResponseEntity.ok(new ServicioResponse(actualizado.getId(), actualizado.getNombre(),
                 actualizado.getDescripcion(), actualizado.getDuracionMinutos(),
