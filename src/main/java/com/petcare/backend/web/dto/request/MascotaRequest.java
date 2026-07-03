@@ -32,11 +32,9 @@ public record MascotaRequest(
 
         String medicalAlerts,
 
-        // Required fields for initial registration linking to the main owner
-        @NotNull(message = "Owner ID is required")
+        // Optional — only used for initial registration
         Long ownerId,
 
-        @NotBlank(message = "Relation with owner is required")
         String ownerRelation
 ) {
 }
