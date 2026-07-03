@@ -42,10 +42,13 @@ public class TriajeService {
         Usuario asistente = usuarioRepositoryPort.findById(asistenteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assistant not found"));
 
-        if (!List.of("ASISTENTE", "ADMINISTRADOR").contains(asistente.getRol().toUpperCase())) {
+        if (asistente.getRol() == null || !List.of("ASISTENTE", "ADMINISTRADOR").contains(asistente.getRol().toUpperCase())) {
             throw new BusinessRuleException("Only assistants or administrators can perform triage");
         }
 
+        if (triaje.getNivelUrgencia() == null) {
+            throw new BusinessRuleException("Urgency level must not be null");
+        }
         String urgencia = triaje.getNivelUrgencia().toUpperCase();
         if (!List.of("RUTINARIA", "PREFERENTE", "URGENTE", "EMERGENCIA").contains(urgencia)) {
             throw new BusinessRuleException("Invalid urgency level. Use: RUTINARIA, PREFERENTE, URGENTE, EMERGENCIA");
@@ -63,6 +66,9 @@ public class TriajeService {
     }
 
     public Page<Triaje> listarPorPrioridad(String nivelUrgencia, Pageable pageable) {
+        if (nivelUrgencia == null) {
+            throw new BusinessRuleException("Urgency level must not be null");
+        }
         String urgencia = nivelUrgencia.toUpperCase();
         if (!List.of("RUTINARIA", "PREFERENTE", "URGENTE", "EMERGENCIA").contains(urgencia)) {
             throw new BusinessRuleException("Invalid urgency level");

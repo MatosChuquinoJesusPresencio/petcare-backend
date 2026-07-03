@@ -67,7 +67,6 @@ public class AtencionClinica {
     public Usuario getActualizadoPor() { return actualizadoPor; }
     public Instant getActualizadoEn() { return actualizadoEn; }
 
-    public void setId(Long id) { this.id = id; }
     public void setCita(Cita cita) { this.cita = cita; }
     public void setMascota(Mascota mascota) { this.mascota = mascota; }
     public void setVeterinario(Usuario veterinario) { this.veterinario = veterinario; }

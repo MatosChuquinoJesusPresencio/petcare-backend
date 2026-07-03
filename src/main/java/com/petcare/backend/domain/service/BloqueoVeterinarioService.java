@@ -6,7 +6,7 @@ import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,7 +22,7 @@ public class BloqueoVeterinarioService {
         return bloqueoRepositoryPort.findByVeterinarioId(veterinarioId);
     }
 
-    public List<BloqueoVeterinario> listarPorVeterinarioYFecha(Long veterinarioId, Instant fecha) {
+    public List<BloqueoVeterinario> listarPorVeterinarioYFecha(Long veterinarioId, LocalDate fecha) {
         return bloqueoRepositoryPort.findByVeterinarioIdAndFecha(veterinarioId, fecha);
     }
 
@@ -38,6 +38,8 @@ public class BloqueoVeterinarioService {
 
     @Transactional
     public void eliminarBloqueo(Long id) {
+        bloqueoRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule block not found"));
         bloqueoRepositoryPort.deleteById(id);
     }
 }

@@ -2,13 +2,16 @@ package com.petcare.backend.domain.service;
 
 import com.petcare.backend.domain.model.ContactoEmergencia;
 import com.petcare.backend.domain.model.Dueno;
+import com.petcare.backend.domain.model.Usuario;
 import com.petcare.backend.domain.port.ContactoEmergenciaRepositoryPort;
 import com.petcare.backend.domain.port.DuenoRepositoryPort;
+import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceDuplicateException;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -17,12 +20,15 @@ public class DuenoService {
 
     private final DuenoRepositoryPort duenoRepositoryPort;
     private final ContactoEmergenciaRepositoryPort contactoRepositoryPort;
+    private final UsuarioRepositoryPort usuarioRepositoryPort;
 
-    public DuenoService(DuenoRepositoryPort duenoRepositoryPort, ContactoEmergenciaRepositoryPort contactoRepositoryPort) {
+    public DuenoService(DuenoRepositoryPort duenoRepositoryPort, ContactoEmergenciaRepositoryPort contactoRepositoryPort, UsuarioRepositoryPort usuarioRepositoryPort) {
         this.duenoRepositoryPort = duenoRepositoryPort;
         this.contactoRepositoryPort = contactoRepositoryPort;
+        this.usuarioRepositoryPort = usuarioRepositoryPort;
     }
 
+    @Transactional
     public Dueno registrarDueno(Dueno dueno) {
         if (duenoRepositoryPort.findByDni(dueno.getDni()).isPresent()) {
             throw new ResourceDuplicateException("The owner's DNI is already registered");
@@ -33,15 +39,19 @@ public class DuenoService {
         return duenoRepositoryPort.save(dueno);
     }
 
+    @Transactional
     public Dueno actualizarDueno(Long id, Dueno duenoDetalles) {
         Dueno dueno = duenoRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
 
-        duenoRepositoryPort.findByDni(duenoDetalles.getDni()).ifPresent(d -> {
-            if (!d.getId().equals(id)) {
-                throw new ResourceDuplicateException("DNI already belongs to another owner");
-            }
-        });
+        if (duenoDetalles.getDni() != null) {
+            String dni = duenoDetalles.getDni();
+            duenoRepositoryPort.findByDni(dni).ifPresent(d -> {
+                if (!d.getId().equals(id)) {
+                    throw new ResourceDuplicateException("DNI already belongs to another owner");
+                }
+            });
+        }
 
         dueno.setDni(duenoDetalles.getDni());
         dueno.setTelefono(duenoDetalles.getTelefono());
@@ -58,18 +68,25 @@ public class DuenoService {
         return duenoRepositoryPort.findAll(soloActivos, nombre, dni, pageable);
     }
 
+    @Transactional
     public void desactivarDueno(Long id) {
-        duenoRepositoryPort.findById(id)
+        Dueno dueno = duenoRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
-        duenoRepositoryPort.deleteById(id);
+        Usuario usuario = dueno.getUsuario();
+        if (usuario != null) {
+            usuario.setEstado(false);
+            usuarioRepositoryPort.save(usuario);
+        }
     }
 
+    @Transactional
     public void eliminarDueno(Long id) {
         duenoRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
         duenoRepositoryPort.deleteById(id);
     }
 
+    @Transactional
     public ContactoEmergencia agregarContactoEmergencia(Long duenoId, ContactoEmergencia contacto) {
         Dueno dueno = duenoRepositoryPort.findById(duenoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
@@ -81,7 +98,10 @@ public class DuenoService {
         return contactoRepositoryPort.findAll(duenoId, nombre, telefono, relacion, pageable);
     }
 
+    @Transactional
     public void eliminarContactoEmergencia(Long contactoId) {
+        contactoRepositoryPort.findById(contactoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Emergency contact not found"));
         contactoRepositoryPort.deleteById(contactoId);
     }
 }

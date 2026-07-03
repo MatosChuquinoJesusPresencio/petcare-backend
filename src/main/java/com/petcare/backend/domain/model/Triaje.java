@@ -37,7 +37,6 @@ public class Triaje {
     }
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
     public Cita getCita() { return cita; }
     public void setCita(Cita cita) { this.cita = cita; }
     public String getMotivoVisita() { return motivoVisita; }

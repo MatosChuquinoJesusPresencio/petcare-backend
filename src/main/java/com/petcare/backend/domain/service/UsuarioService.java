@@ -3,8 +3,10 @@ package com.petcare.backend.domain.service;
 import com.petcare.backend.domain.model.Usuario;
 import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceDuplicateException;
+import com.petcare.backend.domain.exception.BusinessRuleException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +25,18 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public Usuario registrarUsuario(Usuario usuario) {
+        if (usuario.getEmail() == null) {
+            throw new BusinessRuleException("Email must not be null");
+        }
         if (usuarioRepositoryPort.findByEmail(usuario.getEmail()).isPresent()) {
             throw new ResourceDuplicateException("Email address is already registered");
         }
 
+        if (usuario.getContrasena() == null) {
+            throw new BusinessRuleException("Password must not be null");
+        }
         usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
         usuario.setEstado(true);
         return usuarioRepositoryPort.save(usuario);
@@ -46,6 +55,6 @@ public class UsuarioService {
     }
 
     public List<Usuario> listarVeterinariosActivos() {
-        return usuarioRepositoryPort.findByRolAndActivo("VETERINARIO", true);
+        return usuarioRepositoryPort.findByRolAndEstado("VETERINARIO", true);
     }
 }

@@ -22,7 +22,6 @@ public class SalaEspera {
     }
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
     public Cita getCita() { return cita; }
     public void setCita(Cita cita) { this.cita = cita; }
     public Mascota getMascota() { return mascota; }

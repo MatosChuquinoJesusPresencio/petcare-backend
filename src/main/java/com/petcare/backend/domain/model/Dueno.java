@@ -29,7 +29,6 @@ public class Dueno {
     public String getDireccion() { return direccion; }
     public Usuario getUsuario() { return usuario; }
     
-    public void setId(Long id) { this.id = id; }
     public void setDni(String dni) { this.dni = dni; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public void setDireccion(String direccion) { this.direccion = direccion; }

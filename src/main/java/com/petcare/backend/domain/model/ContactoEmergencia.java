@@ -18,7 +18,6 @@ public class ContactoEmergencia {
     }
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
     public Dueno getDueno() { return dueno; }
     public void setDueno(Dueno dueno) { this.dueno = dueno; }
     public String getNombre() { return nombre; }

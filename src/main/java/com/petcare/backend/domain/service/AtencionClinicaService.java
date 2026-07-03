@@ -61,7 +61,7 @@ public class AtencionClinicaService {
         AtencionClinica atencion = new AtencionClinica(
                 null, cita, mascota, veterinario, triaje,
                 motivoConsulta, sintomas, diagnostico, tratamiento, observacionesClinicas,
-                veterinario, Instant.now(), null, Instant.now()
+                veterinario, Instant.now(), null, null
         );
 
         return atencionClinicaRepositoryPort.save(atencion);

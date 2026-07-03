@@ -80,6 +80,7 @@ public class MascotaService {
         mascota.setAlergias(mascotaDetalles.getAlergias());
         mascota.setEnfermedadesCronicas(mascotaDetalles.getEnfermedadesCronicas());
         mascota.setAlertasMedicas(mascotaDetalles.getAlertasMedicas());
+        mascota.setNotasMedicas(mascotaDetalles.getNotasMedicas());
 
         return mascotaRepositoryPort.save(mascota);
     }
@@ -92,8 +93,8 @@ public class MascotaService {
         return mascotaRepositoryPort.findAll(pageable);
     }
 
-    public Page<Mascota> listarTodas(String nombre, String especie, String raza, String sexo, Boolean activo, Long duenoId, Pageable pageable) {
-        return mascotaRepositoryPort.findAll(nombre, especie, raza, sexo, activo, duenoId, pageable);
+    public Page<Mascota> listarTodas(String nombre, String especie, String raza, String genero, Boolean estado, Long duenoId, Pageable pageable) {
+        return mascotaRepositoryPort.findAll(nombre, especie, raza, genero, estado, duenoId, pageable);
     }
 
     public Optional<Dueno> obtenerDuenoPrincipal(Long mascotaId) {
@@ -111,6 +112,7 @@ public class MascotaService {
         mascotaRepositoryPort.save(mascota);
     }
 
+    @Transactional
     public void cambiarEstado(Long id) {
         Mascota mascota = mascotaRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));

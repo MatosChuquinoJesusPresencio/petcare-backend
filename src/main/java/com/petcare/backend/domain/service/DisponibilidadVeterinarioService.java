@@ -3,6 +3,7 @@ package com.petcare.backend.domain.service;
 import com.petcare.backend.domain.model.DisponibilidadVeterinario;
 import com.petcare.backend.domain.port.DisponibilidadVeterinarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
+import com.petcare.backend.domain.exception.BusinessRuleException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,11 +34,19 @@ public class DisponibilidadVeterinarioService {
 
     @Transactional
     public DisponibilidadVeterinario actualizar(Long id, DisponibilidadVeterinario detalles) {
+        if (detalles == null) {
+            throw new BusinessRuleException("Availability details must not be null");
+        }
         DisponibilidadVeterinario existente = obtenerPorId(id);
+        if (detalles.getHoraInicio() == null || detalles.getHoraFin() == null) {
+            throw new BusinessRuleException("Start time and end time must not be null");
+        }
+        if (!detalles.getHoraInicio().isBefore(detalles.getHoraFin())) {
+            throw new BusinessRuleException("Start time must be before end time");
+        }
         existente.setDiaSemana(detalles.getDiaSemana());
         existente.setHoraInicio(detalles.getHoraInicio());
         existente.setHoraFin(detalles.getHoraFin());
-        existente.setVeterinario(detalles.getVeterinario());
         return disponibilidadRepositoryPort.save(existente);
     }
 

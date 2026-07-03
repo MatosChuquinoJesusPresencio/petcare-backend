@@ -41,7 +41,6 @@ public class Usuario {
     public String getRol() { return rol; }
     public Boolean getEstado() { return estado; }
 
-    public void setId(Long id) { this.id = id; }
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
     public void setNombres(String nombres) { this.nombres = nombres; }
     public void setApellidos(String apellidos) { this.apellidos = apellidos; }

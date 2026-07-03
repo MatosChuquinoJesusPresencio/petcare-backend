@@ -9,7 +9,7 @@ public interface MascotaRepositoryPort {
     Optional<Mascota> findById(Long id);
     Optional<Mascota> findByMicrochip(String microchip);
     Page<Mascota> findAll(Pageable pageable);
-    Page<Mascota> findAll(String nombre, String especie, String raza, String sexo, Boolean activo, Long duenoId, Pageable pageable);
+    Page<Mascota> findAll(String nombre, String especie, String raza, String genero, Boolean estado, Long duenoId, Pageable pageable);
     Mascota save(Mascota mascota);
     void deleteById(Long id);
 }
