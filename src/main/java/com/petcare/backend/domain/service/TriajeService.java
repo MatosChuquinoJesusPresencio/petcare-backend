@@ -4,6 +4,7 @@ import com.petcare.backend.domain.model.Cita;
 import com.petcare.backend.domain.model.Triaje;
 import com.petcare.backend.domain.model.Usuario;
 import com.petcare.backend.domain.port.CitaRepositoryPort;
+import com.petcare.backend.domain.port.SalaEsperaRepositoryPort;
 import com.petcare.backend.domain.port.TriajeRepositoryPort;
 import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
@@ -22,13 +23,16 @@ public class TriajeService {
     private final TriajeRepositoryPort triajeRepositoryPort;
     private final CitaRepositoryPort citaRepositoryPort;
     private final UsuarioRepositoryPort usuarioRepositoryPort;
+    private final SalaEsperaRepositoryPort salaEsperaRepositoryPort;
 
     public TriajeService(TriajeRepositoryPort triajeRepositoryPort,
                           CitaRepositoryPort citaRepositoryPort,
-                          UsuarioRepositoryPort usuarioRepositoryPort) {
+                          UsuarioRepositoryPort usuarioRepositoryPort,
+                          SalaEsperaRepositoryPort salaEsperaRepositoryPort) {
         this.triajeRepositoryPort = triajeRepositoryPort;
         this.citaRepositoryPort = citaRepositoryPort;
         this.usuarioRepositoryPort = usuarioRepositoryPort;
+        this.salaEsperaRepositoryPort = salaEsperaRepositoryPort;
     }
 
     @Transactional
@@ -43,7 +47,7 @@ public class TriajeService {
         Usuario asistente = usuarioRepositoryPort.findById(asistenteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Assistant not found"));
 
-        if (asistente.getRol() == null || !List.of("ASISTENTE", "ADMINISTRADOR").contains(asistente.getRol().toUpperCase())) {
+        if (asistente.getRol() == null || !List.of("ASISTENTE", "ADMINISTRADOR", "VETERINARIO").contains(asistente.getRol().toUpperCase())) {
             throw new BusinessRuleException("Only assistants or administrators can perform triage");
         }
 
@@ -58,6 +62,10 @@ public class TriajeService {
         triaje.setCita(cita);
         triaje.setNivelUrgencia(urgencia);
         triaje.setAsistente(asistente);
+
+        if (salaEsperaRepositoryPort.findByCitaId(citaId).isEmpty()) {
+            throw new BusinessRuleException("The appointment must be registered in the waiting room before triage");
+        }
 
         return triajeRepositoryPort.save(triaje);
     }

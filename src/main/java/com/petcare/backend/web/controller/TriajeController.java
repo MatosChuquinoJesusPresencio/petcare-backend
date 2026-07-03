@@ -29,7 +29,7 @@ public class TriajeController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<TriajeResponse> crearTriaje(@Valid @RequestBody TriajeRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario asistente = usuarioService.obtenerPorEmail(username)
