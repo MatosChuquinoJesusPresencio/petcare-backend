@@ -97,6 +97,10 @@ public class AtencionClinicaService {
         return atencionClinicaRepositoryPort.save(existente);
     }
 
+    public Page<AtencionClinica> listarTodas(Pageable pageable) {
+        return atencionClinicaRepositoryPort.findAll(pageable);
+    }
+
     public Page<AtencionClinica> listarPorMascota(Long mascotaId, Pageable pageable) {
         return atencionClinicaRepositoryPort.findByMascotaIdOrderByCreadoEnDesc(mascotaId, pageable);
     }

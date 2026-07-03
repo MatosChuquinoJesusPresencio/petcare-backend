@@ -43,6 +43,12 @@ public class AtencionClinicaController {
         return new ResponseEntity<>(toResponse(atencion), HttpStatus.CREATED);
     }
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
+    public ResponseEntity<Page<AtencionClinicaResponse>> listarTodas(Pageable pageable) {
+        return ResponseEntity.ok(atencionClinicaService.listarTodas(pageable).map(this::toResponse));
+    }
+
     @GetMapping("/mascota/{mascotaId}")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO', 'ASISTENTE')")
     public ResponseEntity<Page<AtencionClinicaResponse>> listarPorMascota(@PathVariable Long mascotaId, Pageable pageable) {
