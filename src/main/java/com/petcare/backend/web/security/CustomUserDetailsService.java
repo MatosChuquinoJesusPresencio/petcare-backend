@@ -28,10 +28,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         String roleName = usuario.getRol().startsWith("ROLE_") ? usuario.getRol() : "ROLE_" + usuario.getRol();
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleName));
 
+        boolean enabled = usuario.getEstado() != null && usuario.getEstado();
+
         return new User(
                 usuario.getEmail(),
                 usuario.getContrasena(),
-                usuario.getEstado(),
+                enabled,
                 true, true, true,
                 authorities
         );
