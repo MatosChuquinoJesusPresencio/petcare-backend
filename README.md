@@ -154,6 +154,6 @@ El proyecto incluye datos de prueba en `db/seed.sql`. Para cargarlos en la base 
 
 ## Documentación
 
-- Swagger UI: [`http://localhost:8080/swagger-ui.html`](http://localhost:8080/swagger-ui.html)
-- OpenAPI JSON: [`http://localhost:8080/v3/api-docs`](http://localhost:8080/v3/api-docs)
+- Swagger UI: [`https://petcare-backend-production-5445.up.railway.app/swagger-ui.html`](https://petcare-backend-production-5445.up.railway.app/swagger-ui.html)
+- OpenAPI JSON: [`https://petcare-backend-production-5445.up.railway.app/v3/api-docs`](https://petcare-backend-production-5445.up.railway.app/v3/api-docs)
 - H2 Console: [`http://localhost:8080/h2-console`](http://localhost:8080/h2-console) (solo en desarrollo)
