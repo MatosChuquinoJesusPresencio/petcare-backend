@@ -1,14 +1,16 @@
 package com.petcare.backend.web.controller;
 
 import com.petcare.backend.domain.service.UsuarioService;
+import com.petcare.backend.web.dto.request.RegisterRequest;
 import com.petcare.backend.web.dto.response.UsuarioResponse;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -28,5 +30,42 @@ public class UsuarioController {
                         u.getEmail(), u.getTelefono(), u.getRol(), u.getEstado()))
                 .toList();
         return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/veterinarios/todos")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
+    public ResponseEntity<List<UsuarioResponse>> listarTodosVeterinarios() {
+        var usuarios = usuarioService.listarVeterinarios().stream()
+                .map(u -> new UsuarioResponse(u.getId(), u.getNombres(), u.getApellidos(),
+                        u.getEmail(), u.getTelefono(), u.getRol(), u.getEstado()))
+                .toList();
+        return ResponseEntity.ok(usuarios);
+    }
+
+    @PatchMapping("/{id}/estado")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<UsuarioResponse> cambiarEstado(@PathVariable Long id,
+                                                           @RequestBody Map<String, Boolean> body) {
+        Boolean estado = body.get("active");
+        if (estado == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        var usuario = usuarioService.cambiarEstado(id, estado);
+        return ResponseEntity.ok(new UsuarioResponse(usuario.getId(), usuario.getNombres(),
+                usuario.getApellidos(), usuario.getEmail(), usuario.getTelefono(),
+                usuario.getRol(), usuario.getEstado()));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<UsuarioResponse> crearUsuario(@Valid @RequestBody RegisterRequest request) {
+        com.petcare.backend.domain.model.Usuario usuario = new com.petcare.backend.domain.model.Usuario(
+                null, request.password(), request.firstName(), request.lastName(),
+                request.email(), request.phone(), request.role().toUpperCase(), null
+        );
+        var creado = usuarioService.registrarUsuario(usuario);
+        return new ResponseEntity<>(new UsuarioResponse(creado.getId(), creado.getNombres(),
+                creado.getApellidos(), creado.getEmail(), creado.getTelefono(),
+                creado.getRol(), creado.getEstado()), HttpStatus.CREATED);
     }
 }

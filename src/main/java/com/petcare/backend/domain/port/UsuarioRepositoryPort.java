@@ -13,4 +13,5 @@ public interface UsuarioRepositoryPort {
     Page<Usuario> findAll(Pageable pageable);
     Usuario save(Usuario usuario);
     List<Usuario> findByRolAndEstado(String rol, Boolean estado);
+    List<Usuario> findByRol(String rol);
 }

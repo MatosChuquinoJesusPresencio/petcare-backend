@@ -3,6 +3,7 @@ package com.petcare.backend.domain.service;
 import com.petcare.backend.domain.model.Usuario;
 import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceDuplicateException;
+import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.BusinessRuleException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -57,5 +58,17 @@ public class UsuarioService {
 
     public List<Usuario> listarVeterinariosActivos() {
         return usuarioRepositoryPort.findByRolAndEstado("VETERINARIO", true);
+    }
+
+    public List<Usuario> listarVeterinarios() {
+        return usuarioRepositoryPort.findByRol("VETERINARIO");
+    }
+
+    @Transactional
+    public Usuario cambiarEstado(Long id, Boolean estado) {
+        Usuario usuario = usuarioRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        usuario.setEstado(estado);
+        return usuarioRepositoryPort.save(usuario);
     }
 }

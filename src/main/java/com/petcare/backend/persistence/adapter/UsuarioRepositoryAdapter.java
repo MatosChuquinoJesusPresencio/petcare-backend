@@ -46,4 +46,9 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     public List<Usuario> findByRolAndEstado(String rol, Boolean estado) {
         return usuarioJpaRepository.findByRolAndEstado(rol, estado).stream().map(usuarioMapper::toDomain).toList();
     }
+
+    @Override
+    public List<Usuario> findByRol(String rol) {
+        return usuarioJpaRepository.findByRol(rol).stream().map(usuarioMapper::toDomain).toList();
+    }
 }
