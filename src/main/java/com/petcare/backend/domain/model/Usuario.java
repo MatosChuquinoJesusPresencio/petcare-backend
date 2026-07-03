@@ -33,6 +33,7 @@ public class Usuario {
     }
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public String getContrasena() { return contrasena; }
     public String getNombres() { return nombres; }
     public String getApellidos() { return apellidos; }

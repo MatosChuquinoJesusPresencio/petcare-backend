@@ -53,6 +53,7 @@ public class AtencionClinica {
     }
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public Cita getCita() { return cita; }
     public Mascota getMascota() { return mascota; }
     public Usuario getVeterinario() { return veterinario; }

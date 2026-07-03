@@ -23,6 +23,7 @@ public class BloqueoVeterinario {
     }
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public Usuario getVeterinario() { return veterinario; }
     public LocalDate getFecha() { return fecha; }
     public LocalTime getHoraInicio() { return horaInicio; }
