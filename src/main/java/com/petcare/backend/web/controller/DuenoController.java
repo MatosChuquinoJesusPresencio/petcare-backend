@@ -10,12 +10,14 @@ import com.petcare.backend.web.dto.request.ContactoEmergenciaRequest;
 import com.petcare.backend.web.dto.request.DuenoRequest;
 import com.petcare.backend.web.dto.response.ContactoEmergenciaResponse;
 import com.petcare.backend.web.dto.response.DuenoResponse;
+import com.petcare.backend.web.dto.response.UsuarioResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,7 +40,7 @@ public class DuenoController {
             Pageable pageable) {
         Page<DuenoResponse> response = duenoService.listar(soloActivos, nombre, dni, pageable)
                 .map(d -> new DuenoResponse(d.getId(), d.getDni(), d.getTelefono(),
-                        d.getDireccion(), d.getUsuario() != null ? d.getUsuario().getId() : null));
+                        d.getDireccion(), toUsuarioResponse(d.getUsuario())));
         return ResponseEntity.ok(response);
     }
 
@@ -46,24 +48,30 @@ public class DuenoController {
     public ResponseEntity<DuenoResponse> obtenerDueno(@PathVariable Long id) {
         return duenoService.obtenerPorId(id)
                 .map(d -> ResponseEntity.ok(new DuenoResponse(d.getId(), d.getDni(), d.getTelefono(),
-                        d.getDireccion(), d.getUsuario() != null ? d.getUsuario().getId() : null)))
+                        d.getDireccion(), toUsuarioResponse(d.getUsuario()))))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
+    @Transactional
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<DuenoResponse> registrarDueno(@Valid @RequestBody DuenoRequest request) {
         Usuario usuario = null;
         if (request.userId() != null) {
             usuario = usuarioService.obtenerPorId(request.userId())
                     .orElseThrow(() -> new ResourceNotFoundException("Associated user not found"));
+        } else if (request.firstName() != null && request.lastName() != null
+                && request.email() != null && request.password() != null) {
+            Usuario newUser = new Usuario(null, request.password(), request.firstName(),
+                    request.lastName(), request.email(), request.phone(), "DUENO", null);
+            usuario = usuarioService.registrarUsuario(newUser);
         }
 
         Dueno dueno = new Dueno(null, request.dni(), request.phone(), request.address(), usuario);
         Dueno creado = duenoService.registrarDueno(dueno);
         return new ResponseEntity<>(new DuenoResponse(creado.getId(), creado.getDni(),
                 creado.getTelefono(), creado.getDireccion(),
-                creado.getUsuario() != null ? creado.getUsuario().getId() : null), HttpStatus.CREATED);
+                toUsuarioResponse(creado.getUsuario())), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -76,7 +84,7 @@ public class DuenoController {
         Dueno actualizado = duenoService.actualizarDueno(id, detalles);
         return ResponseEntity.ok(new DuenoResponse(actualizado.getId(), actualizado.getDni(),
                 actualizado.getTelefono(), actualizado.getDireccion(),
-                actualizado.getUsuario() != null ? actualizado.getUsuario().getId() : null));
+                toUsuarioResponse(actualizado.getUsuario())));
     }
 
     @DeleteMapping("/{id}")
@@ -125,5 +133,11 @@ public class DuenoController {
     public ResponseEntity<Void> eliminarContacto(@PathVariable Long contactoId) {
         duenoService.eliminarContactoEmergencia(contactoId);
         return ResponseEntity.noContent().build();
+    }
+
+    private UsuarioResponse toUsuarioResponse(Usuario usuario) {
+        if (usuario == null) return null;
+        return new UsuarioResponse(usuario.getId(), usuario.getNombres(), usuario.getApellidos(),
+                usuario.getEmail(), usuario.getTelefono(), usuario.getRol(), usuario.getEstado());
     }
 }

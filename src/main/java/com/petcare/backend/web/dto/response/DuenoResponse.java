@@ -5,5 +5,5 @@ public record DuenoResponse(
         String dni,
         String phone,
         String address,
-        Long usuarioId
+        UsuarioResponse usuario
 ) {}

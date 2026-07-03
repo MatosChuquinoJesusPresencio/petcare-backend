@@ -9,9 +9,17 @@ public record DuenoRequest(
         String dni,
 
         String phone,
-        
+
         String address,
-        
-        Long userId
+
+        Long userId,
+
+        String firstName,
+
+        String lastName,
+
+        String email,
+
+        String password
 ) {
 }

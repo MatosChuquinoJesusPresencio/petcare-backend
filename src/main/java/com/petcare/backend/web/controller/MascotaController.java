@@ -9,6 +9,7 @@ import com.petcare.backend.web.dto.request.CambioDuenoPrincipalRequest;
 import com.petcare.backend.web.dto.request.MascotaRequest;
 import com.petcare.backend.web.dto.response.DuenoResponse;
 import com.petcare.backend.web.dto.response.MascotaResponse;
+import com.petcare.backend.web.dto.response.UsuarioResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +60,7 @@ public class MascotaController {
     public ResponseEntity<DuenoResponse> obtenerDuenoPrincipal(@PathVariable Long id) {
         return mascotaService.obtenerDuenoPrincipal(id)
                 .map(d -> ResponseEntity.ok(new DuenoResponse(d.getId(), d.getDni(), d.getTelefono(),
-                        d.getDireccion(), d.getUsuario() != null ? d.getUsuario().getId() : null)))
+                        d.getDireccion(), toUsuarioResponse(d.getUsuario()))))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -136,5 +137,11 @@ public class MascotaController {
                 m.getGenero(), m.getFechaNacimiento(), m.getMicrochip(),
                 m.getCondicionReproductiva(), m.getAlergias(), m.getEnfermedadesCronicas(),
                 m.getAlertasMedicas(), m.getNotasMedicas(), m.getEstado());
+    }
+
+    private UsuarioResponse toUsuarioResponse(Usuario usuario) {
+        if (usuario == null) return null;
+        return new UsuarioResponse(usuario.getId(), usuario.getNombres(), usuario.getApellidos(),
+                usuario.getEmail(), usuario.getTelefono(), usuario.getRol(), usuario.getEstado());
     }
 }
