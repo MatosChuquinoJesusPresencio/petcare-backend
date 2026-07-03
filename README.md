@@ -7,6 +7,8 @@
 
 API RESTful para la gestión de una clínica veterinaria. Desarrollada con Java 25 y Spring Boot 4.1.
 
+**Despliegue:** [https://petcare-backend-production-5445.up.railway.app/](https://petcare-backend-production-5445.up.railway.app/)
+
 ## Características
 
 - Autenticación y autorización con JWT (access + refresh tokens)
