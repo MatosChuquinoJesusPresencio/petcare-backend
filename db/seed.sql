@@ -2,6 +2,27 @@
 -- Compatible con H2 en modo PostgreSQL
 
 -- ============================================================
+-- TRUNCATE: limpia todos los datos existentes
+-- ============================================================
+SET REFERENTIAL_INTEGRITY FALSE;
+
+TRUNCATE TABLE historial_transferencias;
+TRUNCATE TABLE bloqueos_veterinarios;
+TRUNCATE TABLE atenciones_clinicas;
+TRUNCATE TABLE sala_espera;
+TRUNCATE TABLE triajes;
+TRUNCATE TABLE citas;
+TRUNCATE TABLE disponibilidad_veterinarios;
+TRUNCATE TABLE mascota_responsables;
+TRUNCATE TABLE servicios;
+TRUNCATE TABLE contactos_emergencia;
+TRUNCATE TABLE mascotas;
+TRUNCATE TABLE duenos;
+TRUNCATE TABLE usuarios;
+
+SET REFERENTIAL_INTEGRITY TRUE;
+
+-- ============================================================
 -- 1. USUARIOS (contraseña: "password" en todos)
 -- BCrypt hash: $2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G
 -- ============================================================
