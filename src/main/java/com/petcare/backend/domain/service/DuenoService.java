@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class DuenoService {
 
     private final DuenoRepositoryPort duenoRepositoryPort;

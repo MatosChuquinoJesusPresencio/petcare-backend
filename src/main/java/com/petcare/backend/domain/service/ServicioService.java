@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class ServicioService {
 
     private final ServicioRepositoryPort servicioRepositoryPort;

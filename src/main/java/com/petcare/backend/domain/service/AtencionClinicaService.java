@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 
 @Service
+@Transactional(readOnly = true)
 public class AtencionClinicaService {
 
     private final AtencionClinicaRepositoryPort atencionClinicaRepositoryPort;

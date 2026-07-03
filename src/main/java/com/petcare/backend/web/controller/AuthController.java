@@ -45,10 +45,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password())
+                new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
 
-        Usuario usuarioDB = usuarioService.obtenerPorEmail(request.username())
+        Usuario usuarioDB = usuarioService.obtenerPorEmail(request.email())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         String jwt = jwtUtil.generateToken(usuarioDB);
@@ -66,7 +66,7 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(new AuthResponse(usuarioDB.getId(), jwt, refreshToken.getToken(), request.username(), rol));
+                .body(new AuthResponse(usuarioDB.getId(), jwt, refreshToken.getToken(), request.email(), rol));
     }
 
     @PostMapping("/register")

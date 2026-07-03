@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class SalaEsperaService {
 
     private final SalaEsperaRepositoryPort salaEsperaRepositoryPort;

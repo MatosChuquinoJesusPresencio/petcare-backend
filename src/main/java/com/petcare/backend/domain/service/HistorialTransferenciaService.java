@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 
 @Service
+@Transactional(readOnly = true)
 public class HistorialTransferenciaService {
 
     private final HistorialTransferenciaRepositoryPort historialTransferenciaRepositoryPort;
