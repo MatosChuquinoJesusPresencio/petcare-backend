@@ -2,6 +2,7 @@ package com.petcare.backend.web.controller;
 
 import com.petcare.backend.domain.model.Usuario;
 import com.petcare.backend.domain.service.CitaService;
+import com.petcare.backend.domain.service.ServicioService;
 import com.petcare.backend.domain.service.UsuarioService;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.web.dto.request.CitaEstadoRequest;
@@ -30,10 +31,12 @@ public class CitaController {
 
     private final CitaService citaService;
     private final UsuarioService usuarioService;
+    private final ServicioService servicioService;
 
-    public CitaController(CitaService citaService, UsuarioService usuarioService) {
+    public CitaController(CitaService citaService, UsuarioService usuarioService, ServicioService servicioService) {
         this.citaService = citaService;
         this.usuarioService = usuarioService;
+        this.servicioService = servicioService;
     }
 
     @GetMapping
@@ -66,7 +69,10 @@ public class CitaController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam Long servicioId) {
         List<String> slots = citaService.obtenerSlotsDisponibles(veterinarioId, fecha, servicioId);
-        DisponibilidadResponse response = new DisponibilidadResponse(veterinarioId, fecha.toString(), null, slots);
+        Integer duracion = servicioService.obtenerPorId(servicioId)
+                .map(s -> s.getDuracionMinutos())
+                .orElse(null);
+        DisponibilidadResponse response = new DisponibilidadResponse(veterinarioId, fecha.toString(), duracion, slots);
         return ResponseEntity.ok(response);
     }
 
@@ -123,9 +129,13 @@ public class CitaController {
     }
 
     private CitaResponse toCitaResponse(com.petcare.backend.domain.model.Cita c) {
-        return new CitaResponse(c.getId(), c.getMascota().getId(), c.getVeterinario().getId(),
-                c.getServicio().getId(), c.getFechaHora(), c.getEstado(), c.getNotas(),
-                c.getCreadoPor().getId(), c.getCreadoEn(),
+        return new CitaResponse(c.getId(),
+                c.getMascota() != null ? c.getMascota().getId() : null,
+                c.getVeterinario() != null ? c.getVeterinario().getId() : null,
+                c.getServicio() != null ? c.getServicio().getId() : null,
+                c.getFechaHora(), c.getEstado(), c.getNotas(),
+                c.getCreadoPor() != null ? c.getCreadoPor().getId() : null,
+                c.getCreadoEn(),
                 c.getActualizadoPor() != null ? c.getActualizadoPor().getId() : null,
                 c.getActualizadoEn());
     }

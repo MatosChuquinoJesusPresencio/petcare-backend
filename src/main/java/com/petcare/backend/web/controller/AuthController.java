@@ -61,7 +61,8 @@ public class AuthController {
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuarioDB.getId());
 
-        String rol = userDetails.getAuthorities().iterator().next().getAuthority();
+        var authorities = userDetails.getAuthorities();
+        String rol = authorities.isEmpty() ? "UNKNOWN" : authorities.iterator().next().getAuthority();
         if (rol.startsWith("ROLE_")) {
             rol = rol.substring(5);
         }
@@ -167,7 +168,8 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String username = authentication.getName();
-        String rol = authentication.getAuthorities().iterator().next().getAuthority();
+        var authorities = authentication.getAuthorities();
+        String rol = authorities.isEmpty() ? "UNKNOWN" : authorities.iterator().next().getAuthority();
         if (rol.startsWith("ROLE_")) {
             rol = rol.substring(5);
         }
