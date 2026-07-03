@@ -61,6 +61,10 @@ public class CitaService {
             throw new BusinessRuleException("The assigned user does not have the VETERINARIAN role");
         }
 
+        if (!Boolean.TRUE.equals(veterinario.getEstado())) {
+            throw new BusinessRuleException("The selected veterinarian is not active");
+        }
+
         Servicio servicio = servicioRepositoryPort.findById(servicioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
         
