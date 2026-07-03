@@ -19,6 +19,7 @@ public record AtencionClinicaRequest(
 
         String treatment,
 
+        @NotNull(message = "Triage ID is required")
         Long triageId
 ) {
 }

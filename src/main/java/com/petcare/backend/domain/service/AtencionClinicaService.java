@@ -7,6 +7,7 @@ import com.petcare.backend.domain.model.Triaje;
 import com.petcare.backend.domain.model.Usuario;
 import com.petcare.backend.domain.port.AtencionClinicaRepositoryPort;
 import com.petcare.backend.domain.port.CitaRepositoryPort;
+import com.petcare.backend.domain.port.SalaEsperaRepositoryPort;
 import com.petcare.backend.domain.port.TriajeRepositoryPort;
 import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
@@ -26,15 +27,18 @@ public class AtencionClinicaService {
     private final CitaRepositoryPort citaRepositoryPort;
     private final UsuarioRepositoryPort usuarioRepositoryPort;
     private final TriajeRepositoryPort triajeRepositoryPort;
+    private final SalaEsperaRepositoryPort salaEsperaRepositoryPort;
 
     public AtencionClinicaService(AtencionClinicaRepositoryPort atencionClinicaRepositoryPort,
                                    CitaRepositoryPort citaRepositoryPort,
                                    UsuarioRepositoryPort usuarioRepositoryPort,
-                                   TriajeRepositoryPort triajeRepositoryPort) {
+                                   TriajeRepositoryPort triajeRepositoryPort,
+                                   SalaEsperaRepositoryPort salaEsperaRepositoryPort) {
         this.atencionClinicaRepositoryPort = atencionClinicaRepositoryPort;
         this.citaRepositoryPort = citaRepositoryPort;
         this.usuarioRepositoryPort = usuarioRepositoryPort;
         this.triajeRepositoryPort = triajeRepositoryPort;
+        this.salaEsperaRepositoryPort = salaEsperaRepositoryPort;
     }
 
     @Transactional
@@ -53,11 +57,8 @@ public class AtencionClinicaService {
 
         Mascota mascota = cita.getMascota();
 
-        Triaje triaje = null;
-        if (triajeId != null) {
-            triaje = triajeRepositoryPort.findById(triajeId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Triage not found"));
-        }
+        Triaje triaje = triajeRepositoryPort.findById(triajeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Triage not found"));
 
         AtencionClinica atencion = new AtencionClinica(
                 null, cita, mascota, veterinario, triaje,
@@ -65,7 +66,14 @@ public class AtencionClinicaService {
                 veterinario, Instant.now(), null, null
         );
 
-        return atencionClinicaRepositoryPort.save(atencion);
+        AtencionClinica saved = atencionClinicaRepositoryPort.save(atencion);
+
+        salaEsperaRepositoryPort.findByCitaId(citaId).ifPresent(sala -> {
+            sala.setEstado("ATENDIDO");
+            salaEsperaRepositoryPort.save(sala);
+        });
+
+        return saved;
     }
 
     @Transactional
