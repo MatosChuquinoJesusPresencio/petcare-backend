@@ -1,13 +1,11 @@
 # PetCare Backend
 
-![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=java)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?logo=spring)
+![Java 25](https://img.shields.io/badge/Java-25-ED8B00?logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F?logo=springboot)
 ![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?logo=apachemaven)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-API RESTful para la gestión de una clínica veterinaria. Desarrollada con Java 21 y Spring Boot 3.5.
-
-**Despliegue:** [https://petcare-backend-xxuc.onrender.com/](https://petcare-backend-xxuc.onrender.com/)
+API RESTful para la gestión de una clínica veterinaria. Desarrollada con Java 25 y Spring Boot 4.1.
 
 ## Características
 
@@ -23,13 +21,16 @@ API RESTful para la gestión de una clínica veterinaria. Desarrollada con Java 
 
 ## Tecnologías
 
-- **Java 21** + **Spring Boot 3.5.14**
-- **Spring MVC**, **Spring Data JPA**, **Spring Security**
-- **PostgreSQL** (producción) / **H2** (desarrollo)
-- **JWT** (jjwt) para autenticación
-- **MapStruct** para mapeo DTO ↔ Entidad
-- **Lombok**, **Spring Validation**, **SpringDoc OpenAPI 3**
-- **Docker**
+| Categoría | Tecnologías |
+|---|---|
+| **Lenguaje** | Java 25 |
+| **Framework** | Spring Boot 4.1, Spring MVC, Spring Data JPA, Spring Security, Spring Validation, Spring Cloud 2025.1 |
+| **Base de datos** | PostgreSQL (producción), H2 (desarrollo) |
+| **Autenticación** | JWT (jjwt 0.11.5) — access + refresh tokens en cookies httpOnly |
+| **Mapeo** | MapStruct 1.5.5 + MapStruct-Lombok binding 0.2.0 |
+| **Documentación** | SpringDoc OpenAPI 2.8.5 (Swagger UI) |
+| **Herramientas** | Lombok, Maven 3.9, Docker, Spring Boot DevTools |
+| **Arquitectura** | Hexagonal (puertos y adaptadores) |
 
 ## Arquitectura
 
@@ -46,27 +47,30 @@ config/       → Configuración (OpenAPI, etc.)
 
 ```
 src/main/java/com/petcare/
-├── web/              # Capa de entrada (controladores REST)
-│   ├── controller/   #   Endpoints de la API
-│   ├── dto/          #   Objetos de transferencia de datos
-│   └── security/     #   Filtros JWT, configuración de seguridad
-├── domain/           # Capa de negocio
-│   ├── model/        #   Modelos de dominio
-│   ├── port/         #   Puertos (interfaces de entrada/salida)
-│   └── service/      #   Implementación de servicios
-├── persistence/      # Capa de persistencia
-│   ├── entity/       #   Entidades JPA
-│   ├── adapter/      #   Adaptadores de repositorio
-│   └── repository/   #   Repositorios Spring Data JPA
-└── config/           # Configuración global
-    └── openapi/      #   Configuración de Swagger/OpenAPI
+├── web/                  # Capa de entrada (controladores REST)
+│   ├── controller/       #   Endpoints de la API
+│   ├── dto/              #   Objetos de transferencia de datos
+│   ├── security/         #   Filtros JWT, configuración de seguridad
+│   ├── exception/        #   Manejador global de excepciones (ProblemDetail)
+│   └── config/           #   Configuración web (CORS, OpenAPI)
+├── domain/               # Capa de negocio
+│   ├── model/            #   Modelos de dominio
+│   ├── port/             #   Puertos (interfaces de entrada/salida)
+│   ├── service/          #   Implementación de servicios
+│   └── exception/        #   Excepciones de negocio
+├── persistence/          # Capa de persistencia
+│   ├── entity/           #   Entidades JPA
+│   ├── mapper/           #   Mappers MapStruct (entity ↔ domain)
+│   ├── adapter/          #   Adaptadores de repositorio
+│   ├── repository/       #   Repositorios Spring Data JPA
+│   └── specification/    #   Especificaciones para consultas dinámicas
+└── config/               # Configuración global
+    └── openapi/          #   Configuración de Swagger/OpenAPI
 ```
 
 ```
 src/main/resources/
-├── application.yml         # Configuración principal
-├── application-dev.yml     # Perfil de desarrollo (H2)
-└── application-prod.yml    # Perfil de producción (PostgreSQL)
+└── application.properties   # Configuración principal (H2 por defecto)
 ```
 
 ## Requisitos
@@ -94,12 +98,19 @@ Sin `.env` se usa H2 en memoria (modo PostgreSQL) automáticamente.
 ## Ejecución
 
 ```bash
-# Con Maven wrapper
+# Con Maven wrapper (Linux/macOS)
 ./mvnw spring-boot:run
 
-# Build y ejecución
+# Con Maven wrapper (Windows)
+mvnw.cmd spring-boot:run
+
+# Build y ejecución (Linux/macOS)
 ./mvnw clean package -DskipTests
 java -jar target/backend-0.0.1-SNAPSHOT.jar
+
+# Build y ejecución (Windows)
+mvnw.cmd clean package -DskipTests
+java -jar target\backend-0.0.1-SNAPSHOT.jar
 
 # Con Docker
 docker build -t petcare-backend .
@@ -110,10 +121,34 @@ docker run -p 8080:8080 --env-file .env petcare-backend
 
 | Comando | Descripción |
 |---|---|
-| `./mvnw spring-boot:run` | Inicia el servidor en desarrollo |
-| `./mvnw clean package` | Empaqueta la aplicación en JAR |
-| `./mvnw test` | Ejecuta los tests |
-| `./mvnw clean package -DskipTests` | Empaqueta sin ejecutar tests |
+| `./mvnw` / `mvnw.cmd` `spring-boot:run` | Inicia el servidor en desarrollo |
+| `./mvnw` / `mvnw.cmd` `clean package` | Empaqueta la aplicación en JAR |
+| `./mvnw` / `mvnw.cmd` `test` | Ejecuta los tests |
+| `./mvnw` / `mvnw.cmd` `clean package -DskipTests` | Empaqueta sin ejecutar tests |
+| `mvnw.cmd clean compile` | Compila sin empaquetar (Windows) |
+
+## Seed Data
+
+El proyecto incluye datos de prueba en `db/seed.sql`. Para cargarlos en la base de datos H2 en memoria:
+
+1. Inicia la aplicación con `mvnw.cmd spring-boot:run`
+2. Abre la consola H2 en [`http://localhost:8080/h2-console`](http://localhost:8080/h2-console)
+3. Conéctate con los datos por defecto (URL: `jdbc:h2:mem:petcaredb`, usuario: `sa`, contraseña: vacío)
+4. Copia y pega el contenido de `db/seed.sql` y ejecútalo
+
+**Usuarios de prueba** (contraseña `password` para todos):
+
+| Email | Rol |
+|---|---|
+| `admin@petcare.com` | ADMINISTRADOR |
+| `carlos@petcare.com` | VETERINARIO |
+| `ana@petcare.com` | ASISTENTE |
+| `juan.perez@gmail.com` | DUENO |
+
+## Notas
+
+- **MapStruct** genera código fuente en `target/generated-sources/`. Si tu IDE muestra warnings en los mappers, marca `target/` como carpeta excluida (`File > Project Structure > Modules` en IntelliJ, o agrega `target/` en `Files > Settings > Editor > File Types > Ignore files and folders`).
+- **H2 Console** solo está disponible con la configuración por defecto (sin `SPRING_DATASOURCE_URL` personalizada).
 
 ## Documentación
 
