@@ -53,7 +53,9 @@ public class DuenoService {
             });
         }
 
-        dueno.setDni(duenoDetalles.getDni());
+        if (duenoDetalles.getDni() != null) {
+            dueno.setDni(duenoDetalles.getDni());
+        }
         dueno.setTelefono(duenoDetalles.getTelefono());
         dueno.setDireccion(duenoDetalles.getDireccion());
 

@@ -11,5 +11,4 @@ public interface MascotaResponsableRepositoryPort {
     Page<MascotaResponsable> findByDuenoId(Long duenoId, Pageable pageable);
     Optional<MascotaResponsable> findByMascotaIdAndDuenoId(Long mascotaId, Long duenoId);
     MascotaResponsable save(MascotaResponsable mascotaResponsable);
-    void deleteByMascotaIdAndDuenoId(Long mascotaId, Long duenoId);
 }

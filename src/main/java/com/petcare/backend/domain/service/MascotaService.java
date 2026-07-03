@@ -116,7 +116,7 @@ public class MascotaService {
     public void cambiarEstado(Long id) {
         Mascota mascota = mascotaRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
-        mascota.setEstado(!mascota.getEstado());
+        mascota.setEstado(!Boolean.TRUE.equals(mascota.getEstado()));
         mascotaRepositoryPort.save(mascota);
     }
 
