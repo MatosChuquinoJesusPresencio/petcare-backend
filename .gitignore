@@ -37,9 +37,3 @@ build/
 
 ### OpenCode ###
 AGENTS.md
-
-### Local H2 seed (not tracked) ###
-src/main/resources/data.sql
-
-### Supabase schema (local only, upload manually) ###
-db/supabase.sql
