@@ -72,12 +72,12 @@ public class DuenoService {
     }
 
     @Transactional
-    public void desactivarDueno(Long id) {
+    public void toggleActivoDueno(Long id) {
         Dueno dueno = duenoRepositoryPort.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
         Usuario usuario = dueno.getUsuario();
         if (usuario != null) {
-            usuario.setEstado(false);
+            usuario.setEstado(!usuario.getEstado());
             usuarioRepositoryPort.save(usuario);
         }
     }

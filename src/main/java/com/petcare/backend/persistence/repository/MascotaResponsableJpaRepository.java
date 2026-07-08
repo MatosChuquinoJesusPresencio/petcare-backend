@@ -3,12 +3,14 @@ package com.petcare.backend.persistence.repository;
 import com.petcare.backend.persistence.entity.MascotaResponsableEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface MascotaResponsableJpaRepository extends JpaRepository<MascotaResponsableEntity, Long> {
+    @EntityGraph(attributePaths = {"mascota", "dueno"})
     List<MascotaResponsableEntity> findByMascotaId(Long mascotaId);
 
     Page<MascotaResponsableEntity> findByDuenoId(Long duenoId, Pageable pageable);

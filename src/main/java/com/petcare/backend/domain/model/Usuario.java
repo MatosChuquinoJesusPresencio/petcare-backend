@@ -1,5 +1,16 @@
 package com.petcare.backend.domain.model;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Usuario {
     private Long id;
     private String contrasena;
@@ -9,28 +20,8 @@ public class Usuario {
     private String telefono;
     private String rol;
     private Boolean estado;
-
-    public Usuario() {}
-
-    public Usuario(
-        Long id,
-        String contrasena, 
-        String nombres, 
-        String apellidos, 
-        String email,
-        String telefono, 
-        String rol, 
-        Boolean estado
-    ) {
-        this.id = id;
-        this.contrasena = contrasena;
-        this.nombres = nombres;
-        this.apellidos = apellidos;
-        this.email = email;
-        this.telefono = telefono;
-        this.rol = rol;
-        this.estado = estado;
-    }
+    @Builder.Default
+    private Integer tokenVersion = 0;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -41,6 +32,7 @@ public class Usuario {
     public String getTelefono() { return telefono; }
     public String getRol() { return rol; }
     public Boolean getEstado() { return estado; }
+    public Integer getTokenVersion() { return tokenVersion; }
 
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
     public void setNombres(String nombres) { this.nombres = nombres; }
@@ -49,4 +41,5 @@ public class Usuario {
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public void setRol(String rol) { this.rol = rol; }
     public void setEstado(Boolean estado) { this.estado = estado; }
+    public void setTokenVersion(Integer tokenVersion) { this.tokenVersion = tokenVersion; }
 }

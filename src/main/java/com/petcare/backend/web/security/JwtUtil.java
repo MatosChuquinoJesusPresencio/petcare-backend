@@ -72,22 +72,28 @@ public class JwtUtil {
     }
 
     public ResponseCookie getCleanJwtCookie() {
-        return ResponseCookie.from("accessToken", "")
+        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
                 .path("/")
-                .maxAge(0)
-                .build();
+                .maxAge(0);
+        if (!cookieDomain.isBlank()) {
+            builder.domain(cookieDomain);
+        }
+        return builder.build();
     }
 
     public ResponseCookie getCleanRefreshTokenCookie() {
-        return ResponseCookie.from("refreshToken", "")
+        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
                 .path("/")
-                .maxAge(0)
-                .build();
+                .maxAge(0);
+        if (!cookieDomain.isBlank()) {
+            builder.domain(cookieDomain);
+        }
+        return builder.build();
     }
 }

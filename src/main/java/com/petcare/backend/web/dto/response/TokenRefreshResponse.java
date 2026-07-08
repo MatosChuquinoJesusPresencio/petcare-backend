@@ -1,11 +1,9 @@
 package com.petcare.backend.web.dto.response;
 
 public record TokenRefreshResponse(
-        String accessToken,
-        String refreshToken,
-        String tokenType
+        String accessToken
 ) {
-    public TokenRefreshResponse(String accessToken, String refreshToken) {
-        this(accessToken, refreshToken, "Bearer");
+    public TokenRefreshResponse(String accessToken) {
+        this.accessToken = accessToken;
     }
 }

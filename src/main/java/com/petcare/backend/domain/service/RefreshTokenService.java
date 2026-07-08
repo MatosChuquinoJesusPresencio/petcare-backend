@@ -29,9 +29,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public RefreshToken createRefreshToken(Long userId) {
-        refreshTokenRepositoryPort.deleteByUsuarioId(userId);
-
+    public synchronized RefreshToken createRefreshToken(Long userId) {
         RefreshToken refreshToken = new RefreshToken(
                 null,
                 usuarioRepositoryPort.findById(userId)
@@ -47,16 +45,26 @@ public class RefreshTokenService {
         return refreshTokenRepositoryPort.findByToken(token);
     }
 
-    public RefreshToken verifyExpiration(RefreshToken token) {
+    public synchronized RefreshToken verifyExpirationAndDelete(RefreshToken token) {
         if (token.getFechaExpiracion().isBefore(Instant.now())) {
-            refreshTokenRepositoryPort.deleteByUsuarioId(token.getUsuario().getId());
+            refreshTokenRepositoryPort.deleteByToken(token.getToken());
             throw new BusinessRuleException("Refresh token has expired. Please log in again.");
         }
+        refreshTokenRepositoryPort.deleteByToken(token.getToken());
         return token;
     }
 
     @Transactional
     public void deleteByUserId(Long userId) {
         refreshTokenRepositoryPort.deleteByUsuarioId(userId);
+    }
+
+    @Transactional
+    public synchronized void deleteByToken(String token) {
+        refreshTokenRepositoryPort.deleteByToken(token);
+    }
+
+    public void deleteAllExpiredBefore(Instant instant) {
+        refreshTokenRepositoryPort.deleteAllExpiredBefore(instant);
     }
 }

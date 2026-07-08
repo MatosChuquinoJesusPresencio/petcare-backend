@@ -8,6 +8,7 @@ import com.petcare.backend.persistence.repository.RefreshTokenJpaRepository;
 import com.petcare.backend.persistence.repository.UsuarioJpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Component
@@ -43,5 +44,15 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepositoryPort
     @Override
     public void deleteByUsuarioId(Long usuarioId) {
         refreshTokenJpaRepository.deleteByUsuarioId(usuarioId);
+    }
+
+    @Override
+    public void deleteByToken(String token) {
+        refreshTokenJpaRepository.deleteByToken(token);
+    }
+
+    @Override
+    public void deleteAllExpiredBefore(Instant instant) {
+        refreshTokenJpaRepository.deleteAllExpiredBefore(instant);
     }
 }

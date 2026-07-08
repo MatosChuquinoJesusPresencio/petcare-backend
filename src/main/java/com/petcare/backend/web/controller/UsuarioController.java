@@ -59,10 +59,14 @@ public class UsuarioController {
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioResponse> crearUsuario(@Valid @RequestBody RegisterRequest request) {
-        com.petcare.backend.domain.model.Usuario usuario = new com.petcare.backend.domain.model.Usuario(
-                null, request.password(), request.firstName(), request.lastName(),
-                request.email(), request.phone(), request.role().toUpperCase(), null
-        );
+        com.petcare.backend.domain.model.Usuario usuario = com.petcare.backend.domain.model.Usuario.builder()
+                .contrasena(request.password())
+                .nombres(request.firstName())
+                .apellidos(request.lastName())
+                .email(request.email())
+                .telefono(request.phone())
+                .rol(request.role().toUpperCase())
+                .build();
         var creado = usuarioService.registrarUsuario(usuario);
         return new ResponseEntity<>(new UsuarioResponse(creado.getId(), creado.getNombres(),
                 creado.getApellidos(), creado.getEmail(), creado.getTelefono(),

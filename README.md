@@ -7,18 +7,19 @@
 
 API RESTful para la gestión de una clínica veterinaria. Desarrollada con Java 25 y Spring Boot 4.1.
 
-**Despliegue:** [https://petcare-backend-production-5445.up.railway.app/](https://petcare-backend-production-5445.up.railway.app/)
-
 ## Características
 
-- Autenticación y autorización con JWT (access + refresh tokens)
+- Autenticación y autorización con JWT (access + refresh tokens en cookies httpOnly)
+- **Multi-dispositivo**: cada sesión genera su propio refresh token independiente
+- **Refresh token rotation**: el token se renueva en cada uso, el anterior se invalida
+- **JWT invalidation por tokenVersion**: al cambiar contraseña o cerrar sesión, se incrementa el `tokenVersion` y los JWTs anteriores se rechazan
 - Gestión de usuarios con roles (ADMINISTRADOR, VETERINARIO, ASISTENTE, DUENO)
 - CRUD completo de clientes (dueños) y contactos de emergencia
 - CRUD completo de mascotas con vinculación a dueños
 - Gestión de citas con reprogramación y control de disponibilidad horaria
 - CRUD de servicios veterinarios con costo referencial
 - Documentación interactiva con Swagger UI / OpenAPI 3
-- Base de datos PostgreSQL en producción / H2 en desarrollo
+- Base de datos PostgreSQL en producción (Supabase) / H2 en desarrollo
 - Arquitectura hexagonal para separación de responsabilidades
 
 ## Tecnologías
@@ -27,10 +28,10 @@ API RESTful para la gestión de una clínica veterinaria. Desarrollada con Java 
 |---|---|
 | **Lenguaje** | Java 25 |
 | **Framework** | Spring Boot 4.1, Spring MVC, Spring Data JPA, Spring Security, Spring Validation, Spring Cloud 2025.1 |
-| **Base de datos** | PostgreSQL (producción), H2 (desarrollo) |
-| **Autenticación** | JWT (jjwt 0.11.5) — access + refresh tokens en cookies httpOnly |
-| **Mapeo** | MapStruct 1.5.5 + MapStruct-Lombok binding 0.2.0 |
-| **Documentación** | SpringDoc OpenAPI 2.8.5 (Swagger UI) |
+| **Base de datos** | PostgreSQL (producción / Supabase), H2 (desarrollo) |
+| **Autenticación** | JWT (jjwt 0.11.5) — access + refresh tokens en cookies httpOnly, refresh rotation, tokenVersion |
+| **Mapeo** | MapStruct 1.6.3 + MapStruct-Lombok binding 0.2.0 |
+| **Documentación** | SpringDoc OpenAPI 2.8.5 (Swagger UI en `/docs` y `/swagger-ui.html`) |
 | **Herramientas** | Lombok, Maven 3.9, Docker, Spring Boot DevTools |
 | **Arquitectura** | Hexagonal (puertos y adaptadores) |
 
@@ -72,30 +73,32 @@ src/main/java/com/petcare/
 
 ```
 src/main/resources/
-└── application.properties   # Configuración principal (H2 por defecto)
+├── application.properties           # Configuración principal (H2 por defecto)
+└── application-prod.properties      # Perfil producción (PostgreSQL/Supabase)
 ```
 
 ## Requisitos
 
-- Java 21 (JDK)
+- Java 25 (JDK)
 - Maven 3.9+ (o usar `mvnw`)
 - Docker (opcional)
 
 ## Configuración
 
-Crear archivo `.env` en la raíz:
+Crear archivo `.env` en `petcare-backend/` (opcional, solo para PostgreSQL local):
 
 ```env
 SPRING_DATASOURCE_URL=jdbc:postgresql://<host>:5432/<db>
 SPRING_DATASOURCE_USERNAME=usuario
 SPRING_DATASOURCE_PASSWORD=contraseña
+SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
 JWT_SECRET=clave-secreta-jwt
 JWT_EXPIRATION=900000
 JWT_REFRESH_EXPIRATION_MS=604800000
-APP_CORS_ALLOWED_ORIGINS=http://localhost:3000
+APP_CORS_ALLOWED_ORIGINS=http://localhost:5173
 ```
 
-Sin `.env` se usa H2 en memoria (modo PostgreSQL) automáticamente.
+Sin `.env` se usa H2 en memoria (modo PostgreSQL) automáticamente — funciona al clonar sin configuración adicional.
 
 ## Ejecución
 
@@ -116,14 +119,14 @@ java -jar target\backend-0.0.1-SNAPSHOT.jar
 
 # Con Docker
 docker build -t petcare-backend .
-docker run -p 8080:8080 --env-file .env petcare-backend
+docker run -p 8080:8080 --env-file ../.env petcare-backend
 ```
 
 ## Scripts disponibles
 
 | Comando | Descripción |
 |---|---|
-| `./mvnw` / `mvnw.cmd` `spring-boot:run` | Inicia el servidor en desarrollo |
+| `./mvnw` / `mvnw.cmd` `spring-boot:run` | Inicia el servidor en desarrollo (perfil `dev`) |
 | `./mvnw` / `mvnw.cmd` `clean package` | Empaqueta la aplicación en JAR |
 | `./mvnw` / `mvnw.cmd` `test` | Ejecuta los tests |
 | `./mvnw` / `mvnw.cmd` `clean package -DskipTests` | Empaqueta sin ejecutar tests |
@@ -131,12 +134,9 @@ docker run -p 8080:8080 --env-file .env petcare-backend
 
 ## Seed Data
 
-El proyecto incluye datos de prueba en `db/seed.sql`. Para cargarlos en la base de datos H2 en memoria:
+### Desarrollo (H2)
 
-1. Inicia la aplicación con `mvnw.cmd spring-boot:run`
-2. Abre la consola H2 en [`http://localhost:8080/h2-console`](http://localhost:8080/h2-console)
-3. Conéctate con los datos por defecto (URL: `jdbc:h2:mem:petcaredb`, usuario: `sa`, contraseña: vacío)
-4. Copia y pega el contenido de `db/seed.sql` y ejecútalo
+El archivo `src/main/resources/data.sql` se ejecuta automáticamente al iniciar la aplicación con el perfil `dev` (por defecto). Contiene datos de prueba para H2 (modo PostgreSQL).
 
 **Usuarios de prueba** (contraseña `password` para todos):
 
@@ -146,14 +146,55 @@ El proyecto incluye datos de prueba en `db/seed.sql`. Para cargarlos en la base 
 | `carlos@petcare.com` | VETERINARIO |
 | `ana@petcare.com` | ASISTENTE |
 | `juan.perez@gmail.com` | DUENO |
+| `maria.lopez@gmail.com` | DUENO |
+| `roberto.garcia@gmail.com` | DUENO |
+| `lucia@petcare.com` | VETERINARIO |
+| `pedro@petcare.com` | ASISTENTE |
+
+### Producción (PostgreSQL / Supabase)
+
+Ejecutar `db/supabase.sql` una vez en el SQL Editor de Supabase. Contiene el esquema completo (CREATE TABLE) y los mismos datos de prueba.
+
+```bash
+# Abrir Supabase Dashboard → SQL Editor → pegar db/supabase.sql → ejecutar
+```
+
+## Perfiles
+
+| Perfil | Base de datos | Seed | H2 Console | Uso |
+|---|---|---|---|---|
+| `dev` (default) | H2 en memoria | `data.sql` automático | Disponible | Desarrollo local |
+| `prod` | PostgreSQL (env vars) | Manual (`supabase.sql`) | Deshabilitado | Render / Supabase |
+
+Para usar el perfil `prod` localmente:
+```bash
+set SPRING_PROFILES_ACTIVE=prod
+mvnw.cmd spring-boot:run
+```
 
 ## Notas
 
-- **MapStruct** genera código fuente en `target/generated-sources/`. Si tu IDE muestra warnings en los mappers, marca `target/` como carpeta excluida (`File > Project Structure > Modules` en IntelliJ, o agrega `target/` en `Files > Settings > Editor > File Types > Ignore files and folders`).
-- **H2 Console** solo está disponible con la configuración por defecto (sin `SPRING_DATASOURCE_URL` personalizada).
+- **MapStruct** genera código fuente en `target/generated-sources/`. Si tu IDE muestra warnings en los mappers, marca `target/` como carpeta excluida.
+- **H2 Console** solo está disponible en el perfil `dev` (`http://localhost:8080/h2-console`).
+- **Swagger UI** disponible en `/docs` y `/swagger-ui.html` (esta última redirige).
+- **Token invalidation**: después de cambios en auth, los usuarios deben limpiar cookies del navegador o usar incógnito, porque los JWTs viejos no contienen el claim `tokenVersion`.
+
+## Despliegue
+
+### Render
+
+1. Crear Web Service → seleccionar "Docker"
+2. Conectar repositorio
+3. Agregar variables de entorno en Dashboard:
+   - `SPRING_PROFILES_ACTIVE=prod`
+   - `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`
+   - `SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver`
+   - `JWT_SECRET`, `JWT_EXPIRATION`, `JWT_REFRESH_EXPIRATION_MS`
+   - `APP_CORS_ALLOWED_ORIGINS=https://<frontend>.vercel.app`
+4. Render usa el `Dockerfile` para build + deploy automático
 
 ## Documentación
 
-- Swagger UI: [`https://petcare-backend-production-5445.up.railway.app/swagger-ui.html`](https://petcare-backend-production-5445.up.railway.app/swagger-ui.html)
-- OpenAPI JSON: [`https://petcare-backend-production-5445.up.railway.app/v3/api-docs`](https://petcare-backend-production-5445.up.railway.app/v3/api-docs)
-- H2 Console: [`http://localhost:8080/h2-console`](http://localhost:8080/h2-console) (solo en desarrollo)
+- Swagger UI: [`/docs`](http://localhost:8080/docs) o [`/swagger-ui.html`](http://localhost:8080/swagger-ui.html) (desarrollo)
+- OpenAPI JSON: [`/v3/api-docs`](http://localhost:8080/v3/api-docs)
+- H2 Console: [`/h2-console`](http://localhost:8080/h2-console) (solo perfil `dev`; JDBC URL: `jdbc:h2:mem:petcaredb`, User: `sa`, password: vacío)

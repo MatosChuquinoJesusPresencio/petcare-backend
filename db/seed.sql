@@ -28,15 +28,15 @@ SET REFERENTIAL_INTEGRITY TRUE;
 -- Admin(1), Carlos(2 vet), Ana(3 asis), Juan(4 dueno), Maria(5 dueno),
 -- Roberto(6 dueno), Lucia(7 vet), Pedro(8 asis)
 -- ============================================================
-INSERT INTO usuarios (id, contrasena, nombres, apellidos, email, telefono, rol, estado) VALUES
-(1, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Admin',    'PetCare',   'admin@petcare.com',      '999999001', 'ADMINISTRADOR', true),
-(2, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Carlos',   'Mendoza',   'carlos@petcare.com',     '999999002', 'VETERINARIO',   true),
-(3, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Ana',      'Gomez',     'ana@petcare.com',        '999999003', 'ASISTENTE',     true),
-(4, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Juan',     'Perez',     'juan.perez@gmail.com',   '999999004', 'DUENO',         true),
-(5, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Maria',    'Lopez',     'maria.lopez@gmail.com',  '999999005', 'DUENO',         true),
-(6, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Roberto',  'Garcia',    'roberto.garcia@gmail.com','999999006','DUENO',         true),
-(7, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Lucia',    'Fernandez', 'lucia@petcare.com',      '999999007', 'VETERINARIO',   true),
-(8, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Pedro',    'Ruiz',      'pedro@petcare.com',      '999999008', 'ASISTENTE',     true);
+INSERT INTO usuarios (id, contrasena, nombres, apellidos, email, telefono, rol, estado, token_version) VALUES
+(1, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Admin',    'PetCare',   'admin@petcare.com',      '999999001', 'ADMINISTRADOR', true, 0),
+(2, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Carlos',   'Mendoza',   'carlos@petcare.com',     '999999002', 'VETERINARIO',   true, 0),
+(3, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Ana',      'Gomez',     'ana@petcare.com',        '999999003', 'ASISTENTE',     true, 0),
+(4, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Juan',     'Perez',     'juan.perez@gmail.com',   '999999004', 'DUENO',         true, 0),
+(5, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Maria',    'Lopez',     'maria.lopez@gmail.com',  '999999005', 'DUENO',         true, 0),
+(6, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Roberto',  'Garcia',    'roberto.garcia@gmail.com','999999006','DUENO',         true, 0),
+(7, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Lucia',    'Fernandez', 'lucia@petcare.com',      '999999007', 'VETERINARIO',   true, 0),
+(8, '$2a$10$OdbZaFPcyPOZRDZnRiXS.OiluMKtpBEXWMMTz17ODp4ITqIfpTR7G', 'Pedro',    'Ruiz',      'pedro@petcare.com',      '999999008', 'ASISTENTE',     true, 0);
 
 -- ============================================================
 -- 2. DUENOS (3)

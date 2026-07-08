@@ -6,6 +6,7 @@ import com.petcare.backend.domain.service.RefreshTokenService;
 import com.petcare.backend.domain.service.UsuarioService;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.TokenRefreshException;
+import com.petcare.backend.domain.service.UsuarioService;
 import com.petcare.backend.web.dto.response.AuthResponse;
 import com.petcare.backend.web.dto.response.TokenRefreshResponse;
 import com.petcare.backend.web.dto.request.LoginRequest;
@@ -51,6 +52,10 @@ public class AuthController {
         Usuario usuarioDB = usuarioService.obtenerPorEmail(request.email())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        usuarioService.incrementarTokenVersion(usuarioDB.getId());
+        usuarioDB = usuarioService.obtenerPorEmail(request.email())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         String jwt = jwtUtil.generateToken(usuarioDB);
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuarioDB.getId());
@@ -66,15 +71,20 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(new AuthResponse(usuarioDB.getId(), jwt, refreshToken.getToken(), request.email(), rol));
+                .body(new AuthResponse(usuarioDB.getId(), request.email(), rol));
     }
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        Usuario usuario = new Usuario(
-                null, request.password(), request.firstName(), request.lastName(),
-                request.email(), request.phone(), request.role().toUpperCase(), null
-        );
+        Usuario usuario = Usuario.builder()
+                .contrasena(request.password())
+                .nombres(request.firstName())
+                .apellidos(request.lastName())
+                .email(request.email())
+                .telefono(request.phone())
+                .rol(request.role().toUpperCase())
+                .tokenVersion(0)
+                .build();
 
         Usuario registrado = usuarioService.registrarUsuario(usuario);
 
@@ -89,8 +99,7 @@ public class AuthController {
         headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         String rol = registrado.getRol();
-        return new ResponseEntity<>(new AuthResponse(registrado.getId(), jwt,
-                refreshToken.getToken(), registrado.getEmail(), rol), headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(new AuthResponse(registrado.getId(), registrado.getEmail(), rol), headers, HttpStatus.CREATED);
     }
 
     @PostMapping("/refresh")
@@ -111,21 +120,23 @@ public class AuthController {
         String finalRefreshToken = requestRefreshToken;
 
         return refreshTokenService.findByToken(finalRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
                 .map(token -> {
+                    refreshTokenService.verifyExpirationAndDelete(token);
                     Usuario usuario = token.getUsuario();
                     if (usuario == null) {
                         throw new TokenRefreshException("User not found for refresh token");
                     }
-                    return usuario;
-                })
-                .map(usuario -> {
-                    String token = jwtUtil.generateToken(usuario);
-                    ResponseCookie jwtCookie = jwtUtil.generateJwtCookie(token);
+
+                    RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(usuario.getId());
+
+                    String jwt = jwtUtil.generateToken(usuario);
+                    ResponseCookie jwtCookie = jwtUtil.generateJwtCookie(jwt);
+                    ResponseCookie newRefreshCookie = jwtUtil.generateRefreshTokenCookie(newRefreshToken.getToken());
 
                     return ResponseEntity.ok()
                             .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                            .body(new TokenRefreshResponse(token, finalRefreshToken));
+                            .header(HttpHeaders.SET_COOKIE, newRefreshCookie.toString())
+                            .body(new TokenRefreshResponse(jwt));
                 })
                 .orElseThrow(() -> new TokenRefreshException("Refresh token is not in database or is invalid."));
     }
@@ -134,12 +145,9 @@ public class AuthController {
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         String requestRefreshToken = jwtUtil.getRefreshTokenFromCookies(request);
         if (requestRefreshToken != null) {
-        refreshTokenService.findByToken(requestRefreshToken)
-                .ifPresent(token -> {
-                    if (token.getUsuario() != null) {
-                        refreshTokenService.deleteByUserId(token.getUsuario().getId());
-                    }
-                });
+            refreshTokenService.findByToken(requestRefreshToken).ifPresent(token -> {
+                refreshTokenService.deleteByToken(token.getToken());
+            });
         }
 
         ResponseCookie cleanJwtCookie = jwtUtil.getCleanJwtCookie();
@@ -168,6 +176,6 @@ public class AuthController {
         Usuario usuario = usuarioService.obtenerPorEmail(username)
                 .orElse(null);
         Long id = usuario != null ? usuario.getId() : null;
-        return ResponseEntity.ok(new AuthResponse(id, null, null, username, rol));
+        return ResponseEntity.ok(new AuthResponse(id, username, rol));
     }
 }

@@ -62,8 +62,14 @@ public class DuenoController {
                     .orElseThrow(() -> new ResourceNotFoundException("Associated user not found"));
         } else if (request.firstName() != null && request.lastName() != null
                 && request.email() != null && request.password() != null) {
-            Usuario newUser = new Usuario(null, request.password(), request.firstName(),
-                    request.lastName(), request.email(), request.phone(), "DUENO", null);
+            Usuario newUser = Usuario.builder()
+                    .contrasena(request.password())
+                    .nombres(request.firstName())
+                    .apellidos(request.lastName())
+                    .email(request.email())
+                    .telefono(request.phone())
+                    .rol("DUENO")
+                    .build();
             usuario = usuarioService.registrarUsuario(newUser);
         }
 
@@ -97,7 +103,7 @@ public class DuenoController {
     @PatchMapping("/{id}/toggle")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<Void> cambiarActivo(@PathVariable Long id) {
-        duenoService.desactivarDueno(id);
+        duenoService.toggleActivoDueno(id);
         return ResponseEntity.noContent().build();
     }
 
