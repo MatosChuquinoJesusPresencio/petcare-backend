@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MascotaResponsableJpaRepository extends JpaRepository<MascotaResponsableEntity, Long> {
-    @EntityGraph(attributePaths = {"mascota", "dueno"})
+    @EntityGraph(attributePaths = {"mascota", "dueno", "dueno.usuario"})
     List<MascotaResponsableEntity> findByMascotaId(Long mascotaId);
 
     Page<MascotaResponsableEntity> findByDuenoId(Long duenoId, Pageable pageable);
