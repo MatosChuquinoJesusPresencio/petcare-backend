@@ -9,4 +9,5 @@ public interface DisponibilidadVeterinarioRepositoryPort {
     List<DisponibilidadVeterinario> findByVeterinarioIdAndDiaSemana(Long veterinarioId, Integer diaSemana);
     Optional<DisponibilidadVeterinario> findById(Long id);
     DisponibilidadVeterinario save(DisponibilidadVeterinario disponibilidad);
+    void deleteById(Long id);
 }

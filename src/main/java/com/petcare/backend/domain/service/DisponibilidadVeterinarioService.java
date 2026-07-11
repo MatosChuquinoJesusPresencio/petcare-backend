@@ -52,9 +52,17 @@ public class DisponibilidadVeterinarioService {
     }
 
     @Transactional
-    public void eliminar(Long id) {
+    public DisponibilidadVeterinario toggleActivo(Long id) {
         DisponibilidadVeterinario existente = obtenerPorId(id);
-        existente.setActivo(false);
-        disponibilidadRepositoryPort.save(existente);
+        existente.setActivo(!Boolean.TRUE.equals(existente.getActivo()));
+        return disponibilidadRepositoryPort.save(existente);
+    }
+
+    @Transactional
+    public void eliminar(Long id) {
+        if (!disponibilidadRepositoryPort.findById(id).isPresent()) {
+            throw new ResourceNotFoundException("Availability schedule not found");
+        }
+        disponibilidadRepositoryPort.deleteById(id);
     }
 }

@@ -66,6 +66,12 @@ public class DisponibilidadVeterinarioController {
         return ResponseEntity.ok(toResponse(disponibilidadService.actualizar(id, detalles)));
     }
 
+    @PatchMapping("/{id}/toggle")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
+    public ResponseEntity<DisponibilidadVeterinarioResponse> toggleActivo(@PathVariable Long id) {
+        return ResponseEntity.ok(toResponse(disponibilidadService.toggleActivo(id)));
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {

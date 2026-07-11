@@ -52,4 +52,9 @@ public class DisponibilidadVeterinarioRepositoryAdapter implements Disponibilida
         DisponibilidadVeterinarioEntity saved = disponibilidadVeterinarioJpaRepository.save(entity);
         return disponibilidadVeterinarioMapper.toDomain(saved);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        disponibilidadVeterinarioJpaRepository.deleteById(id);
+    }
 }
