@@ -144,9 +144,7 @@ public class AuthController {
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         String requestRefreshToken = jwtUtil.getRefreshTokenFromCookies(request);
         if (requestRefreshToken != null) {
-            refreshTokenService.findByToken(requestRefreshToken).ifPresent(token -> {
-                refreshTokenService.deleteByToken(token.getToken());
-            });
+            refreshTokenService.deleteByToken(requestRefreshToken);
         }
 
         ResponseCookie cleanJwtCookie = jwtUtil.getCleanJwtCookie();
