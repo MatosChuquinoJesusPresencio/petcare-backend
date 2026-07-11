@@ -3,6 +3,7 @@ package com.petcare.backend.persistence.repository;
 import com.petcare.backend.persistence.entity.CitaEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -15,5 +16,6 @@ public interface CitaJpaRepository extends JpaRepository<CitaEntity, Long>, JpaS
 
     Page<CitaEntity> findByVeterinarioId(Long veterinarioId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"mascota", "veterinario", "servicio", "creadoPor", "actualizadoPor"})
     List<CitaEntity> findByVeterinarioIdAndFechaHoraBetween(Long veterinarioId, Instant start, Instant end);
 }
