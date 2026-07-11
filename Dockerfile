@@ -8,6 +8,7 @@ RUN mvn clean package -DskipTests -B
 
 # Runtime stage
 FROM eclipse-temurin:25-jre-alpine AS runtime
+RUN apk add --no-cache ca-certificates tzdata
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
