@@ -40,3 +40,4 @@ AGENTS.md
 
 ### Supabase schema (local only, upload manually) ###
 db/supabase.sql
+db/seed-supabase.sql
