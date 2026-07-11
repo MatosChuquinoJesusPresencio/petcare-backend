@@ -21,6 +21,8 @@ API RESTful para la gestión de una clínica veterinaria. Desarrollada con Java 
 - Documentación interactiva con Swagger UI / OpenAPI 3
 - Base de datos PostgreSQL en producción (Supabase) / H2 en desarrollo
 - Arquitectura hexagonal para separación de responsabilidades
+- **Todos los mensajes de error al español** (validación, reglas de negocio, recursos no encontrados)
+- **Validación de DNI** (exactamente 8 dígitos) y **teléfono** (exactamente 9 dígitos) en DTOs
 
 ## Tecnologías
 
@@ -174,6 +176,9 @@ mvnw.cmd spring-boot:run
 
 ## Notas
 
+- **Mensajes de error en español**: todos los mensajes de validación, reglas de negocio y excepciones están en español.
+- **Validación de DNI**: exactamente 8 dígitos (frontend y backend).
+- **Validación de teléfono**: exactamente 9 dígitos (frontend y backend).
 - **MapStruct** genera código fuente en `target/generated-sources/`. Si tu IDE muestra warnings en los mappers, marca `target/` como carpeta excluida.
 - **H2 Console** solo está disponible en el perfil `dev` (`http://localhost:8080/h2-console`).
 - **Swagger UI** disponible en `/docs` y `/swagger-ui.html` (esta última redirige).
