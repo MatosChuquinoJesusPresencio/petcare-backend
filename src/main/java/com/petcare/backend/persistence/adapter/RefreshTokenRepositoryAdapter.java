@@ -52,6 +52,11 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepositoryPort
     }
 
     @Override
+    public void deleteExpiredByUsuarioId(Long usuarioId, Instant instant) {
+        refreshTokenJpaRepository.deleteExpiredByUsuarioId(usuarioId, instant);
+    }
+
+    @Override
     public void deleteAllExpiredBefore(Instant instant) {
         refreshTokenJpaRepository.deleteAllExpiredBefore(instant);
     }

@@ -4,9 +4,9 @@ import com.petcare.backend.domain.model.RefreshToken;
 import com.petcare.backend.domain.model.Usuario;
 import com.petcare.backend.domain.service.RefreshTokenService;
 import com.petcare.backend.domain.service.UsuarioService;
+import com.petcare.backend.domain.exception.BusinessRuleException;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.TokenRefreshException;
-import com.petcare.backend.domain.service.UsuarioService;
 import com.petcare.backend.web.dto.response.AuthResponse;
 import com.petcare.backend.web.dto.response.TokenRefreshResponse;
 import com.petcare.backend.web.dto.request.LoginRequest;
@@ -51,9 +51,6 @@ public class AuthController {
 
         Usuario usuarioDB = usuarioService.obtenerPorEmail(request.email())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-
-        usuarioService.incrementarTokenVersion(usuarioDB.getId());
-        usuarioDB.setTokenVersion(usuarioDB.getTokenVersion() == null ? 1 : usuarioDB.getTokenVersion() + 1);
 
         String jwt = jwtUtil.generateToken(usuarioDB);
 
@@ -120,15 +117,21 @@ public class AuthController {
 
         return refreshTokenService.findByToken(finalRefreshToken)
                 .map(token -> {
-                    refreshTokenService.verifyExpirationAndDelete(token);
+                    if (token.getFechaExpiracion().isBefore(java.time.Instant.now())) {
+                        refreshTokenService.deleteByToken(token.getToken());
+                        throw new BusinessRuleException("El token de actualización ha expirado. Por favor, inicie sesión de nuevo.");
+                    }
+
                     Usuario usuario = token.getUsuario();
                     if (usuario == null) {
                         throw new TokenRefreshException("Usuario no encontrado para el token de actualización");
                     }
 
                     RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(usuario.getId());
-
                     String jwt = jwtUtil.generateToken(usuario);
+
+                    refreshTokenService.deleteByToken(token.getToken());
+
                     ResponseCookie jwtCookie = jwtUtil.generateJwtCookie(jwt);
                     ResponseCookie newRefreshCookie = jwtUtil.generateRefreshTokenCookie(newRefreshToken.getToken());
 

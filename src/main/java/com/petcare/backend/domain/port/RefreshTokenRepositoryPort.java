@@ -10,5 +10,6 @@ public interface RefreshTokenRepositoryPort {
     RefreshToken save(RefreshToken refreshToken);
     void deleteByUsuarioId(Long usuarioId);
     void deleteByToken(String token);
+    void deleteExpiredByUsuarioId(Long usuarioId, Instant instant);
     void deleteAllExpiredBefore(Instant instant);
 }
