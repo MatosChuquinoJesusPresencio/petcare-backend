@@ -48,7 +48,17 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     }
 
     @Override
+    public Page<Usuario> findByRolAndEstado(String rol, Boolean estado, Pageable pageable) {
+        return usuarioJpaRepository.findByRolAndEstado(rol, estado, pageable).map(usuarioMapper::toDomain);
+    }
+
+    @Override
     public List<Usuario> findByRol(String rol) {
         return usuarioJpaRepository.findByRol(rol).stream().map(usuarioMapper::toDomain).toList();
+    }
+
+    @Override
+    public Page<Usuario> findByRol(String rol, Pageable pageable) {
+        return usuarioJpaRepository.findByRol(rol, pageable).map(usuarioMapper::toDomain);
     }
 }

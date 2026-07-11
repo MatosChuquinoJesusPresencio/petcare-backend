@@ -4,12 +4,14 @@ import com.petcare.backend.domain.service.UsuarioService;
 import com.petcare.backend.web.dto.request.RegisterRequest;
 import com.petcare.backend.web.dto.response.UsuarioResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,22 +26,20 @@ public class UsuarioController {
 
     @GetMapping("/veterinarios")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
-    public ResponseEntity<List<UsuarioResponse>> listarVeterinariosActivos() {
-        var usuarios = usuarioService.listarVeterinariosActivos().stream()
+    public ResponseEntity<Page<UsuarioResponse>> listarVeterinariosActivos(
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(usuarioService.listarVeterinariosActivos(pageable)
                 .map(u -> new UsuarioResponse(u.getId(), u.getNombres(), u.getApellidos(),
-                        u.getEmail(), u.getTelefono(), u.getRol(), u.getEstado()))
-                .toList();
-        return ResponseEntity.ok(usuarios);
+                        u.getEmail(), u.getTelefono(), u.getRol(), u.getEstado())));
     }
 
     @GetMapping("/veterinarios/todos")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
-    public ResponseEntity<List<UsuarioResponse>> listarTodosVeterinarios() {
-        var usuarios = usuarioService.listarVeterinarios().stream()
+    public ResponseEntity<Page<UsuarioResponse>> listarTodosVeterinarios(
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(usuarioService.listarVeterinarios(pageable)
                 .map(u -> new UsuarioResponse(u.getId(), u.getNombres(), u.getApellidos(),
-                        u.getEmail(), u.getTelefono(), u.getRol(), u.getEstado()))
-                .toList();
-        return ResponseEntity.ok(usuarios);
+                        u.getEmail(), u.getTelefono(), u.getRol(), u.getEstado())));
     }
 
     @PatchMapping("/{id}/estado")

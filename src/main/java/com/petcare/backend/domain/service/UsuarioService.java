@@ -60,8 +60,16 @@ public class UsuarioService {
         return usuarioRepositoryPort.findByRolAndEstado("VETERINARIO", true);
     }
 
+    public Page<Usuario> listarVeterinariosActivos(Pageable pageable) {
+        return usuarioRepositoryPort.findByRolAndEstado("VETERINARIO", true, pageable);
+    }
+
     public List<Usuario> listarVeterinarios() {
         return usuarioRepositoryPort.findByRol("VETERINARIO");
+    }
+
+    public Page<Usuario> listarVeterinarios(Pageable pageable) {
+        return usuarioRepositoryPort.findByRol("VETERINARIO", pageable);
     }
 
     @Transactional

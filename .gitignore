@@ -37,3 +37,6 @@ build/
 
 ### OpenCode ###
 AGENTS.md
+
+### Supabase schema (local only, upload manually) ###
+db/supabase.sql

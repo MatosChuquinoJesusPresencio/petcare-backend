@@ -53,8 +53,6 @@ public class AuthController {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         usuarioService.incrementarTokenVersion(usuarioDB.getId());
-        usuarioDB = usuarioService.obtenerPorEmail(request.email())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         String jwt = jwtUtil.generateToken(usuarioDB);
 

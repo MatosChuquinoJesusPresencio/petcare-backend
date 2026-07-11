@@ -7,9 +7,10 @@ import com.petcare.backend.persistence.mapper.SalaEsperaMapper;
 import com.petcare.backend.persistence.repository.CitaJpaRepository;
 import com.petcare.backend.persistence.repository.MascotaJpaRepository;
 import com.petcare.backend.persistence.repository.SalaEsperaJpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -54,15 +55,15 @@ public class SalaEsperaRepositoryAdapter implements SalaEsperaRepositoryPort {
     }
 
     @Override
-    public List<SalaEspera> findAllByOrderByFechaLlegadaAsc() {
-        return salaEsperaJpaRepository.findAllByOrderByFechaLlegadaAsc().stream()
-                .map(salaEsperaMapper::toDomain).toList();
+    public Page<SalaEspera> findAllByOrderByFechaLlegadaAsc(Pageable pageable) {
+        return salaEsperaJpaRepository.findAllByOrderByFechaLlegadaAsc(pageable)
+                .map(salaEsperaMapper::toDomain);
     }
 
     @Override
-    public List<SalaEspera> findByEstadoOrderByFechaLlegadaAsc(String estado) {
-        return salaEsperaJpaRepository.findByEstadoOrderByFechaLlegadaAsc(estado).stream()
-                .map(salaEsperaMapper::toDomain).toList();
+    public Page<SalaEspera> findByEstadoOrderByFechaLlegadaAsc(String estado, Pageable pageable) {
+        return salaEsperaJpaRepository.findByEstadoOrderByFechaLlegadaAsc(estado, pageable)
+                .map(salaEsperaMapper::toDomain);
     }
 
     @Override

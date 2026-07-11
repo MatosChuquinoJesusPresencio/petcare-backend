@@ -7,6 +7,8 @@ import com.petcare.backend.domain.port.SalaEsperaRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.BusinessRuleException;
 import com.petcare.backend.domain.model.Mascota;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,14 +66,14 @@ public class SalaEsperaService {
         return salaEsperaRepositoryPort.save(salaEspera);
     }
 
-    public List<SalaEspera> listarTodas() {
-        return salaEsperaRepositoryPort.findAllByOrderByFechaLlegadaAsc();
+    public Page<SalaEspera> listarTodas(Pageable pageable) {
+        return salaEsperaRepositoryPort.findAllByOrderByFechaLlegadaAsc(pageable);
     }
 
-    public List<SalaEspera> listarPorEstado(String estado) {
+    public Page<SalaEspera> listarPorEstado(String estado, Pageable pageable) {
         if (estado == null) {
             throw new BusinessRuleException("Status must not be null");
         }
-        return salaEsperaRepositoryPort.findByEstadoOrderByFechaLlegadaAsc(estado.toUpperCase());
+        return salaEsperaRepositoryPort.findByEstadoOrderByFechaLlegadaAsc(estado.toUpperCase(), pageable);
     }
 }

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: petcare-backend
+    env: java
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/backend.jar
+    healthCheckPath: /api/auth/me
+    cron:
+      - path: /api/auth/me
+        schedule: "*/14 * * * *"
