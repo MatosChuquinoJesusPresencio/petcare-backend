@@ -31,15 +31,15 @@ public class SalaEsperaService {
     @Transactional
     public SalaEspera registrarLlegada(Long citaId, String observaciones) {
         Cita cita = citaRepositoryPort.findById(citaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada"));
 
         if (salaEsperaRepositoryPort.findByCitaId(citaId).isPresent()) {
-            throw new BusinessRuleException("This appointment is already registered in the waiting room");
+            throw new BusinessRuleException("Esta cita ya está registrada en sala de espera");
         }
 
         Mascota mascota = cita.getMascota();
         if (mascota == null) {
-            throw new BusinessRuleException("The appointment does not have an associated pet");
+            throw new BusinessRuleException("La cita no tiene una mascota asociada");
         }
 
         SalaEspera salaEspera = new SalaEspera(
@@ -52,14 +52,14 @@ public class SalaEsperaService {
     @Transactional
     public SalaEspera cambiarEstado(Long id, String nuevoEstado) {
         SalaEspera salaEspera = salaEsperaRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Waiting room entry not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de sala de espera no encontrado"));
 
         if (nuevoEstado == null) {
-            throw new BusinessRuleException("New status must not be null");
+            throw new BusinessRuleException("El nuevo estado no debe ser nulo");
         }
         String estadoUpper = nuevoEstado.toUpperCase();
         if (!List.of("PENDIENTE", "EN_ATENCION", "ATENDIDO", "NO_ASISTIO", "REPROGRAMADO").contains(estadoUpper)) {
-            throw new BusinessRuleException("Invalid waiting room status");
+            throw new BusinessRuleException("Estado de sala de espera inválido");
         }
 
         salaEspera.setEstado(estadoUpper);
@@ -72,7 +72,7 @@ public class SalaEsperaService {
 
     public Page<SalaEspera> listarPorEstado(String estado, Pageable pageable) {
         if (estado == null) {
-            throw new BusinessRuleException("Status must not be null");
+            throw new BusinessRuleException("El estado no debe ser nulo");
         }
         return salaEsperaRepositoryPort.findByEstadoOrderByFechaLlegadaAsc(estado.toUpperCase(), pageable);
     }

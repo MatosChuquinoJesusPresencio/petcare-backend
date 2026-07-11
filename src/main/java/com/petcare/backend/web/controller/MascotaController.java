@@ -99,7 +99,7 @@ public class MascotaController {
     public ResponseEntity<MascotaResponse> cambiarActivo(@PathVariable Long id) {
         mascotaService.cambiarEstado(id);
         Mascota mascota = mascotaService.obtenerPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Pet not found after toggle"));
+                .orElseThrow(() -> new ResourceNotFoundException("Mascota no encontrada después del cambio de estado"));
         return ResponseEntity.ok(toMascotaResponse(mascota));
     }
 
@@ -125,7 +125,7 @@ public class MascotaController {
                                                        @Valid @RequestBody CambioDuenoPrincipalRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioService.obtenerPorEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no encontrado"));
 
         mascotaService.cambiarDuenoPrincipal(mascotaId, request.ownerId(), request.relation(),
                 request.reason(), usuario.getId());

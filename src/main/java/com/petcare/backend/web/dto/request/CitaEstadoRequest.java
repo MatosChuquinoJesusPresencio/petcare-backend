@@ -3,7 +3,7 @@ package com.petcare.backend.web.dto.request;
 import jakarta.validation.constraints.NotBlank;
 
 public record CitaEstadoRequest(
-        @NotBlank(message = "New status is required")
+        @NotBlank(message = "El nuevo estado es obligatorio")
         String status
 ) {
 }

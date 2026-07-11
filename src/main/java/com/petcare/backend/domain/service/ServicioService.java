@@ -29,7 +29,7 @@ public class ServicioService {
     @Transactional
     public Servicio actualizarServicio(Long id, Servicio servicioDetalles) {
         Servicio servicio = servicioRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
         
         servicio.setNombre(servicioDetalles.getNombre());
         servicio.setDescripcion(servicioDetalles.getDescripcion());
@@ -50,14 +50,14 @@ public class ServicioService {
     @Transactional
     public void eliminarServicio(Long id) {
         servicioRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
         servicioRepositoryPort.deleteById(id);
     }
 
     @Transactional
     public Servicio cambiarActivo(Long id) {
         Servicio servicio = servicioRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
         servicio.setActivo(!servicio.getActivo());
         return servicioRepositoryPort.save(servicio);
     }

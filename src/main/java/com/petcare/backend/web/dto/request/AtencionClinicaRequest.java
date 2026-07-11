@@ -4,22 +4,22 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record AtencionClinicaRequest(
-        @NotNull(message = "Appointment ID is required")
+        @NotNull(message = "El ID de la cita es obligatorio")
         Long appointmentId,
 
-        @NotBlank(message = "Reason for consultation is required")
+        @NotBlank(message = "El motivo de consulta es obligatorio")
         String reasonForConsultation,
 
         String symptoms,
 
-        @NotBlank(message = "Diagnosis is required")
+        @NotBlank(message = "El diagnóstico es obligatorio")
         String diagnosis,
 
         String clinicalObservations,
 
         String treatment,
 
-        @NotNull(message = "Triage ID is required")
+        @NotNull(message = "El ID del triaje es obligatorio")
         Long triageId
 ) {
 }

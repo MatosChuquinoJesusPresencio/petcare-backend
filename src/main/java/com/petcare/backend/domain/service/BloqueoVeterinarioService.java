@@ -29,7 +29,7 @@ public class BloqueoVeterinarioService {
 
     public BloqueoVeterinario obtenerPorId(Long id) {
         return bloqueoRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule block not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Bloqueo de horario no encontrado"));
     }
 
     @Transactional
@@ -40,7 +40,7 @@ public class BloqueoVeterinarioService {
     @Transactional
     public void eliminarBloqueo(Long id) {
         bloqueoRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule block not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Bloqueo de horario no encontrado"));
         bloqueoRepositoryPort.deleteById(id);
     }
 }

@@ -6,18 +6,18 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalTime;
 
 public record DisponibilidadRequest(
-        @NotNull(message = "Veterinarian ID is required")
+        @NotNull(message = "El ID del veterinario es obligatorio")
         Long veterinarianId,
 
-        @NotNull(message = "Day of week is required")
-        @Min(value = 1, message = "Day of week must be between 1 (Monday) and 7 (Sunday)")
-        @Max(value = 7, message = "Day of week must be between 1 (Monday) and 7 (Sunday)")
+        @NotNull(message = "El día de la semana es obligatorio")
+        @Min(value = 1, message = "El día de la semana debe estar entre 1 (Lunes) y 7 (Domingo)")
+        @Max(value = 7, message = "El día de la semana debe estar entre 1 (Lunes) y 7 (Domingo)")
         Integer dayOfWeek,
 
-        @NotNull(message = "Start time is required")
+        @NotNull(message = "La hora de inicio es obligatoria")
         LocalTime startTime,
 
-        @NotNull(message = "End time is required")
+        @NotNull(message = "La hora de fin es obligatoria")
         LocalTime endTime
 ) {
 }

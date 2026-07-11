@@ -33,7 +33,7 @@ public class TriajeController {
     public ResponseEntity<TriajeResponse> crearTriaje(@Valid @RequestBody TriajeRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario asistente = usuarioService.obtenerPorEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no encontrado"));
 
         Triaje triaje = new Triaje(null, null, request.reasonForVisit(), request.urgencyLevel(),
                 request.visibleSigns(), request.observations(), request.weight(), request.temperature(),

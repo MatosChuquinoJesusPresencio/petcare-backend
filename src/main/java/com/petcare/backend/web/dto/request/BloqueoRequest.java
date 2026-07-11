@@ -5,16 +5,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record BloqueoRequest(
-        @NotNull(message = "Veterinarian ID is required")
+        @NotNull(message = "El ID del veterinario es obligatorio")
         Long veterinarianId,
 
-        @NotNull(message = "Date is required")
+        @NotNull(message = "La fecha es obligatoria")
         LocalDate date,
 
-        @NotNull(message = "Start time is required")
+        @NotNull(message = "La hora de inicio es obligatoria")
         LocalTime startTime,
 
-        @NotNull(message = "End time is required")
+        @NotNull(message = "La hora de fin es obligatoria")
         LocalTime endTime,
 
         String reason

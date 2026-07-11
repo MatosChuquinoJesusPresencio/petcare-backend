@@ -54,7 +54,7 @@ public class BloqueoVeterinarioController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
     public ResponseEntity<BloqueoVeterinarioResponse> bloquear(@Valid @RequestBody BloqueoRequest request) {
         Usuario veterinario = usuarioService.obtenerPorId(request.veterinarianId())
-                .orElseThrow(() -> new ResourceNotFoundException("Veterinarian not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Veterinario no encontrado"));
 
         BloqueoVeterinario bloqueo = new BloqueoVeterinario(null, veterinario, request.date(),
                 request.startTime(), request.endTime(), request.reason());

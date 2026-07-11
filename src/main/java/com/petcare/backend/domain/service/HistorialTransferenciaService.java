@@ -40,18 +40,18 @@ public class HistorialTransferenciaService {
                                                           Long duenoNuevoId, String motivo,
                                                           Long usuarioResponsableId) {
         Mascota mascota = mascotaRepositoryPort.findById(mascotaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Mascota no encontrada"));
 
         Dueno duenoAnterior = duenoAnteriorId != null
                 ? duenoRepositoryPort.findById(duenoAnteriorId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Previous owner not found"))
+                        .orElseThrow(() -> new ResourceNotFoundException("Dueño anterior no encontrado"))
                 : null;
 
         Dueno duenoNuevo = duenoRepositoryPort.findById(duenoNuevoId)
-                .orElseThrow(() -> new ResourceNotFoundException("New owner not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Nuevo dueño no encontrado"));
 
         Usuario responsable = usuarioRepositoryPort.findById(usuarioResponsableId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         HistorialTransferencia transferencia = new HistorialTransferencia(
                 null, mascota, duenoAnterior, duenoNuevo, Instant.now(), motivo, responsable

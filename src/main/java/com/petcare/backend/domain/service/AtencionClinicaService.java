@@ -46,19 +46,19 @@ public class AtencionClinicaService {
                                        String diagnostico, String tratamiento, String observacionesClinicas,
                                        Long veterinarioId, Long triajeId) {
         Cita cita = citaRepositoryPort.findById(citaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada"));
 
         Usuario veterinario = usuarioRepositoryPort.findById(veterinarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Veterinarian not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Veterinario no encontrado"));
 
         if (!"VETERINARIO".equalsIgnoreCase(veterinario.getRol())) {
-            throw new BusinessRuleException("Only veterinarians can register clinical care");
+            throw new BusinessRuleException("Solo los veterinarios pueden registrar atención clínica");
         }
 
         Mascota mascota = cita.getMascota();
 
         Triaje triaje = triajeRepositoryPort.findById(triajeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Triage not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Triaje no encontrado"));
 
         AtencionClinica atencion = new AtencionClinica(
                 null, cita, mascota, veterinario, triaje,
@@ -81,10 +81,10 @@ public class AtencionClinicaService {
                                        String diagnostico, String tratamiento, String observacionesClinicas,
                                        Long usuarioId) {
         AtencionClinica existente = atencionClinicaRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Clinical care record not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de atención clínica no encontrado"));
 
         Usuario usuario = usuarioRepositoryPort.findById(usuarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         existente.setMotivoConsulta(motivoConsulta);
         existente.setSintomas(sintomas);
@@ -107,11 +107,11 @@ public class AtencionClinicaService {
 
     public AtencionClinica obtenerPorId(Long id) {
         return atencionClinicaRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Clinical care record not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de atención clínica no encontrado"));
     }
 
     public AtencionClinica obtenerPorCitaId(Long citaId) {
         return atencionClinicaRepositoryPort.findByCitaId(citaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Clinical care record not found for this appointment"));
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de atención clínica no encontrado para esta cita"));
     }
 }

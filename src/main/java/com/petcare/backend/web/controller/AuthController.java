@@ -50,7 +50,7 @@ public class AuthController {
         );
 
         Usuario usuarioDB = usuarioService.obtenerPorEmail(request.email())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         usuarioService.incrementarTokenVersion(usuarioDB.getId());
         usuarioDB.setTokenVersion(usuarioDB.getTokenVersion() == null ? 1 : usuarioDB.getTokenVersion() + 1);
@@ -113,7 +113,7 @@ public class AuthController {
         }
 
         if (requestRefreshToken == null || requestRefreshToken.trim().isEmpty()) {
-            throw new TokenRefreshException("Refresh token is not present in cookies or request body.");
+            throw new TokenRefreshException("El token de actualización no está presente en las cookies o en el cuerpo de la solicitud.");
         }
 
         String finalRefreshToken = requestRefreshToken;
@@ -123,7 +123,7 @@ public class AuthController {
                     refreshTokenService.verifyExpirationAndDelete(token);
                     Usuario usuario = token.getUsuario();
                     if (usuario == null) {
-                        throw new TokenRefreshException("User not found for refresh token");
+                        throw new TokenRefreshException("Usuario no encontrado para el token de actualización");
                     }
 
                     RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(usuario.getId());
@@ -137,7 +137,7 @@ public class AuthController {
                             .header(HttpHeaders.SET_COOKIE, newRefreshCookie.toString())
                             .body(new TokenRefreshResponse(jwt));
                 })
-                .orElseThrow(() -> new TokenRefreshException("Refresh token is not in database or is invalid."));
+                .orElseThrow(() -> new TokenRefreshException("El token de actualización no está en la base de datos o es inválido."));
     }
 
     @PostMapping("/logout")

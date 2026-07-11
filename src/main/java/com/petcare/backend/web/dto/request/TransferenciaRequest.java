@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record TransferenciaRequest(
-        @NotNull(message = "New owner ID is required")
+        @NotNull(message = "El ID del nuevo dueño es obligatorio")
         Long nuevoDuenoId,
 
-        @NotBlank(message = "Reason is required")
+        @NotBlank(message = "El motivo es obligatorio")
         String motivo
 ) {
 }

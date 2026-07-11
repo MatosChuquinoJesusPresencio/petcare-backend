@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public record CitaReprogramarRequest(
-        @NotNull(message = "New date and time are required")
+        @NotNull(message = "La nueva fecha y hora son obligatorias")
         LocalDateTime dateTime
 ) {
 }

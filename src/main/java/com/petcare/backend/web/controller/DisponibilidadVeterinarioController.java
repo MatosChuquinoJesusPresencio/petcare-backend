@@ -44,7 +44,7 @@ public class DisponibilidadVeterinarioController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
     public ResponseEntity<DisponibilidadVeterinarioResponse> registrar(@Valid @RequestBody DisponibilidadRequest request) {
         Usuario veterinario = usuarioService.obtenerPorId(request.veterinarianId())
-                .orElseThrow(() -> new ResourceNotFoundException("Veterinarian not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Veterinario no encontrado"));
 
         DisponibilidadVeterinario disponibilidad = new DisponibilidadVeterinario(null, veterinario,
                 request.dayOfWeek(), request.startTime(), request.endTime(), true);
@@ -58,7 +58,7 @@ public class DisponibilidadVeterinarioController {
     public ResponseEntity<DisponibilidadVeterinarioResponse> actualizar(@PathVariable Long id,
                                                                          @Valid @RequestBody DisponibilidadRequest request) {
         Usuario veterinario = usuarioService.obtenerPorId(request.veterinarianId())
-                .orElseThrow(() -> new ResourceNotFoundException("Veterinarian not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Veterinario no encontrado"));
 
         DisponibilidadVeterinario detalles = new DisponibilidadVeterinario(null, veterinario,
                 request.dayOfWeek(), request.startTime(), request.endTime(), null);

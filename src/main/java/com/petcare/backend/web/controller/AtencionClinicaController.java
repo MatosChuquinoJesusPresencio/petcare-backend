@@ -34,7 +34,7 @@ public class AtencionClinicaController {
     public ResponseEntity<AtencionClinicaResponse> registrar(@Valid @RequestBody AtencionClinicaRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario veterinario = usuarioService.obtenerPorEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no encontrado"));
 
         AtencionClinica atencion = atencionClinicaService.registrar(
                 request.appointmentId(), request.reasonForConsultation(), request.symptoms(),
@@ -73,7 +73,7 @@ public class AtencionClinicaController {
                                                                @Valid @RequestBody AtencionClinicaRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioService.obtenerPorEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no encontrado"));
 
         AtencionClinica actualizada = atencionClinicaService.actualizar(id,
                 request.reasonForConsultation(), request.symptoms(), request.diagnosis(),

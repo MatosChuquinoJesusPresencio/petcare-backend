@@ -98,7 +98,7 @@ public class CitaController {
     public ResponseEntity<CitaResponse> agendarCita(@Valid @RequestBody CitaRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario creador = usuarioService.obtenerPorEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not valid"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario autenticado no válido"));
 
         var cita = citaService.agendarCita(request.petId(), request.veterinarianId(),
                 request.serviceId(), request.dateTime(), request.notes(), creador.getId());

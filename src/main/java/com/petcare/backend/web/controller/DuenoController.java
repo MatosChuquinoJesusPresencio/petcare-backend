@@ -59,7 +59,7 @@ public class DuenoController {
         Usuario usuario = null;
         if (request.userId() != null) {
             usuario = usuarioService.obtenerPorId(request.userId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Associated user not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario asociado no encontrado"));
         } else if (request.firstName() != null && request.lastName() != null
                 && request.email() != null && request.password() != null) {
             Usuario newUser = Usuario.builder()
@@ -85,7 +85,7 @@ public class DuenoController {
     public ResponseEntity<DuenoResponse> actualizarDueno(@PathVariable Long id,
                                                           @Valid @RequestBody DuenoRequest request) {
         Dueno existente = duenoService.obtenerPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Dueño no encontrado"));
         Dueno detalles = new Dueno(null, request.dni(), request.phone(), request.address(), existente.getUsuario());
         Dueno actualizado = duenoService.actualizarDueno(id, detalles);
         return ResponseEntity.ok(new DuenoResponse(actualizado.getId(), actualizado.getDni(),

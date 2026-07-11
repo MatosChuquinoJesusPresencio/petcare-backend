@@ -5,13 +5,13 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record TriajeRequest(
-        @NotNull(message = "Appointment ID is required")
+        @NotNull(message = "El ID de la cita es obligatorio")
         Long appointmentId,
 
-        @NotBlank(message = "Reason for visit is required")
+        @NotBlank(message = "El motivo de la visita es obligatorio")
         String reasonForVisit,
 
-        @NotBlank(message = "Urgency level is required")
+        @NotBlank(message = "El nivel de urgencia es obligatorio")
         String urgencyLevel,
 
         String visibleSigns,

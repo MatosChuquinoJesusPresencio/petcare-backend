@@ -52,28 +52,28 @@ public class CitaService {
     @Transactional
     public Cita agendarCita(Long mascotaId, Long veterinarioId, Long servicioId, LocalDateTime fechaHora, String notas, Long creadoPorId) {
         Mascota mascota = mascotaRepositoryPort.findById(mascotaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Pet not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Mascota no encontrada"));
         
         Usuario veterinario = usuarioRepositoryPort.findById(veterinarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Veterinarian not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Veterinario no encontrado"));
         
         if (!"VETERINARIO".equalsIgnoreCase(veterinario.getRol())) {
-            throw new BusinessRuleException("The assigned user does not have the VETERINARIAN role");
+            throw new BusinessRuleException("El usuario asignado no tiene el rol VETERINARIO");
         }
 
         if (!Boolean.TRUE.equals(veterinario.getEstado())) {
-            throw new BusinessRuleException("The selected veterinarian is not active");
+            throw new BusinessRuleException("El veterinario seleccionado no está activo");
         }
 
         Servicio servicio = servicioRepositoryPort.findById(servicioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
         
         if (!servicio.getActivo()) {
-            throw new BusinessRuleException("The selected service is not active");
+            throw new BusinessRuleException("El servicio seleccionado no está activo");
         }
 
         Usuario creadoPor = usuarioRepositoryPort.findById(creadoPorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Creator user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario creador no encontrado"));
 
         ZoneId zone = ZoneId.systemDefault();
         Instant fechaHoraInstant = fechaHora.atZone(zone).toInstant();
@@ -90,10 +90,10 @@ public class CitaService {
     @Transactional
     public Cita reprogramarCita(Long citaId, LocalDateTime nuevaFechaHora) {
         Cita cita = citaRepositoryPort.findById(citaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada"));
 
         if ("CANCELADA".equals(cita.getEstado()) || "ATENDIDA".equals(cita.getEstado())) {
-            throw new BusinessRuleException("Cannot reschedule a cancelled or completed appointment");
+            throw new BusinessRuleException("No se puede reprogramar una cita cancelada o atendida");
         }
 
         ZoneId zone = ZoneId.systemDefault();
@@ -109,14 +109,14 @@ public class CitaService {
     @Transactional
     public Cita cambiarEstadoCita(Long citaId, String nuevoEstado) {
         Cita cita = citaRepositoryPort.findById(citaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada"));
 
         if (nuevoEstado == null) {
-            throw new BusinessRuleException("New status must not be null");
+            throw new BusinessRuleException("El nuevo estado no debe ser nulo");
         }
         String estadoUpper = nuevoEstado.toUpperCase();
         if (!List.of("AGENDADA", "CONFIRMADA", "REPROGRAMADA", "CANCELADA", "ATENDIDA", "NO_ASISTIO").contains(estadoUpper)) {
-            throw new BusinessRuleException("Invalid appointment status");
+            throw new BusinessRuleException("Estado de cita inválido");
         }
 
         cita.setEstado(estadoUpper);
@@ -149,7 +149,7 @@ public class CitaService {
 
     public List<String> obtenerSlotsDisponibles(Long veterinarioId, LocalDate fecha, Long servicioId) {
         Servicio servicio = servicioRepositoryPort.findById(servicioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
 
         int diaSemana = fecha.getDayOfWeek().getValue();
         List<DisponibilidadVeterinario> disponibilidades = disponibilidadRepositoryPort
@@ -237,7 +237,7 @@ public class CitaService {
             }
         }
         if (!dentroDeHorario) {
-            throw new ScheduleConflictException("The selected date or time is outside the veterinarian's available schedule");
+            throw new ScheduleConflictException("La fecha u hora seleccionada está fuera del horario disponible del veterinario");
         }
 
         Instant inicioDia = fecha.atStartOfDay(zone).toInstant();
@@ -251,7 +251,7 @@ public class CitaService {
             }
             if (horaInicioCita.isBefore(bloq.getHoraFin()) &&
                     bloq.getHoraInicio().isBefore(horaFinCita)) {
-                throw new ScheduleConflictException("The veterinarian has a schedule block at the selected time: " + bloq.getMotivo());
+                throw new ScheduleConflictException("El veterinario tiene un bloqueo de horario en la hora seleccionada: " + bloq.getMotivo());
             }
         }
 
@@ -269,7 +269,7 @@ public class CitaService {
             LocalTime extFin = extInicio.plusMinutes(existente.getServicio().getDuracionMinutos());
 
             if (horaInicioCita.isBefore(extFin) && extInicio.isBefore(horaFinCita)) {
-                throw new ScheduleConflictException("The veterinarian already has another appointment scheduled at this time (" + existente.getMascota().getNombre() + " at " + extInicio + ")");
+                throw new ScheduleConflictException("El veterinario ya tiene otra cita programada en este horario (" + existente.getMascota().getNombre() + " a las " + extInicio + ")");
             }
         }
     }

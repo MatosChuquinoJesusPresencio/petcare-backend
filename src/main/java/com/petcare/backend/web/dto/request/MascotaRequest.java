@@ -6,20 +6,20 @@ import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 public record MascotaRequest(
-        @NotBlank(message = "Pet name is required")
+        @NotBlank(message = "El nombre de la mascota es obligatorio")
         String name,
 
-        @NotBlank(message = "Species is required")
+        @NotBlank(message = "La especie es obligatoria")
         String species,
 
-        @NotBlank(message = "Breed is required")
+        @NotBlank(message = "La raza es obligatoria")
         String breed,
 
-        @NotBlank(message = "Gender is required")
-        @Pattern(regexp = "^(?i)(MACHO|HEMBRA)$", message = "Gender must be MACHO or HEMBRA")
+        @NotBlank(message = "El género es obligatorio")
+        @Pattern(regexp = "^(?i)(MACHO|HEMBRA)$", message = "El género debe ser MACHO o HEMBRA")
         String gender,
 
-        @NotNull(message = "Birth date is required")
+        @NotNull(message = "La fecha de nacimiento es obligatoria")
         LocalDate birthDate,
 
         String microchip,

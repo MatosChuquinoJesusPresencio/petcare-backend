@@ -58,7 +58,7 @@ public class ServicioController {
     public ResponseEntity<ServicioResponse> actualizarServicio(@PathVariable Long id,
                                                                 @Valid @RequestBody ServicioRequest request) {
         Servicio existente = servicioService.obtenerPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Servicio no encontrado"));
         Servicio detalles = new Servicio(null, request.name(), request.description(),
                 request.durationMinutes(), request.referentialCost(), existente.getActivo());
         Servicio actualizado = servicioService.actualizarServicio(id, detalles);

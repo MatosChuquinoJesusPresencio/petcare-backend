@@ -30,14 +30,14 @@ public class UsuarioService {
     @Transactional
     public Usuario registrarUsuario(Usuario usuario) {
         if (usuario.getEmail() == null) {
-            throw new BusinessRuleException("Email must not be null");
+            throw new BusinessRuleException("El correo electrónico no debe ser nulo");
         }
         if (usuarioRepositoryPort.findByEmail(usuario.getEmail()).isPresent()) {
-            throw new ResourceDuplicateException("Email address is already registered");
+            throw new ResourceDuplicateException("El correo electrónico ya está registrado");
         }
 
         if (usuario.getContrasena() == null) {
-            throw new BusinessRuleException("Password must not be null");
+            throw new BusinessRuleException("La contraseña no debe ser nula");
         }
         usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
         usuario.setEstado(true);
@@ -75,7 +75,7 @@ public class UsuarioService {
     @Transactional
     public Usuario cambiarEstado(Long id, Boolean estado) {
         Usuario usuario = usuarioRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         usuario.setEstado(estado);
         return usuarioRepositoryPort.save(usuario);
     }
@@ -83,7 +83,7 @@ public class UsuarioService {
     @Transactional
     public void incrementarTokenVersion(Long userId) {
         Usuario usuario = usuarioRepositoryPort.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         usuario.setTokenVersion(usuario.getTokenVersion() == null ? 1 : usuario.getTokenVersion() + 1);
         usuarioRepositoryPort.save(usuario);
     }

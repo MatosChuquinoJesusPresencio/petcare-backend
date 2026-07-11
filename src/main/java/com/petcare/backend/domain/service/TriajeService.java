@@ -38,25 +38,25 @@ public class TriajeService {
     @Transactional
     public Triaje crearTriaje(Triaje triaje, Long citaId, Long asistenteId) {
         Cita cita = citaRepositoryPort.findById(citaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cita no encontrada"));
 
         if (triajeRepositoryPort.findByCitaId(citaId).isPresent()) {
-            throw new BusinessRuleException("This appointment already has a triage evaluation");
+            throw new BusinessRuleException("Esta cita ya tiene una evaluación de triaje");
         }
 
         Usuario asistente = usuarioRepositoryPort.findById(asistenteId)
-                .orElseThrow(() -> new ResourceNotFoundException("Assistant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Asistente no encontrado"));
 
         if (asistente.getRol() == null || !List.of("ASISTENTE", "ADMINISTRADOR", "VETERINARIO").contains(asistente.getRol().toUpperCase())) {
-            throw new BusinessRuleException("Only assistants or administrators can perform triage");
+            throw new BusinessRuleException("Solo asistentes o administradores pueden realizar triaje");
         }
 
         if (triaje.getNivelUrgencia() == null) {
-            throw new BusinessRuleException("Urgency level must not be null");
+            throw new BusinessRuleException("El nivel de urgencia no debe ser nulo");
         }
         String urgencia = triaje.getNivelUrgencia().toUpperCase();
         if (!List.of("RUTINARIA", "PREFERENTE", "URGENTE", "EMERGENCIA").contains(urgencia)) {
-            throw new BusinessRuleException("Invalid urgency level. Use: RUTINARIA, PREFERENTE, URGENTE, EMERGENCIA");
+            throw new BusinessRuleException("Nivel de urgencia inválido. Use: RUTINARIA, PREFERENTE, URGENTE, EMERGENCIA");
         }
 
         triaje.setCita(cita);
@@ -64,7 +64,7 @@ public class TriajeService {
         triaje.setAsistente(asistente);
 
         if (salaEsperaRepositoryPort.findByCitaId(citaId).isEmpty()) {
-            throw new BusinessRuleException("The appointment must be registered in the waiting room before triage");
+            throw new BusinessRuleException("La cita debe estar registrada en sala de espera antes del triaje");
         }
 
         return triajeRepositoryPort.save(triaje);
@@ -76,22 +76,22 @@ public class TriajeService {
 
     public Page<Triaje> listarPorPrioridad(String nivelUrgencia, Pageable pageable) {
         if (nivelUrgencia == null) {
-            throw new BusinessRuleException("Urgency level must not be null");
+            throw new BusinessRuleException("El nivel de urgencia no debe ser nulo");
         }
         String urgencia = nivelUrgencia.toUpperCase();
         if (!List.of("RUTINARIA", "PREFERENTE", "URGENTE", "EMERGENCIA").contains(urgencia)) {
-            throw new BusinessRuleException("Invalid urgency level");
+            throw new BusinessRuleException("Nivel de urgencia inválido");
         }
         return triajeRepositoryPort.findByNivelUrgencia(urgencia, pageable);
     }
 
     public Triaje obtenerPorId(Long id) {
         return triajeRepositoryPort.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Triage not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Triaje no encontrado"));
     }
 
     public Triaje obtenerPorCitaId(Long citaId) {
         return triajeRepositoryPort.findByCitaId(citaId)
-                .orElseThrow(() -> new ResourceNotFoundException("Triage not found for this appointment"));
+                .orElseThrow(() -> new ResourceNotFoundException("Triaje no encontrado para esta cita"));
     }
 }
