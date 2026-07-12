@@ -4,7 +4,6 @@ import com.petcare.backend.domain.model.RefreshToken;
 import com.petcare.backend.domain.port.RefreshTokenRepositoryPort;
 import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
-import com.petcare.backend.domain.exception.BusinessRuleException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +29,8 @@ public class RefreshTokenService {
 
     @Transactional
     public synchronized RefreshToken createRefreshToken(Long userId) {
+        refreshTokenRepositoryPort.deleteExpiredByUsuarioId(userId, Instant.now());
+
         RefreshToken refreshToken = new RefreshToken(
                 null,
                 usuarioRepositoryPort.findById(userId)
@@ -43,15 +44,6 @@ public class RefreshTokenService {
 
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenRepositoryPort.findByToken(token);
-    }
-
-    public synchronized RefreshToken verifyExpirationAndDelete(RefreshToken token) {
-        if (token.getFechaExpiracion().isBefore(Instant.now())) {
-            refreshTokenRepositoryPort.deleteByToken(token.getToken());
-            throw new BusinessRuleException("El token de actualización ha expirado. Por favor, inicie sesión de nuevo.");
-        }
-        refreshTokenRepositoryPort.deleteByToken(token.getToken());
-        return token;
     }
 
     @Transactional

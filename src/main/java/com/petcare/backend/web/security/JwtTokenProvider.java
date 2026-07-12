@@ -29,7 +29,6 @@ public class JwtTokenProvider {
                 .setSubject(usuario.getEmail())
                 .claim("rol", usuario.getRol())
                 .claim("nombre", usuario.getNombres() + " " + usuario.getApellidos())
-                .claim("tokenVersion", usuario.getTokenVersion() != null ? usuario.getTokenVersion() : 0)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + expirationMs))
                 .signWith(secretKey)
@@ -43,16 +42,6 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-    }
-
-    public int getTokenVersionFromToken(String token) {
-        Integer version = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("tokenVersion", Integer.class);
-        return version != null ? version : 0;
     }
 
     public boolean validateToken(String token) {
