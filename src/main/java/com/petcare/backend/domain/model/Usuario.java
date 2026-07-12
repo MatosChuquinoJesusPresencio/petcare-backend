@@ -20,8 +20,6 @@ public class Usuario {
     private String telefono;
     private String rol;
     private Boolean estado;
-    @Builder.Default
-    private Integer tokenVersion = 0;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -32,7 +30,6 @@ public class Usuario {
     public String getTelefono() { return telefono; }
     public String getRol() { return rol; }
     public Boolean getEstado() { return estado; }
-    public Integer getTokenVersion() { return tokenVersion; }
 
     public void setContrasena(String contrasena) { this.contrasena = contrasena; }
     public void setNombres(String nombres) { this.nombres = nombres; }
@@ -41,5 +38,4 @@ public class Usuario {
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public void setRol(String rol) { this.rol = rol; }
     public void setEstado(Boolean estado) { this.estado = estado; }
-    public void setTokenVersion(Integer tokenVersion) { this.tokenVersion = tokenVersion; }
 }

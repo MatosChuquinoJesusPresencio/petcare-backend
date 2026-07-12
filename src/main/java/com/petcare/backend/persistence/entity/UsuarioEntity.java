@@ -37,13 +37,8 @@ public class UsuarioEntity {
     @Column(nullable = false)
     private Boolean estado;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Integer tokenVersion = 0;
-
     @PrePersist
     protected void onCreate() {
         this.estado = true;
-        this.tokenVersion = 0;
     }
 }

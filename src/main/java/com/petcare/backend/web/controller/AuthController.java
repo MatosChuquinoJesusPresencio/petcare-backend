@@ -79,7 +79,6 @@ public class AuthController {
                 .email(request.email())
                 .telefono(request.phone())
                 .rol(request.role().toUpperCase())
-                .tokenVersion(0)
                 .build();
 
         Usuario registrado = usuarioService.registrarUsuario(usuario);

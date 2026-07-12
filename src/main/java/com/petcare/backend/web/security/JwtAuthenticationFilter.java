@@ -1,6 +1,5 @@
 package com.petcare.backend.web.security;
 
-import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -21,14 +20,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
-    private final UsuarioRepositoryPort usuarioRepositoryPort;
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
-                                   CustomUserDetailsService customUserDetailsService,
-                                   UsuarioRepositoryPort usuarioRepositoryPort) {
+                                   CustomUserDetailsService customUserDetailsService) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.customUserDetailsService = customUserDetailsService;
-        this.usuarioRepositoryPort = usuarioRepositoryPort;
     }
 
     @Override
@@ -37,20 +33,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             String email = jwtTokenProvider.getEmailFromToken(token);
-            int tokenVersionFromJwt = jwtTokenProvider.getTokenVersionFromToken(token);
 
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
-            var usuarioOpt = usuarioRepositoryPort.findByEmail(email);
-            if (usuarioOpt.isPresent()) {
-                Integer currentTokenVersion = usuarioOpt.get().getTokenVersion();
-                if (currentTokenVersion != null && currentTokenVersion == tokenVersionFromJwt) {
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-            }
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }

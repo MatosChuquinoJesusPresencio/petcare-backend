@@ -79,12 +79,4 @@ public class UsuarioService {
         usuario.setEstado(estado);
         return usuarioRepositoryPort.save(usuario);
     }
-
-    @Transactional
-    public void incrementarTokenVersion(Long userId) {
-        Usuario usuario = usuarioRepositoryPort.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        usuario.setTokenVersion(usuario.getTokenVersion() == null ? 1 : usuario.getTokenVersion() + 1);
-        usuarioRepositoryPort.save(usuario);
-    }
 }
