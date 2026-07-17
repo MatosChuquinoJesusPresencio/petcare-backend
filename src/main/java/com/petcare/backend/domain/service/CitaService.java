@@ -27,6 +27,7 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class CitaService {
+    private static final ZoneId BUSINESS_ZONE = ZoneId.of("America/Lima");
 
     private final CitaRepositoryPort citaRepositoryPort;
     private final BloqueoVeterinarioRepositoryPort bloqueoRepositoryPort;
@@ -75,8 +76,7 @@ public class CitaService {
         Usuario creadoPor = usuarioRepositoryPort.findById(creadoPorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario creador no encontrado"));
 
-        ZoneId zone = ZoneId.systemDefault();
-        Instant fechaHoraInstant = fechaHora.atZone(zone).toInstant();
+        Instant fechaHoraInstant = toBusinessInstant(fechaHora);
         validarDisponibilidadYHorarios(veterinarioId, servicio, fechaHoraInstant, null);
 
         Cita cita = new Cita(
@@ -96,8 +96,7 @@ public class CitaService {
             throw new BusinessRuleException("No se puede reprogramar una cita cancelada o atendida");
         }
 
-        ZoneId zone = ZoneId.systemDefault();
-        Instant nuevaFechaHoraInstant = nuevaFechaHora.atZone(zone).toInstant();
+        Instant nuevaFechaHoraInstant = toBusinessInstant(nuevaFechaHora);
         validarDisponibilidadYHorarios(cita.getVeterinario().getId(), cita.getServicio(), nuevaFechaHoraInstant, citaId);
 
         cita.setFechaHora(nuevaFechaHoraInstant);
@@ -133,9 +132,8 @@ public class CitaService {
     }
 
     public Page<Cita> listarConFiltros(Long mascotaId, Long veterinarioId, Long servicioId, String estado, LocalDateTime fechaDesde, LocalDateTime fechaHasta, Pageable pageable) {
-        ZoneId zone = ZoneId.systemDefault();
-        Instant desde = fechaDesde != null ? fechaDesde.atZone(zone).toInstant() : null;
-        Instant hasta = fechaHasta != null ? fechaHasta.atZone(zone).toInstant() : null;
+        Instant desde = fechaDesde != null ? toBusinessInstant(fechaDesde) : null;
+        Instant hasta = fechaHasta != null ? toBusinessInstant(fechaHasta) : null;
         return citaRepositoryPort.findAll(mascotaId, veterinarioId, servicioId, estado, desde, hasta, pageable);
     }
 
@@ -159,9 +157,8 @@ public class CitaService {
             return List.of();
         }
 
-        ZoneId zone = ZoneId.systemDefault();
-        Instant inicioDia = fecha.atStartOfDay(zone).toInstant();
-        Instant finDia = fecha.plusDays(1).atStartOfDay(zone).toInstant();
+        Instant inicioDia = fecha.atStartOfDay(BUSINESS_ZONE).toInstant();
+        Instant finDia = fecha.plusDays(1).atStartOfDay(BUSINESS_ZONE).toInstant();
 
         List<BloqueoVeterinario> bloqueos = bloqueoRepositoryPort
                 .findByVeterinarioIdAndFecha(veterinarioId, fecha);
@@ -198,7 +195,7 @@ public class CitaService {
                         if ("CANCELADA".equals(existente.getEstado()) || "NO_ASISTIO".equals(existente.getEstado())) {
                             continue;
                         }
-                        LocalTime extInicio = existente.getFechaHora().atZone(zone).toLocalTime();
+                        LocalTime extInicio = existente.getFechaHora().atZone(BUSINESS_ZONE).toLocalTime();
                         LocalTime extFin = extInicio.plusMinutes(existente.getServicio().getDuracionMinutos());
                         if (slotInicio.isBefore(extFin) && extInicio.isBefore(slotFin)) {
                             bloqueado = true;
@@ -219,8 +216,7 @@ public class CitaService {
     }
 
     private void validarDisponibilidadYHorarios(Long veterinarioId, Servicio servicio, Instant fechaHora, Long citaAExcluirId) {
-        ZoneId zone = ZoneId.systemDefault();
-        LocalDateTime fechaHoraLocal = LocalDateTime.ofInstant(fechaHora, zone);
+        LocalDateTime fechaHoraLocal = LocalDateTime.ofInstant(fechaHora, BUSINESS_ZONE);
         LocalTime horaInicioCita = fechaHoraLocal.toLocalTime();
         LocalTime horaFinCita = horaInicioCita.plusMinutes(servicio.getDuracionMinutos());
         LocalDate fecha = fechaHoraLocal.toLocalDate();
@@ -240,8 +236,8 @@ public class CitaService {
             throw new ScheduleConflictException("La fecha u hora seleccionada está fuera del horario disponible del veterinario");
         }
 
-        Instant inicioDia = fecha.atStartOfDay(zone).toInstant();
-        Instant finDia = fecha.plusDays(1).atStartOfDay(zone).toInstant();
+        Instant inicioDia = fecha.atStartOfDay(BUSINESS_ZONE).toInstant();
+        Instant finDia = fecha.plusDays(1).atStartOfDay(BUSINESS_ZONE).toInstant();
 
         List<BloqueoVeterinario> bloqueos = bloqueoRepositoryPort.findByVeterinarioIdAndFecha(veterinarioId, fecha);
         for (BloqueoVeterinario bloq : bloqueos) {
@@ -265,12 +261,16 @@ public class CitaService {
                 continue;
             }
 
-            LocalTime extInicio = existente.getFechaHora().atZone(zone).toLocalTime();
+            LocalTime extInicio = existente.getFechaHora().atZone(BUSINESS_ZONE).toLocalTime();
             LocalTime extFin = extInicio.plusMinutes(existente.getServicio().getDuracionMinutos());
 
             if (horaInicioCita.isBefore(extFin) && extInicio.isBefore(horaFinCita)) {
                 throw new ScheduleConflictException("El veterinario ya tiene otra cita programada en este horario (" + existente.getMascota().getNombre() + " a las " + extInicio + ")");
             }
         }
+    }
+
+    private Instant toBusinessInstant(LocalDateTime fechaHoraLocal) {
+        return fechaHoraLocal.atZone(BUSINESS_ZONE).toInstant();
     }
 }

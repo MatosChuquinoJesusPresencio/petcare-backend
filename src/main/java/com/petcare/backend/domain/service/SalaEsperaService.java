@@ -21,6 +21,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class SalaEsperaService {
 
+    private static final ZoneId BUSINESS_ZONE = ZoneId.of("America/Lima");
     private static final List<String> ESTADOS_VALIDOS = List.of("PENDIENTE", "EN_ATENCION", "ATENDIDO", "REPROGRAMADO");
     private static final List<String> TRANSICIONES_PERMITIDAS = List.of("PENDIENTE", "REPROGRAMADO");
 
@@ -51,8 +52,8 @@ public class SalaEsperaService {
         if (fechaCita == null) {
             throw new BusinessRuleException("La cita no tiene fecha/hora definida");
         }
-        LocalDate hoy = LocalDate.now(ZoneId.of("America/Bogota"));
-        LocalDate fechaCitaLocal = fechaCita.atZone(ZoneId.of("America/Bogota")).toLocalDate();
+        LocalDate hoy = LocalDate.now(BUSINESS_ZONE);
+        LocalDate fechaCitaLocal = fechaCita.atZone(BUSINESS_ZONE).toLocalDate();
         if (!fechaCitaLocal.equals(hoy)) {
             throw new BusinessRuleException("Solo se pueden registrar citas del día de hoy en sala de espera");
         }
