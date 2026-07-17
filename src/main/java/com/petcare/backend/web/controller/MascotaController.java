@@ -15,6 +15,8 @@ import com.petcare.backend.web.dto.response.UsuarioResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,7 +50,7 @@ public class MascotaController {
             @RequestParam(value = "sexo", required = false) String sexo,
             @RequestParam(value = "activo", required = false) Boolean activo,
             @RequestParam(value = "duenoId", required = false) Long duenoId,
-            Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<Mascota> result;
         if (nombre != null || especie != null || raza != null || sexo != null || activo != null || duenoId != null) {
             result = mascotaService.listarTodas(nombre, especie, raza, sexo, activo, duenoId, pageable);
@@ -74,7 +76,7 @@ public class MascotaController {
     }
 
     @GetMapping("/dueno/{duenoId}")
-    public ResponseEntity<Page<MascotaResponse>> listarMascotasDeDueno(@PathVariable Long duenoId, Pageable pageable) {
+    public ResponseEntity<Page<MascotaResponse>> listarMascotasDeDueno(@PathVariable Long duenoId, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(mascotaService.listarMascotasDeDueno(duenoId, pageable).map(this::toMascotaResponse));
     }
 

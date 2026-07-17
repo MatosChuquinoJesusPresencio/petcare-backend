@@ -16,6 +16,8 @@ import com.petcare.backend.web.dto.response.DisponibilidadResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +56,7 @@ public class CitaController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaDesde,
             @RequestParam(value = "fechaHasta", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaHasta,
-            Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<CitaResponse> result;
         if (mascotaId != null || veterinarioId != null || servicioId != null
                 || (estado != null && !estado.isBlank()) || fechaDesde != null || fechaHasta != null) {
@@ -89,12 +91,12 @@ public class CitaController {
     }
 
     @GetMapping("/mascota/{mascotaId}")
-    public ResponseEntity<Page<CitaResponse>> listarPorMascota(@PathVariable Long mascotaId, Pageable pageable) {
+    public ResponseEntity<Page<CitaResponse>> listarPorMascota(@PathVariable Long mascotaId, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(citaService.listarPorMascota(mascotaId, pageable).map(this::toCitaResponse));
     }
 
     @GetMapping("/veterinario/{veterinarioId}")
-    public ResponseEntity<Page<CitaResponse>> listarPorVeterinario(@PathVariable Long veterinarioId, Pageable pageable) {
+    public ResponseEntity<Page<CitaResponse>> listarPorVeterinario(@PathVariable Long veterinarioId, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(citaService.listarPorVeterinario(veterinarioId, pageable).map(this::toCitaResponse));
     }
 

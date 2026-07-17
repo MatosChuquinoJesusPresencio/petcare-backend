@@ -15,6 +15,8 @@ import com.petcare.backend.web.dto.response.UsuarioResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,7 +46,7 @@ public class DuenoController {
             @RequestParam(value = "soloActivos", required = false) Boolean soloActivos,
             @RequestParam(value = "nombre", required = false) String nombre,
             @RequestParam(value = "dni", required = false) String dni,
-            Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<DuenoResponse> response = duenoService.listar(soloActivos, nombre, dni, pageable)
                 .map(d -> new DuenoResponse(d.getId(), d.getDni(), d.getTelefono(),
                         d.getDireccion(), toUsuarioResponse(d.getUsuario())));
@@ -160,7 +162,7 @@ public class DuenoController {
             @RequestParam(value = "nombre", required = false) String nombre,
             @RequestParam(value = "telefono", required = false) String telefono,
             @RequestParam(value = "relacion", required = false) String relacion,
-            Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<ContactoEmergenciaResponse> response = duenoService
                 .listarContactosDeDueno(duenoId, nombre, telefono, relacion, pageable)
                 .map(c -> new ContactoEmergenciaResponse(c.getId(),

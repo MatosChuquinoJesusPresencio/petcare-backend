@@ -11,6 +11,7 @@ import com.petcare.backend.web.dto.response.UsuarioResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class UsuarioController {
     @GetMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Page<UsuarioResponse>> listarTodos(
-            @PageableDefault(size = 20) Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(usuarioService.listarTodos(pageable)
                 .map(u -> new UsuarioResponse(u.getId(), u.getNombres(), u.getApellidos(),
                         u.getEmail(), u.getTelefono(), u.getRol(), u.getEstado())));
@@ -56,7 +57,7 @@ public class UsuarioController {
     @GetMapping("/veterinarios")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<Page<UsuarioResponse>> listarVeterinariosActivos(
-            @PageableDefault(size = 20) Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(usuarioService.listarVeterinariosActivos(pageable)
                 .map(u -> new UsuarioResponse(u.getId(), u.getNombres(), u.getApellidos(),
                         u.getEmail(), u.getTelefono(), u.getRol(), u.getEstado())));
@@ -65,7 +66,7 @@ public class UsuarioController {
     @GetMapping("/veterinarios/todos")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE')")
     public ResponseEntity<Page<UsuarioResponse>> listarTodosVeterinarios(
-            @PageableDefault(size = 20) Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(usuarioService.listarVeterinarios(pageable)
                 .map(u -> new UsuarioResponse(u.getId(), u.getNombres(), u.getApellidos(),
                         u.getEmail(), u.getTelefono(), u.getRol(), u.getEstado())));

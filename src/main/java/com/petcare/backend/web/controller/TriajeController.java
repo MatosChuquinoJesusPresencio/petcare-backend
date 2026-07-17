@@ -11,6 +11,8 @@ import com.petcare.backend.web.dto.response.TriajeResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -66,13 +68,13 @@ public class TriajeController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
-    public ResponseEntity<Page<TriajeResponse>> listarTodos(Pageable pageable) {
+    public ResponseEntity<Page<TriajeResponse>> listarTodos(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(triajeService.listarTodos(pageable).map(this::toResponse));
     }
 
     @GetMapping("/prioridad/{nivelUrgencia}")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
-    public ResponseEntity<Page<TriajeResponse>> listarPorPrioridad(@PathVariable String nivelUrgencia, Pageable pageable) {
+    public ResponseEntity<Page<TriajeResponse>> listarPorPrioridad(@PathVariable String nivelUrgencia, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(triajeService.listarPorPrioridad(nivelUrgencia, pageable).map(this::toResponse));
     }
 

@@ -11,6 +11,7 @@ import com.petcare.backend.web.dto.response.SalaEsperaResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class SalaEsperaController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<Page<SalaEsperaResponse>> listarTodas(
-            @PageableDefault(size = 20) Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(toResponsePage(salaEsperaService.listarTodas(pageable)));
     }
 
@@ -46,7 +47,7 @@ public class SalaEsperaController {
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
     public ResponseEntity<Page<SalaEsperaResponse>> listarPorEstado(
             @PathVariable String estado,
-            @PageableDefault(size = 20) Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(toResponsePage(salaEsperaService.listarPorEstado(estado, pageable)));
     }
 
