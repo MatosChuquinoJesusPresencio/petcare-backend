@@ -188,17 +188,49 @@ mvnw.cmd spring-boot:run
 
 ## Despliegue
 
-### Render
+### Render (Docker)
 
-1. Crear Web Service → seleccionar "Docker"
-2. Conectar repositorio
-3. Agregar variables de entorno en Dashboard:
-   - `SPRING_PROFILES_ACTIVE=prod`
-   - `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`
-   - `SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver`
-   - `JWT_SECRET`, `JWT_EXPIRATION`, `JWT_REFRESH_EXPIRATION_MS`
-   - `APP_CORS_ALLOWED_ORIGINS=https://<frontend>.vercel.app`
-4. Render usa el `Dockerfile` para build + deploy automático
+1. Crear Web Service → seleccionar **Docker** como tipo de despliegue
+2. Conectar repositorio GitHub
+3. Configurar:
+   - **Dockerfile Path**: `petcare-backend/Dockerfile`
+   - **Docker Context**: `petcare-backend`
+4. Agregar variables de entorno en Dashboard:
+
+| Variable | Descripción | Ejemplo |
+|---|---|---|
+| `SPRING_PROFILES_ACTIVE` | Perfil activo | `prod` |
+| `SPRING_DATASOURCE_URL` | URL JDBC de PostgreSQL | `jdbc:postgresql://host:5432/db?sslmode=require` |
+| `SPRING_DATASOURCE_USERNAME` | Usuario de PostgreSQL | `postgres.xxxx` |
+| `SPRING_DATASOURCE_PASSWORD` | Contraseña de PostgreSQL | `tu-password` |
+| `SPRING_DATASOURCE_DRIVER_CLASS_NAME` | Driver JDBC | `org.postgresql.Driver` |
+| `JWT_SECRET` | Clave secreta JWT (Base64, >=32 bytes) | `openssl rand -base64 32` |
+| `JWT_EXPIRATION` | TTL del access token (ms) | `1800000` (30 min) |
+| `JWT_REFRESH_EXPIRATION_MS` | TTL del refresh token (ms) | `604800000` (7 días) |
+| `APP_CORS_ALLOWED_ORIGINS` | Orígenes CORS permitidos (coma-separados) | `https://tu-app.vercel.app` |
+| `TEXTBEE_API_KEY` | API key de TextBee (opcional, SMS/WhatsApp) | |
+| `TEXTBEE_GATEWAY_ID` | Gateway ID de TextBee (opcional) | |
+
+5. Render ejecuta `Dockerfile` automáticamente en cada push
+6. Health check en `/` (público, sin autenticación)
+7. Cron cada 14 min en `/` para mantener vivo el free tier
+
+**Variables opcionales:**
+- `TEXTBEE_API_KEY` / `TEXTBEE_GATEWAY_ID` — Sin estas claves, el backend funciona normalmente. Las notificaciones por SMS/WhatsApp simplemente no se envían (se registra warning en logs).
+
+### Base de datos (Supabase)
+
+1. Crear proyecto en Supabase
+2. Abrir SQL Editor → pegar contenido de `supabase.sql` (raíz del proyecto) → ejecutar
+3. Copiar la URL de conexión del dashboard (Settings → Database → Connection string → URI)
+4. Usar esa URL en `SPRING_DATASOURCE_URL`
+
+### Docker local
+
+```bash
+docker build -t petcare-backend .
+docker run -p 8080:8080 --env-file ../.env petcare-backend
+```
 
 ## Documentación
 
