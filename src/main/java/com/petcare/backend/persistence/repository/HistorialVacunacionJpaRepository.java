@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface HistorialVacunacionJpaRepository extends JpaRepository<HistorialVacunacionEntity, Long> {
     List<HistorialVacunacionEntity> findByMascotaIdOrderByFechaAplicacionDesc(Long mascotaId);
-    List<HistorialVacunacionEntity> findByProximaDosisBetween(LocalDate desde, LocalDate hasta);
+    List<HistorialVacunacionEntity> findByProximaDosisBetweenOrderByProximaDosisAsc(LocalDate desde, LocalDate hasta);
 }

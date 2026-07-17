@@ -29,13 +29,13 @@ public class BloqueoVeterinarioRepositoryAdapter implements BloqueoVeterinarioRe
 
     @Override
     public List<BloqueoVeterinario> findByVeterinarioId(Long veterinarioId) {
-        return bloqueoVeterinarioJpaRepository.findByVeterinarioId(veterinarioId).stream()
+        return bloqueoVeterinarioJpaRepository.findByVeterinarioIdOrderByFechaAsc(veterinarioId).stream()
                 .map(bloqueoVeterinarioMapper::toDomain).toList();
     }
 
     @Override
     public List<BloqueoVeterinario> findByVeterinarioIdAndFecha(Long veterinarioId, LocalDate fecha) {
-        return bloqueoVeterinarioJpaRepository.findByVeterinarioIdAndFecha(veterinarioId, fecha).stream()
+        return bloqueoVeterinarioJpaRepository.findByVeterinarioIdAndFechaOrderByHoraInicioAsc(veterinarioId, fecha).stream()
                 .map(bloqueoVeterinarioMapper::toDomain).toList();
     }
 

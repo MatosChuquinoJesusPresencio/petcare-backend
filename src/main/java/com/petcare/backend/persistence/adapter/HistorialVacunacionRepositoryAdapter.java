@@ -44,7 +44,7 @@ public class HistorialVacunacionRepositoryAdapter implements HistorialVacunacion
 
     @Override
     public List<HistorialVacunacion> findByProximaDosisBetween(LocalDate desde, LocalDate hasta) {
-        return jpaRepository.findByProximaDosisBetween(desde, hasta)
+        return jpaRepository.findByProximaDosisBetweenOrderByProximaDosisAsc(desde, hasta)
                 .stream().map(mapper::toDomain).toList();
     }
 

@@ -43,7 +43,7 @@ public class RecetaRepositoryAdapter implements RecetaRepositoryPort {
 
     @Override
     public List<Receta> findByAtencionClinicaId(Long atencionClinicaId) {
-        return jpaRepository.findByAtencionClinicaId(atencionClinicaId)
+        return jpaRepository.findByAtencionClinicaIdOrderByCreadoEnDesc(atencionClinicaId)
                 .stream().map(this::toDomainWithDetalles).toList();
     }
 

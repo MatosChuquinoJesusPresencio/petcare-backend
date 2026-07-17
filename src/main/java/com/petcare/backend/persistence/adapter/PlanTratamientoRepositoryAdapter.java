@@ -50,7 +50,7 @@ public class PlanTratamientoRepositoryAdapter implements PlanTratamientoReposito
 
     @Override
     public List<PlanTratamiento> findByAtencionClinicaId(Long atencionClinicaId) {
-        return jpaRepository.findByAtencionClinicaId(atencionClinicaId)
+        return jpaRepository.findByAtencionClinicaIdOrderByCreadoEnDesc(atencionClinicaId)
                 .stream().map(this::toDomainWithActividades).toList();
     }
 

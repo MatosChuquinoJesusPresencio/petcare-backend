@@ -35,17 +35,17 @@ public class SeguimientoRepositoryAdapter implements SeguimientoRepositoryPort {
 
     @Override
     public List<Seguimiento> findByAtencionClinicaId(Long atencionClinicaId) {
-        return jpaRepository.findByAtencionClinicaId(atencionClinicaId).stream().map(this::toDomain).toList();
+        return jpaRepository.findByAtencionClinicaIdOrderByCreadoEnDesc(atencionClinicaId).stream().map(this::toDomain).toList();
     }
 
     @Override
     public List<Seguimiento> findByMascotaId(Long mascotaId) {
-        return jpaRepository.findByMascotaId(mascotaId).stream().map(this::toDomain).toList();
+        return jpaRepository.findByMascotaIdOrderByCreadoEnDesc(mascotaId).stream().map(this::toDomain).toList();
     }
 
     @Override
     public List<Seguimiento> findByFechaProgramadaBetween(Instant desde, Instant hasta) {
-        return jpaRepository.findByFechaProgramadaBetween(desde, hasta).stream().map(this::toDomain).toList();
+        return jpaRepository.findByFechaProgramadaBetweenOrderByFechaProgramadaAsc(desde, hasta).stream().map(this::toDomain).toList();
     }
 
     @Override
