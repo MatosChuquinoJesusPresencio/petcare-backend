@@ -67,7 +67,7 @@ public class CitaRepositoryAdapter implements CitaRepositoryPort {
 
     @Override
     public List<Cita> findByVeterinarioIdAndFechaHoraBetween(Long veterinarioId, Instant start, Instant end) {
-        return citaJpaRepository.findByVeterinarioIdAndFechaHoraBetween(veterinarioId, start, end).stream()
+        return citaJpaRepository.findByVeterinarioIdAndFechaHoraBetweenOrderByFechaHoraAsc(veterinarioId, start, end).stream()
                 .map(citaMapper::toDomain).toList();
     }
 

@@ -4,6 +4,8 @@ import com.petcare.backend.domain.service.HistorialTransferenciaService;
 import com.petcare.backend.web.dto.response.HistorialTransferenciaResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +22,7 @@ public class HistorialTransferenciaController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ASISTENTE', 'VETERINARIO')")
-    public ResponseEntity<Page<HistorialTransferenciaResponse>> listarPorMascota(@PathVariable Long mascotaId, Pageable pageable) {
+    public ResponseEntity<Page<HistorialTransferenciaResponse>> listarPorMascota(@PathVariable Long mascotaId, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<HistorialTransferenciaResponse> page = historialTransferenciaService.listarPorMascota(mascotaId, pageable)
                 .map(h -> new HistorialTransferenciaResponse(h.getId(),
                         h.getMascota() != null ? h.getMascota().getId() : null,

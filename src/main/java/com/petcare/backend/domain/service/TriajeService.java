@@ -1,6 +1,7 @@
 package com.petcare.backend.domain.service;
 
 import com.petcare.backend.domain.model.Cita;
+import com.petcare.backend.domain.model.SalaEspera;
 import com.petcare.backend.domain.model.Triaje;
 import com.petcare.backend.domain.model.Usuario;
 import com.petcare.backend.domain.port.CitaRepositoryPort;
@@ -9,6 +10,8 @@ import com.petcare.backend.domain.port.TriajeRepositoryPort;
 import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
 import com.petcare.backend.domain.exception.BusinessRuleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,19 +23,24 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class TriajeService {
 
+    private static final Logger log = LoggerFactory.getLogger(TriajeService.class);
+
     private final TriajeRepositoryPort triajeRepositoryPort;
     private final CitaRepositoryPort citaRepositoryPort;
     private final UsuarioRepositoryPort usuarioRepositoryPort;
     private final SalaEsperaRepositoryPort salaEsperaRepositoryPort;
+    private final NotificacionService notificacionService;
 
     public TriajeService(TriajeRepositoryPort triajeRepositoryPort,
                           CitaRepositoryPort citaRepositoryPort,
                           UsuarioRepositoryPort usuarioRepositoryPort,
-                          SalaEsperaRepositoryPort salaEsperaRepositoryPort) {
+                          SalaEsperaRepositoryPort salaEsperaRepositoryPort,
+                          NotificacionService notificacionService) {
         this.triajeRepositoryPort = triajeRepositoryPort;
         this.citaRepositoryPort = citaRepositoryPort;
         this.usuarioRepositoryPort = usuarioRepositoryPort;
         this.salaEsperaRepositoryPort = salaEsperaRepositoryPort;
+        this.notificacionService = notificacionService;
     }
 
     @Transactional
@@ -63,11 +71,28 @@ public class TriajeService {
         triaje.setNivelUrgencia(urgencia);
         triaje.setAsistente(asistente);
 
-        if (salaEsperaRepositoryPort.findByCitaId(citaId).isEmpty()) {
-            throw new BusinessRuleException("La cita debe estar registrada en sala de espera antes del triaje");
+        SalaEspera sala = salaEsperaRepositoryPort.findByCitaId(citaId)
+                .orElseThrow(() -> new BusinessRuleException("La cita debe estar registrada en sala de espera antes del triaje"));
+
+        Triaje saved = triajeRepositoryPort.save(triaje);
+
+        sala.setEstado("EN_ATENCION");
+        salaEsperaRepositoryPort.save(sala);
+
+        if (cita.getVeterinario() != null) {
+            String nombreMascota = cita.getMascota() != null ? cita.getMascota().getNombre() : "N/A";
+            notificacionService.registrar(
+                    "TRIAJE_REALIZADO",
+                    cita.getVeterinario().getId(),
+                    cita.getMascota() != null ? cita.getMascota().getId() : null,
+                    citaId,
+                    "PLATAFORMA",
+                    String.format("Se realizó triaje para %s. Urgencia: %s. La mascota está en sala de espera.",
+                            nombreMascota, urgencia)
+            );
         }
 
-        return triajeRepositoryPort.save(triaje);
+        return saved;
     }
 
     public Page<Triaje> listarTodos(Pageable pageable) {

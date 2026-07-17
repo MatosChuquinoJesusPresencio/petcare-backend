@@ -8,6 +8,8 @@ import com.petcare.backend.web.dto.response.ServicioResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +29,7 @@ public class ServicioController {
     public ResponseEntity<Page<ServicioResponse>> listarServicios(
             @RequestParam(value = "soloActivos", required = false) Boolean soloActivos,
             @RequestParam(value = "nombre", required = false) String nombre,
-            Pageable pageable) {
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<ServicioResponse> servicios = servicioService.listar(soloActivos, nombre, pageable)
                 .map(s -> new ServicioResponse(s.getId(), s.getNombre(), s.getDescripcion(),
                         s.getDuracionMinutos(), s.getCostoReferencial(), s.getActivo()));

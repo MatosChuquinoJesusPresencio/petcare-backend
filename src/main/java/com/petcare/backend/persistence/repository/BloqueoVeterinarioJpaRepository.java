@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface BloqueoVeterinarioJpaRepository extends JpaRepository<BloqueoVeterinarioEntity, Long> {
-    List<BloqueoVeterinarioEntity> findByVeterinarioId(Long veterinarioId);
+    List<BloqueoVeterinarioEntity> findByVeterinarioIdOrderByFechaAsc(Long veterinarioId);
 
-    List<BloqueoVeterinarioEntity> findByVeterinarioIdAndFecha(Long veterinarioId, LocalDate fecha);
+    List<BloqueoVeterinarioEntity> findByVeterinarioIdAndFechaOrderByHoraInicioAsc(Long veterinarioId, LocalDate fecha);
 }

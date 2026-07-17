@@ -17,5 +17,5 @@ public interface CitaJpaRepository extends JpaRepository<CitaEntity, Long>, JpaS
     Page<CitaEntity> findByVeterinarioId(Long veterinarioId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"mascota", "veterinario", "servicio", "creadoPor", "actualizadoPor"})
-    List<CitaEntity> findByVeterinarioIdAndFechaHoraBetween(Long veterinarioId, Instant start, Instant end);
+    List<CitaEntity> findByVeterinarioIdAndFechaHoraBetweenOrderByFechaHoraAsc(Long veterinarioId, Instant start, Instant end);
 }

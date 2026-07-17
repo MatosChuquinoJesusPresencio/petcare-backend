@@ -79,4 +79,30 @@ public class UsuarioService {
         usuario.setEstado(estado);
         return usuarioRepositoryPort.save(usuario);
     }
+
+    @Transactional
+    public Usuario actualizarUsuario(Long id, String firstName, String lastName, String email, String phone, String rol) {
+        Usuario usuario = usuarioRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        if (!usuario.getEmail().equals(email) && usuarioRepositoryPort.findByEmail(email).isPresent()) {
+            throw new ResourceDuplicateException("El correo electrónico ya está registrado");
+        }
+        usuario.setNombres(firstName);
+        usuario.setApellidos(lastName);
+        usuario.setEmail(email);
+        usuario.setTelefono(phone);
+        usuario.setRol(rol);
+        return usuarioRepositoryPort.save(usuario);
+    }
+
+    @Transactional
+    public void cambiarContrasena(Long id, String currentPassword, String newPassword) {
+        Usuario usuario = usuarioRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        if (!passwordEncoder.matches(currentPassword, usuario.getContrasena())) {
+            throw new BusinessRuleException("La contraseña actual es incorrecta");
+        }
+        usuario.setContrasena(passwordEncoder.encode(newPassword));
+        usuarioRepositoryPort.save(usuario);
+    }
 }

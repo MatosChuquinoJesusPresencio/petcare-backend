@@ -1,12 +1,12 @@
 services:
   - type: web
     name: petcare-backend
-    env: java
-    buildCommand: mvn clean package -DskipTests
-    startCommand: java -jar target/backend.jar
-    healthCheckPath: /api/auth/me
+    env: docker
+    dockerContext: petcare-backend
+    dockerfilePath: petcare-backend/Dockerfile
+    healthCheckPath: /
     healthCheckPolicy:
       initialDelaySeconds: 120
     cron:
-      - path: /api/auth/me
+      - path: /
         schedule: "*/14 * * * *"
