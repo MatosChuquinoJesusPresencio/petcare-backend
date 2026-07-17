@@ -2,6 +2,7 @@ package com.petcare.backend.web.controller;
 
 import com.petcare.backend.domain.model.BloqueoVeterinario;
 import com.petcare.backend.domain.model.Usuario;
+import com.petcare.backend.domain.service.AuditoriaService;
 import com.petcare.backend.domain.service.BloqueoVeterinarioService;
 import com.petcare.backend.domain.service.UsuarioService;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
@@ -12,9 +13,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
@@ -23,11 +26,14 @@ public class BloqueoVeterinarioController {
 
     private final BloqueoVeterinarioService bloqueoService;
     private final UsuarioService usuarioService;
+    private final AuditoriaService auditoriaService;
 
     public BloqueoVeterinarioController(BloqueoVeterinarioService bloqueoService,
-                                         UsuarioService usuarioService) {
+                                         UsuarioService usuarioService,
+                                         AuditoriaService auditoriaService) {
         this.bloqueoService = bloqueoService;
         this.usuarioService = usuarioService;
+        this.auditoriaService = auditoriaService;
     }
 
     @GetMapping("/veterinario/{veterinarioId}")
@@ -60,13 +66,40 @@ public class BloqueoVeterinarioController {
                 request.startTime(), request.endTime(), request.reason());
 
         BloqueoVeterinario creado = bloqueoService.bloquear(bloqueo);
+
+        try {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            Usuario auditor = usuarioService.obtenerPorEmail(username).orElse(null);
+            LinkedHashMap<String, String> campos = new LinkedHashMap<>();
+            campos.put("veterinarioId", String.valueOf(request.veterinarianId()));
+            campos.put("fecha", String.valueOf(request.date()));
+            campos.put("horaInicio", String.valueOf(request.startTime()));
+            campos.put("horaFin", String.valueOf(request.endTime()));
+            campos.put("motivo", request.reason());
+            auditoriaService.registrarCreacion("bloqueos_veterinarios", creado.getId(), auditor, campos);
+        } catch (Exception ignored) { }
+
         return new ResponseEntity<>(toResponse(creado), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VETERINARIO')")
     public ResponseEntity<Void> eliminarBloqueo(@PathVariable Long id) {
+        BloqueoVeterinario existente = bloqueoService.obtenerPorId(id);
         bloqueoService.eliminarBloqueo(id);
+
+        try {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            Usuario auditor = usuarioService.obtenerPorEmail(username).orElse(null);
+            LinkedHashMap<String, String> campos = new LinkedHashMap<>();
+            campos.put("veterinarioId", existente.getVeterinario() != null ? String.valueOf(existente.getVeterinario().getId()) : "-");
+            campos.put("fecha", str(existente.getFecha()));
+            campos.put("horaInicio", str(existente.getHoraInicio()));
+            campos.put("horaFin", str(existente.getHoraFin()));
+            campos.put("motivo", existente.getMotivo());
+            auditoriaService.registrarEliminacion("bloqueos_veterinarios", id, auditor, campos);
+        } catch (Exception ignored) { }
+
         return ResponseEntity.noContent().build();
     }
 
@@ -78,5 +111,9 @@ public class BloqueoVeterinarioController {
 
     private List<BloqueoVeterinarioResponse> toResponseList(List<BloqueoVeterinario> list) {
         return list.stream().map(this::toResponse).toList();
+    }
+
+    private String str(Object obj) {
+        return obj != null ? String.valueOf(obj) : "";
     }
 }

@@ -13,11 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 public class SalaEsperaService {
+
+    private static final List<String> ESTADOS_VALIDOS = List.of("PENDIENTE", "EN_ATENCION", "ATENDIDO", "REPROGRAMADO");
+    private static final List<String> TRANSICIONES_PERMITIDAS = List.of("PENDIENTE", "REPROGRAMADO");
 
     private final SalaEsperaRepositoryPort salaEsperaRepositoryPort;
     private final CitaRepositoryPort citaRepositoryPort;
@@ -42,6 +47,16 @@ public class SalaEsperaService {
             throw new BusinessRuleException("La cita no tiene una mascota asociada");
         }
 
+        Instant fechaCita = cita.getFechaHora();
+        if (fechaCita == null) {
+            throw new BusinessRuleException("La cita no tiene fecha/hora definida");
+        }
+        LocalDate hoy = LocalDate.now(ZoneId.of("America/Bogota"));
+        LocalDate fechaCitaLocal = fechaCita.atZone(ZoneId.of("America/Bogota")).toLocalDate();
+        if (!fechaCitaLocal.equals(hoy)) {
+            throw new BusinessRuleException("Solo se pueden registrar citas del día de hoy en sala de espera");
+        }
+
         SalaEspera salaEspera = new SalaEspera(
                 null, cita, mascota, Instant.now(), "PENDIENTE", observaciones
         );
@@ -58,8 +73,11 @@ public class SalaEsperaService {
             throw new BusinessRuleException("El nuevo estado no debe ser nulo");
         }
         String estadoUpper = nuevoEstado.toUpperCase();
-        if (!List.of("PENDIENTE", "EN_ATENCION", "ATENDIDO", "NO_ASISTIO", "REPROGRAMADO").contains(estadoUpper)) {
+        if (!ESTADOS_VALIDOS.contains(estadoUpper)) {
             throw new BusinessRuleException("Estado de sala de espera inválido");
+        }
+        if (!TRANSICIONES_PERMITIDAS.contains(estadoUpper)) {
+            throw new BusinessRuleException("Solo se puede cambiar a PENDIENTE o REPROGRAMADO manualmente");
         }
 
         salaEspera.setEstado(estadoUpper);
@@ -68,6 +86,11 @@ public class SalaEsperaService {
 
     public Page<SalaEspera> listarTodas(Pageable pageable) {
         return salaEsperaRepositoryPort.findAllByOrderByFechaLlegadaAsc(pageable);
+    }
+
+    public SalaEspera obtenerPorId(Long id) {
+        return salaEsperaRepositoryPort.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de sala de espera no encontrado"));
     }
 
     public Page<SalaEspera> listarPorEstado(String estado, Pageable pageable) {
