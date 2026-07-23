@@ -90,6 +90,16 @@ public class TriajeService {
                     String.format("Se realizó triaje para %s. Urgencia: %s. La mascota está en sala de espera.",
                             nombreMascota, urgencia)
             );
+
+            notificacionService.enviar(
+                    "TRIAJE_REALIZADO",
+                    cita.getVeterinario().getId(),
+                    cita.getMascota() != null ? cita.getMascota().getId() : null,
+                    citaId,
+                    "SMS",
+                    String.format("PetCare: Triaje realizado para %s. Urgencia: %s. La mascota esta en sala de espera.",
+                            nombreMascota, urgencia)
+            );
         }
 
         return saved;

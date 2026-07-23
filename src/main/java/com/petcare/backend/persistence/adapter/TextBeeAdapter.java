@@ -46,7 +46,7 @@ public class TextBeeAdapter implements NotificadorPort {
             return false;
         }
         try {
-            String url = apiUrl + "/gateways/" + gatewayId + "/send";
+            String url = apiUrl + "/gateway/devices/" + gatewayId + "/send-sms";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("x-api-key", apiKey);

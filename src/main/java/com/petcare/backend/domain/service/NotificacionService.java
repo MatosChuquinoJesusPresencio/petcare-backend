@@ -32,6 +32,22 @@ public class NotificacionService {
 
     public Notificacion enviar(String tipo, Long destinoUsuarioId, Long mascotaId,
                                 Long citaId, String canal, String mensaje) {
+        if ("SMS".equals(canal) || "WHATSAPP".equals(canal)) {
+            var usuario = usuarioRepositoryPort.findById(destinoUsuarioId).orElse(null);
+            String telefono = usuario != null ? usuario.getTelefono() : null;
+            if (telefono == null || telefono.isBlank()) {
+                log.warn("[Notificacion] Usuario {} no tiene telefono registrado. Notificacion {} no enviada.", destinoUsuarioId, canal);
+                return registrarError(tipo, destinoUsuarioId, canal, mensaje, "Telefono no disponible");
+            }
+            boolean enviado = "SMS".equals(canal)
+                    ? notificadorPort.enviarSMS(telefono, mensaje)
+                    : notificadorPort.enviarWhatsApp(telefono, mensaje);
+            if (enviado) {
+                return registrar(tipo, destinoUsuarioId, mascotaId, citaId, canal, mensaje);
+            } else {
+                return registrarError(tipo, destinoUsuarioId, canal, mensaje, "Error al enviar " + canal);
+            }
+        }
         return registrar(tipo, destinoUsuarioId, mascotaId, citaId, canal, mensaje);
     }
 

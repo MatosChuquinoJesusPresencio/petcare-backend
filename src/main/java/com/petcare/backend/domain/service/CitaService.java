@@ -13,6 +13,8 @@ import com.petcare.backend.domain.port.MascotaRepositoryPort;
 import com.petcare.backend.domain.port.ServicioRepositoryPort;
 import com.petcare.backend.domain.port.UsuarioRepositoryPort;
 import com.petcare.backend.domain.exception.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.petcare.backend.domain.exception.BusinessRuleException;
 import com.petcare.backend.domain.exception.ScheduleConflictException;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,7 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class CitaService {
+    private static final Logger log = LoggerFactory.getLogger(CitaService.class);
     private static final ZoneId BUSINESS_ZONE = ZoneId.of("America/Lima");
 
     private final CitaRepositoryPort citaRepositoryPort;
@@ -35,19 +38,22 @@ public class CitaService {
     private final MascotaRepositoryPort mascotaRepositoryPort;
     private final ServicioRepositoryPort servicioRepositoryPort;
     private final UsuarioRepositoryPort usuarioRepositoryPort;
+    private final NotificacionService notificacionService;
 
     public CitaService(CitaRepositoryPort citaRepositoryPort,
                        BloqueoVeterinarioRepositoryPort bloqueoRepositoryPort,
                        DisponibilidadVeterinarioRepositoryPort disponibilidadRepositoryPort,
                        MascotaRepositoryPort mascotaRepositoryPort,
                        ServicioRepositoryPort servicioRepositoryPort,
-                       UsuarioRepositoryPort usuarioRepositoryPort) {
+                       UsuarioRepositoryPort usuarioRepositoryPort,
+                       NotificacionService notificacionService) {
         this.citaRepositoryPort = citaRepositoryPort;
         this.bloqueoRepositoryPort = bloqueoRepositoryPort;
         this.disponibilidadRepositoryPort = disponibilidadRepositoryPort;
         this.mascotaRepositoryPort = mascotaRepositoryPort;
         this.servicioRepositoryPort = servicioRepositoryPort;
         this.usuarioRepositoryPort = usuarioRepositoryPort;
+        this.notificacionService = notificacionService;
     }
 
     @Transactional
@@ -84,7 +90,20 @@ public class CitaService {
                 "AGENDADA", notas, creadoPor, Instant.now(), null, Instant.now()
         );
 
-        return citaRepositoryPort.save(cita);
+        Cita saved = citaRepositoryPort.save(cita);
+
+        String nombreMascota = mascota.getNombre();
+        notificacionService.enviar(
+                "CITA_RECORDATORIO",
+                creadoPorId,
+                mascotaId,
+                saved.getId(),
+                "SMS",
+                String.format("PetCare: Su cita para %s esta programada para el %s. Servicio: %s.",
+                        nombreMascota, fechaHora.toString(), servicio.getNombre())
+        );
+
+        return saved;
     }
 
     @Transactional

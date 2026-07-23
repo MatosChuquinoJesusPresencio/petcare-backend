@@ -66,6 +66,17 @@ public class SeguimientoService {
                         saved.getFechaProgramada() != null ? saved.getFechaProgramada().toString() : "pendiente")
         );
 
+        notificacionService.enviar(
+                "SEGUIMIENTO_PROGRAMADO",
+                veterinarioId,
+                mascota.getId(),
+                atencion.getCita() != null ? atencion.getCita().getId() : null,
+                "SMS",
+                String.format("PetCare: Se programó un seguimiento para %s. Fecha: %s",
+                        mascota.getNombre(),
+                        saved.getFechaProgramada() != null ? saved.getFechaProgramada().toString() : "pendiente")
+        );
+
         return saved;
     }
 
