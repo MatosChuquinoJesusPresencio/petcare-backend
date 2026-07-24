@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import org.springframework.security.authentication.DisabledException;
+
 import java.util.List;
 
 @Service
@@ -24,6 +26,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con el correo: " + email));
+
+        if ("DUENO".equals(usuario.getRol())) {
+            throw new DisabledException("Los usuarios con rol DUENO no tienen acceso al sistema");
+        }
 
         String roleName = usuario.getRol().startsWith("ROLE_") ? usuario.getRol() : "ROLE_" + usuario.getRol();
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleName));

@@ -79,6 +79,10 @@ public class UsuarioController {
         Usuario existente = usuarioService.obtenerPorId(id)
                 .orElseThrow(() -> new com.petcare.backend.domain.exception.ResourceNotFoundException("Usuario no encontrado"));
 
+        if ("DUENO".equals(request.role().toUpperCase())) {
+            throw new com.petcare.backend.domain.exception.BusinessRuleException(
+                    "No se permite asignar el rol DUENO a un usuario");
+        }
         var usuario = usuarioService.actualizarUsuario(id, request.firstName(), request.lastName(),
                 request.email(), request.phone(), request.role().toUpperCase());
 
@@ -136,6 +140,10 @@ public class UsuarioController {
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioResponse> crearUsuario(@Valid @RequestBody RegisterRequest request) {
+        if ("DUENO".equals(request.role().toUpperCase())) {
+            throw new com.petcare.backend.domain.exception.BusinessRuleException(
+                    "No se permite crear usuarios con rol DUENO desde el panel de administracion");
+        }
         com.petcare.backend.domain.model.Usuario usuario = com.petcare.backend.domain.model.Usuario.builder()
                 .contrasena(request.password())
                 .nombres(request.firstName())

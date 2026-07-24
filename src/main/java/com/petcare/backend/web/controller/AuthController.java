@@ -71,6 +71,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        if ("DUENO".equals(request.role().toUpperCase())) {
+            throw new com.petcare.backend.domain.exception.BusinessRuleException(
+                    "No se permite registrar usuarios con rol DUENO");
+        }
         Usuario usuario = Usuario.builder()
                 .contrasena(request.password())
                 .nombres(request.firstName())
