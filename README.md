@@ -5,6 +5,10 @@
 ![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?logo=apachemaven)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+## Despliegue
+
+🔗 [petcare-backend-i9yi.onrender.com](https://petcare-backend-i9yi.onrender.com/) — Swagger: [/docs](https://petcare-backend-i9yi.onrender.com/docs)
+
 API RESTful para la gestión de una clínica veterinaria. Desarrollada con Java 25 y Spring Boot 4.1.
 
 ## Características
